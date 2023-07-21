@@ -43,17 +43,19 @@ export default function PostMenu({ menuOpen, setOpen, authorId, postId, postType
 
     //////////////////////////////////////////////////////
     // check if user follows post author on component mountt 
-    const checkFollow = async () => {
-        const followingDocRef = doc(db, 'follows', `${user?.uid}_follows_${authorId}`)
-        const docSnap = await getDoc(followingDocRef)
-        if (docSnap.exists()) {
-            setFollowing(true)
-        } else {
-            setFollowing(false)
-        }
-    }
 
     useEffect(() => {
+
+        const checkFollow = async () => {
+            const followingDocRef = doc(db, 'follows', `${user?.uid}_follows_${authorId}`)
+            const docSnap = await getDoc(followingDocRef)
+            if (docSnap.exists()) {
+                setFollowing(true)
+            } else {
+                setFollowing(false)
+            }
+        }
+
         checkFollow()
     }, []);
 
@@ -126,7 +128,7 @@ export default function PostMenu({ menuOpen, setOpen, authorId, postId, postType
 
 
 
-    
+
 
 
 

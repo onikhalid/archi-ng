@@ -21,44 +21,44 @@ export default function Page({ params }) {
     const [user, loading] = useAuthState(auth)
     const [bookmarks, setBookmarks] = useState([]);
 
-    const folderDocRef = doc(db, `folders/${folderId}`);
-
 
 
 
     useEffect(() => {
+        const folderDocRef = doc(db, `folders/${folderId}`);
+
         const getFolderBookmarks = async () => {
             // if (!user) {
             //     return
             // }
             const folderDocsSnap = await getDoc(folderDocRef);
-    
+
             if (folderDocsSnap.exists()) {
-    
+
                 const bookmarkIdsArray = folderDocsSnap.data().bookmarks
                 setFolderName(folderDocsSnap.data().folderName)
                 setFolderOwner(folderDocsSnap.data().userId)
-    
+
                 const getBookmarkData = bookmarkIdsArray.map(async (item) => {
                     const ref = doc(db, `bookmarks/${item}`)
                     const bookmarkDocSnap = await getDoc(ref)
                     const bookmarkData = bookmarkDocSnap.data()
                     return bookmarkData
                 })
-    
+
                 const bookmarkData = await Promise.all(getBookmarkData);
                 setBookmarks(bookmarkData)
-    
+
             }
             else setBookmarks(null)
         }
-    
+
 
         getFolderBookmarks()
-        
+
     }, [folderId])
 
-     
+
 
 
 
@@ -78,9 +78,9 @@ export default function Page({ params }) {
                             return (
                                 <article key={index} >
                                     <BookmarkCard post={bookmark} />
-                                    {user&&user.uid == bookmark.userId &&<button>delete</button>}
+                                    {user && user.uid == bookmark.userId && <button>delete</button>}
                                 </article>
-                                )
+                            )
                         })
                     }
 

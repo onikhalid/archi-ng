@@ -45,24 +45,26 @@ const MobileNav = () => {
   const [lastScrollY, setLastScrollY] = useState(0);
   const classes = hidden === true ? `${styles.hidden} ${styles.mobileNav}` : `${styles.mobileNav}`
 
-  const controlNavbar = () => {
-    if (typeof window !== 'undefined') { 
-      if (window.scrollY > lastScrollY) {
-        setHidden(true); 
-      } else if (window.scrollY < lastScrollY){
-        setHidden (false);  
-      } else if (window.scrollY = 0) {setHidden(true);}
 
-      // remember current page location to use in the next move
-      setLastScrollY(window.scrollY); 
-    }
-  };
 
   useEffect(() => {
+
+    const controlNavbar = () => {
+      if (typeof window !== 'undefined') {
+        if (window.scrollY > lastScrollY) {
+          setHidden(true);
+        } else if (window.scrollY < lastScrollY) {
+          setHidden(false);
+        } else if (window.scrollY = 0) { setHidden(true); }
+
+        // remember current page location to use in the next move
+        setLastScrollY(window.scrollY);
+      }
+    };
+
     if (typeof window !== 'undefined') {
       window.addEventListener('scroll', controlNavbar);
 
-      // cleanup function
       return () => {
         window.removeEventListener('scroll', controlNavbar);
       };
@@ -70,15 +72,18 @@ const MobileNav = () => {
   }, [lastScrollY]);
 
 
+
+
+
   return (
     <nav className={classes}>
       {
         pages.map((link, index) => (
-            <Link
-              href={link.path} key={index}
-              className={currentPath === link.path ? `${styles.navlink} ${styles.active}` : styles.navlink} >
-              {link.icon}
-            </Link>
+          <Link
+            href={link.path} key={index}
+            className={currentPath === link.path ? `${styles.navlink} ${styles.active}` : styles.navlink} >
+            {link.icon}
+          </Link>
         ))
       }
 

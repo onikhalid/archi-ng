@@ -107,7 +107,15 @@ export default function Home() {
 
  
 
-  const getPosts = async () => {
+
+
+
+  ///////////////////////////////////////////////////////////////
+  ////////////         GET INITIAL POSTS         ////////////////
+  ///////////////////////////////////////////////////////////////
+  useEffect(() => {
+    
+      const getPosts = async () => {
     // start fetching
     setLoadingPosts(true)
     const followedUserIds = await GetFollowedUsersIds()
@@ -154,11 +162,7 @@ export default function Home() {
     }
   };
 
-
-  ///////////////////////////////////////////////////////////////
-  ////////////         GET INITIAL POSTS         ////////////////
-  ///////////////////////////////////////////////////////////////
-  useEffect(() => {
+  
     getPosts();
   }, [currentPost, currentwhosePost]);
 

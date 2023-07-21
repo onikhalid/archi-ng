@@ -34,7 +34,7 @@ export const BookmarkCard = ({ post }) => {
             setLoadingPosts(false)
         }
         getArchivedPostsInfo()
-    }, []);
+    }, [post?.postId]);
 
 
 

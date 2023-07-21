@@ -41,60 +41,62 @@ const Archive = () => {
   const [allPosts, setAllPosts] = useState([]);
   const [loadingPosts, setLoadingPosts] = useState([]);
 
-  const getArchivedPosts = async () => {
-    setLoadingPosts(true)
-
-    const bookmarksCollectionRef = collection(db, "bookmarks");
-    const foldersCollectionRef = collection(db, 'folders');
-    const currentUser = user?.uid
-
-
-    const getQuery = () => {
-
-      // bookmarks
-      if (user && whichOne === "Bookmarks") {
-        return query(bookmarksCollectionRef, where('userId', '==', currentUser))
-      }
-
-      else if (user && whichOne === "Folders") {
-        return query(foldersCollectionRef, where('userId', '==', currentUser))
-      }
-
-      else if (!user) {
-        return null
-      }
-    }
-
-    const q = getQuery();
-    if (q == null) {
-      setAllPosts([])
-      return
-    }
-    else {
-      const unsubscribe = onSnapshot(q, (snapshot) => {
-        const newDataArray = [];
-        snapshot.forEach((doc) => {
-          const data = doc.data();
-          newDataArray.push(data);
-        });
-        setAllPosts(newDataArray)
-        setLoadingPosts(false)
-      });
-      return unsubscribe;
-    }
-  };
 
 
   useEffect(() => {
+
+
+    const getArchivedPosts = async () => {
+      setLoadingPosts(true)
+
+      const bookmarksCollectionRef = collection(db, "bookmarks");
+      const foldersCollectionRef = collection(db, 'folders');
+      const currentUser = user?.uid
+
+
+      const getQuery = () => {
+
+        // bookmarks
+        if (user && whichOne === "Bookmarks") {
+          return query(bookmarksCollectionRef, where('userId', '==', currentUser))
+        }
+
+        else if (user && whichOne === "Folders") {
+          return query(foldersCollectionRef, where('userId', '==', currentUser))
+        }
+
+        else if (!user) {
+          return null
+        }
+      }
+
+      const q = getQuery();
+      if (q == null) {
+        setAllPosts([])
+        return
+      }
+      else {
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+          const newDataArray = [];
+          snapshot.forEach((doc) => {
+            const data = doc.data();
+            newDataArray.push(data);
+          });
+          setAllPosts(newDataArray)
+          setLoadingPosts(false)
+        });
+        return unsubscribe;
+      }
+    };
     getArchivedPosts();
-    return()=>{}
+    return () => { }
   }, [whichOne]);
 
-  
+
 
 
   //create a older
-  const CreateNewFolder = (data)=>{
+  const CreateNewFolder = (data) => {
     createFolder(data.Name, user.uid)
   }
 
@@ -146,7 +148,7 @@ const Archive = () => {
       }
 
       {
-        user && allPosts.length > 0 && <section className={whichOne == 'Folders'? `${styles.allposts} ${styles.dockets}`:`${styles.allposts}`}>
+        user && allPosts.length > 0 && <section className={whichOne == 'Folders' ? `${styles.allposts} ${styles.dockets}` : `${styles.allposts}`}>
           {allPosts?.map((post, index) => {
 
             if (loadingPosts) {
