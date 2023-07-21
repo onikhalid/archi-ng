@@ -57,7 +57,7 @@ export default function PostMenu({ menuOpen, setOpen, authorId, postId, postType
         }
 
         checkFollow()
-    }, []);
+    }, [user]);
 
 
     ///////////////////////////////

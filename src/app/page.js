@@ -161,10 +161,9 @@ export default function Home() {
       return unsubscribe;
     }
   };
-
   
     getPosts();
-  }, [currentPost, currentwhosePost]);
+  }, [currentPost, currentwhosePost, user]);
 
 
 ///////////////////////////////////////////////////////////////
@@ -242,7 +241,7 @@ export default function Home() {
     return () => {
       window.removeEventListener('scroll', loadMorePosts)
     };
-  }, [loadingPosts, fetchedPosts]);
+  }, [loadingPosts, fetchedPosts, user]);
 
 
 

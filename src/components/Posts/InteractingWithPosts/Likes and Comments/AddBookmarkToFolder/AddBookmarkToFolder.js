@@ -24,20 +24,20 @@ export const AddToFolderMenu = ({ userId, bookmarkId, bookmarkOwnerId }) => {
     const wrapperRef = useRef(null)
 
 
-
-    const getUserFolders = async () => {
-        const userFoldersQuery = query(collection(db, "folders"), where("userId", "==", userId))
-        const userFoldersSnap = await getDocs(userFoldersQuery)
-        const data = []
-        userFoldersSnap.forEach((doc) => {
-            data.push(doc.data())
-        });
-        setUserFoldersList(data)
-    }
     useEffect(() => {
+
+        const getUserFolders = async () => {
+            const userFoldersQuery = query(collection(db, "folders"), where("userId", "==", userId))
+            const userFoldersSnap = await getDocs(userFoldersQuery)
+            const data = []
+            userFoldersSnap.forEach((doc) => {
+                data.push(doc.data())
+            });
+            setUserFoldersList(data)
+        }
         getUserFolders()
 
-    }, []);
+    }, [user]);
 
 
     const toggleMenu = () => {
@@ -73,7 +73,7 @@ export const AddToFolderMenu = ({ userId, bookmarkId, bookmarkOwnerId }) => {
 
 
 
-    const addTo = (userId, bookmarkId, folderId, bookmarkOwnerId)=>{
+    const addTo = (userId, bookmarkId, folderId, bookmarkOwnerId) => {
         addBookmarkToFolder(userId, bookmarkId, folderId, bookmarkOwnerId)
         setMenuOpen(false)
     }
