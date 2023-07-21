@@ -55,7 +55,6 @@ export default function PostMenu({ menuOpen, setOpen, authorId, postId, postType
 
     useEffect(() => {
         checkFollow()
-        return
     }, []);
 
 

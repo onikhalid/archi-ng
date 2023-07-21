@@ -83,7 +83,7 @@ const MakeArticle = ({ postToEditId }) => {
       await updateDoc(doc(postCollectionRef, postToEditId), postData);
     } else {
       const newPostRef = await addDoc(postCollectionRef, postData);
-        const postId = newPostRef.id
+      const postId = newPostRef.id
       await updateDoc(doc(postCollectionRef, newPostRef.id), {
         postId: postId
       });
@@ -107,24 +107,25 @@ const MakeArticle = ({ postToEditId }) => {
   ////////////       CHECK IF USER WANTS TO CREATE NEW POST OR EDIT PREVIOUS POSTS       //////////////////
   //////////////////////////////////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
-  const checkPostToEdit = async () => {
-    if (postToEditId == null || '' || undefined) {
-      return
-    }
-    else {
-      const postToEditRef = doc(db, `posts/${postToEditId}`)
-      const postToEditSnap = await getDoc(postToEditRef)
-      const postToEdit = postToEditSnap.data()
-      const { title, desc, timeToRead, tags, postContent, coverImageURL } = postToEdit
-      setCoverImgURL(coverImageURL)
-      setTitle(title)
-      setDesc(desc)
-      setTimeToRead(timeToRead)
-      setEditorContent(postContent)
-      setTags(tags.join(','))
-    }
-  }
+
   useLayoutEffect(() => {
+    const checkPostToEdit = async () => {
+      if (postToEditId == null || '' || undefined) {
+        return
+      }
+      else {
+        const postToEditRef = doc(db, `posts/${postToEditId}`)
+        const postToEditSnap = await getDoc(postToEditRef)
+        const postToEdit = postToEditSnap.data()
+        const { title, desc, timeToRead, tags, postContent, coverImageURL } = postToEdit
+        setCoverImgURL(coverImageURL)
+        setTitle(title)
+        setDesc(desc)
+        setTimeToRead(timeToRead)
+        setEditorContent(postContent)
+        setTags(tags.join(','))
+      }
+    }
     checkPostToEdit()
   }, []);
 

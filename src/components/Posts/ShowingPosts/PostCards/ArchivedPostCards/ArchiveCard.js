@@ -21,18 +21,18 @@ export const BookmarkCard = ({ post }) => {
     const bookmarkId = `${post.userId}_${post.postId}`
     const bookmarkOwnerId = post.userId
 
-    const getArchivedPostsInfo = async () => {
-        setLoadingPosts(true)
 
-        const postRef = doc(db, `posts/${post.postId}`)
-        const result = await getDoc(postRef)
-        setArchivedPost(result.data())
-
-        setLoadingPosts(false)
-    }
     useLayoutEffect(() => {
+        const getArchivedPostsInfo = async () => {
+            setLoadingPosts(true)
+
+            const postRef = doc(db, `posts/${post.postId}`)
+            const result = await getDoc(postRef)
+            setArchivedPost(result.data())
+
+            setLoadingPosts(false)
+        }
         getArchivedPostsInfo()
-        return () => { }
     }, []);
 
 
