@@ -25,7 +25,6 @@ export const AddToFolderMenu = ({ userId, bookmarkId, bookmarkOwnerId }) => {
 
 
     useEffect(() => {
-
         const getUserFolders = async () => {
             const userFoldersQuery = query(collection(db, "folders"), where("userId", "==", userId))
             const userFoldersSnap = await getDocs(userFoldersQuery)
@@ -37,7 +36,7 @@ export const AddToFolderMenu = ({ userId, bookmarkId, bookmarkOwnerId }) => {
         }
         getUserFolders()
 
-    }, [user]);
+    }, [user, userId]);
 
 
     const toggleMenu = () => {
@@ -94,7 +93,7 @@ export const AddToFolderMenu = ({ userId, bookmarkId, bookmarkOwnerId }) => {
                 {
                     userfolderList.length < 1 &&
                     <li>
-                        You haven't created any folder
+                        You haven&apos;t created any folder
                     </li>
                 }
                 {

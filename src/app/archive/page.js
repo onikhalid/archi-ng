@@ -45,7 +45,6 @@ const Archive = () => {
 
   useEffect(() => {
 
-
     const getArchivedPosts = async () => {
       setLoadingPosts(true)
 
@@ -88,9 +87,10 @@ const Archive = () => {
         return unsubscribe;
       }
     };
+
     getArchivedPosts();
     return () => { }
-  }, [whichOne]);
+  }, [whichOne, user]);
 
 
 
@@ -131,19 +131,19 @@ const Archive = () => {
       {
         !loading && !user &&
         <div className='infobox'>
-          <h2>😒 Can't save any post without logging in</h2>
+          <h2>😒 Can&apos;t save any post without logging in</h2>
         </div>
       }
       {
         user && whichOne == 'Bookmarks' && allPosts.length < 1 &&
         <div className='infobox'>
-          <h2>😒 You haven't saved any posts</h2>
+          <h2>😒 You haven&apos;t saved any posts</h2>
         </div>
       }
       {
         user && whichOne == 'Folders' && allPosts.length < 1 &&
         <div className='infobox'>
-          <h2>🤔 You haven't created any folders yet</h2>
+          <h2>🤔 You haven&apos;t created any folders yet</h2>
         </div>
       }
 

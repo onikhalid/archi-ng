@@ -24,7 +24,7 @@ export default function Home() {
   // const [postOptionsOpen, setPostOptionsOpen] = useState(null);
   const [currentwhosePost, setCurrentWhosePost] = useState("Feed");
   const [loadingPosts, setLoadingPosts] = useState(true);
-
+  const [followedUserIds, setfollowedUserIds] = useState([]);
 
 
   /////////////////////////////////////////////////
@@ -93,19 +93,7 @@ export default function Home() {
   const pageSize = 1;
   const [fetchedPosts, setfetchedPosts] = useState(null);
 
-  const postsCollectionRef = collection(db, "posts");
-  const followsCollectionRef = collection(db, 'follows');
-  const currentUserId = user?.uid
 
-  const GetFollowedUsersIds = async () => {
-    const followedUsersQuerySnapshot = user && await getDocs(
-      query(followsCollectionRef, where('followerId', '==', currentUserId)));
-    const followedUserIds = user && followedUsersQuerySnapshot.docs.map((doc) => doc.data().followingId);
-    return followedUserIds
-  }
-
-
- 
 
 
 
@@ -114,62 +102,83 @@ export default function Home() {
   ////////////         GET INITIAL POSTS         ////////////////
   ///////////////////////////////////////////////////////////////
   useEffect(() => {
-    
-      const getPosts = async () => {
-    // start fetching
-    setLoadingPosts(true)
-    const followedUserIds = await GetFollowedUsersIds()
 
-    const getQuery = () => {
-      if (currentwhosePost === "Feed") {
-        return query(postsCollectionRef, where('postType', '==', currentPost), orderBy("createdAt"), limit(pageSize))
-      }
-      // when user is signed in but doesn't follow anyone
-      else if (user && followedUserIds.length < 1 && (currentwhosePost === "Following")) {
-        setLoadingPosts(false)
-        return null
-      }
-      else if (user && (currentwhosePost === "Following")) {
-        return query(postsCollectionRef, where('postType', '==', currentPost), where('authorId', 'in', followedUserIds), orderBy("createdAt"), limit(pageSize));
-      }
-      // when user isn't signed in and wants to see posts from their imaginary followed user
-      else if (!user && (currentwhosePost === "Following")) {
-        return null
-      }
+    const postsCollectionRef = collection(db, "posts");
+    const followsCollectionRef = collection(db, 'follows');
+    const currentUserId = user?.uid
+
+
+
+
+    const GetFollowedUsersIds = async () => {
+      const followedUsersQuerySnapshot = user && await getDocs(
+        query(followsCollectionRef, where('followerId', '==', currentUserId)));
+      const followedUserIds = user && followedUsersQuerySnapshot.docs.map((doc) => doc.data().followingId);
+      setfollowedUserIds(followedUserIds)
+      return followedUserIds
     }
 
 
-    const q = getQuery();
-    if (q == null) {
-      setAllPosts([])
-      return
-    }
-    else {
-      const unsubscribe = onSnapshot(q, (snapshot) => {
-        const newDataArray = [];
-        snapshot.forEach((doc) => {
-          const data = doc.data();
-          newDataArray.push(data);
+    const getPosts = async () => {
+      // start fetching
+      setLoadingPosts(true)
+      await GetFollowedUsersIds()
+
+      const getQuery = () => {
+        if (currentwhosePost === "Feed") {
+          return query(postsCollectionRef, where('postType', '==', currentPost), orderBy("createdAt"), limit(pageSize))
+        }
+        // when user is signed in but doesn't follow anyone
+        else if (user && followedUserIds.length < 1 && (currentwhosePost === "Following")) {
+          setLoadingPosts(false)
+          return null
+        }
+        else if (user && (currentwhosePost === "Following")) {
+          return query(postsCollectionRef, where('postType', '==', currentPost), where('authorId', 'in', followedUserIds), orderBy("createdAt"), limit(pageSize));
+        }
+        // when user isn't signed in and wants to see posts from their imaginary followed user
+        else if (!user && (currentwhosePost === "Following")) {
+          return null
+        }
+      }
+
+
+      const q = getQuery();
+      if (q == null) {
+        setAllPosts([])
+        return
+      }
+      else {
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+          const newDataArray = [];
+          snapshot.forEach((doc) => {
+            const data = doc.data();
+            newDataArray.push(data);
+          });
+
+
+          setAllPosts(newDataArray)
+          const documents = snapshot.docs;
+          setfetchedPosts(documents[documents.length - 1])
+          setLoadingPosts(false)
         });
+        return unsubscribe;
+      }
+    };
 
-
-        setAllPosts(newDataArray)
-        const documents = snapshot.docs;
-        setfetchedPosts(documents[documents.length - 1])
-        setLoadingPosts(false)
-      });
-      return unsubscribe;
-    }
-  };
-  
     getPosts();
   }, [currentPost, currentwhosePost, user]);
 
 
-///////////////////////////////////////////////////////////////
-//////     GET NEW POSTS WHEN USER SCROLLS TO THE END    //////
-///////////////////////////////////////////////////////////////
+
+
+  ///////////////////////////////////////////////////////////////
+  //////     GET NEW POSTS WHEN USER SCROLLS TO THE END    //////
+  ///////////////////////////////////////////////////////////////
   useEffect(() => {
+
+    const postsCollectionRef = collection(db, "posts");
+  
 
     const loadMorePosts = async () => {
       if (typeof window === 'undefined' || typeof document === 'undefined') return;
@@ -183,7 +192,6 @@ export default function Home() {
         if (!loadingPosts && fetchedPosts) {
           setLoadingPosts(true);
 
-          const followedUserIds = await GetFollowedUsersIds()
 
           const getQuery = () => {
             if (currentwhosePost === "Feed") {
@@ -252,7 +260,7 @@ export default function Home() {
 
 
 
-  
+
 
 
 
@@ -278,13 +286,13 @@ export default function Home() {
         {
           // user signed in but nothing in the following tab
           user && currentwhosePost === 'Following' && !loadingPosts && allPosts.length < 1 && <div className='infobox main'>
-            <h2>Nothing here, Either you don't follow anyone or the people you follow haven't posted anything </h2>
+            <h2>Nothing here, Either you don&apos;t follow anyone or the people you follow haven&apos;t posted anything</h2>
           </div>
         }
         {
           // user not signed in and current whose post = "following"
           !user && allPosts.length < 1 && <div className='infobox main'>
-            <h2>Sign in 😏, you don't follow anybody  </h2>
+            <h2>Sign in 😏, you don&apos;t follow anybody  </h2>
             <Button name={'Sign in'} type={'primary'} link={'/auth'} />
           </div>
         }
