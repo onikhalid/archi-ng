@@ -41,7 +41,6 @@ const MakeCaseStudy = ({ postToEditId }) => {
   };
 
   useEffect(() => {
-  const { setValue } = useForm()
 
     setValue("Title", title || "");
     setValue("Client", client || "");
@@ -152,9 +151,9 @@ const MakeCaseStudy = ({ postToEditId }) => {
       setTags(tags.join(','))
     }
   }
-  
+
     checkPostToEdit()
-  }, []);
+  }, [postToEditId]);
 
 
 

@@ -25,34 +25,37 @@ export default function Page({ params }) {
 
 
 
-    const getFolderBookmarks = async () => {
-        // if (!user) {
-        //     return
-        // }
-        const folderDocsSnap = await getDoc(folderDocRef);
-
-        if (folderDocsSnap.exists()) {
-
-            const bookmarkIdsArray = folderDocsSnap.data().bookmarks
-            setFolderName(folderDocsSnap.data().folderName)
-            setFolderOwner(folderDocsSnap.data().userId)
-
-            const getBookmarkData = bookmarkIdsArray.map(async (item) => {
-                const ref = doc(db, `bookmarks/${item}`)
-                const bookmarkDocSnap = await getDoc(ref)
-                const bookmarkData = bookmarkDocSnap.data()
-                return bookmarkData
-            })
-
-            const bookmarkData = await Promise.all(getBookmarkData);
-            setBookmarks(bookmarkData)
-
-        }
-        else setBookmarks(null)
-    }
 
     useEffect(() => {
+        const getFolderBookmarks = async () => {
+            // if (!user) {
+            //     return
+            // }
+            const folderDocsSnap = await getDoc(folderDocRef);
+    
+            if (folderDocsSnap.exists()) {
+    
+                const bookmarkIdsArray = folderDocsSnap.data().bookmarks
+                setFolderName(folderDocsSnap.data().folderName)
+                setFolderOwner(folderDocsSnap.data().userId)
+    
+                const getBookmarkData = bookmarkIdsArray.map(async (item) => {
+                    const ref = doc(db, `bookmarks/${item}`)
+                    const bookmarkDocSnap = await getDoc(ref)
+                    const bookmarkData = bookmarkDocSnap.data()
+                    return bookmarkData
+                })
+    
+                const bookmarkData = await Promise.all(getBookmarkData);
+                setBookmarks(bookmarkData)
+    
+            }
+            else setBookmarks(null)
+        }
+    
+
         getFolderBookmarks()
+        
     }, [folderId])
 
      

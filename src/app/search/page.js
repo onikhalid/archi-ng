@@ -43,78 +43,82 @@ const Search = () => {
 
 
 
-  async function performSearch(queryText) {
-    if (queryText == '') {
-      return
-    }
-    else
-      setSearching(true)
-
-    const postsCollection = collection(db, 'posts');
-    const whichPost = () => {
-      if (whichResultType === 'Studies') { return 'Case Studies' }
-      else if (whichResultType === 'Articles') { return 'Articles' }
-      else if (whichResultType === 'Photos') { return 'Photography' }
-      else 'Case Studies'
-    }
-    console.log(whichPost())
-
-    const authorQuery = query(postsCollection, where('postType', '==', whichPost()), where('authorName', '>=', ""), where('authorName', '<=', queryText + '\uf8ff'), orderBy('authorName'));
-    const authorResults = await getDocs(authorQuery);
-
-    const titleQuery = query(postsCollection, where('postType', '==', whichPost()), where('title', '>=', queryText), where('title', '<=', queryText + '\uf8ff'));
-    const titleResults = await getDocs(titleQuery);
-
-    const tagsQuery = query(postsCollection, where('postType', '==', whichPost()), where('tags', 'array-contains', queryText));
-    const tagsResults = await getDocs(tagsQuery);
-
-    const typologyQuery = query(postsCollection, where('postType', '==', whichPost()), where('typology', '>=', queryText), where('typology', '<=', queryText + '\uf8ff'));
-    const typologyResults = await getDocs(typologyQuery);
-
-    const architectQuery = query(postsCollection, where('postType', '==', whichPost()), where('architect', '>=', queryText), where('architect', '<=', queryText + '\uf8ff'));
-    const architectResults = await getDocs(architectQuery);
-
-
-    const results = [];
-    authorResults.forEach((doc) => results.push(doc.data()));
-
-
-    titleResults.forEach((doc) => {
-      if (!results.find((result) => result.id === doc.id)) {
-        results.push(doc.data());
-      }
-    });
-    tagsResults.forEach((doc) => {
-      if (!results.find((result) => result.id === doc.id)) {
-        results.push(doc.data());
-      }
-    });
-    typologyResults.forEach((doc) => {
-      if (!results.find((result) => result.id === doc.id)) {
-        results.push(doc.data());
-      }
-    });
-    architectResults.forEach((doc) => {
-      if (!results.find((result) => result.id === doc.id)) {
-        results.push(doc.data());
-      }
-    });
-    console.log(results)
-
-
-    setSearchResult(results)
-    setSearching(false)
-    return;
-  }
 
 
   ////////////////////////////////////////////////////////
   //perform Search once the q parameter in the URL changes
   useEffect(() => {
+    async function performSearch(queryText) {
+      if (queryText == '') {
+        return
+      }
+      else
+        setSearching(true)
+
+      const postsCollection = collection(db, 'posts');
+      const whichPost = () => {
+        if (whichResultType === 'Studies') { return 'Case Studies' }
+        else if (whichResultType === 'Articles') { return 'Articles' }
+        else if (whichResultType === 'Photos') { return 'Photography' }
+        else 'Case Studies'
+      }
+      console.log(whichPost())
+
+      const authorQuery = query(postsCollection, where('postType', '==', whichPost()), where('authorName', '>=', ""), where('authorName', '<=', queryText + '\uf8ff'), orderBy('authorName'));
+      const authorResults = await getDocs(authorQuery);
+
+      const titleQuery = query(postsCollection, where('postType', '==', whichPost()), where('title', '>=', queryText), where('title', '<=', queryText + '\uf8ff'));
+      const titleResults = await getDocs(titleQuery);
+
+      const tagsQuery = query(postsCollection, where('postType', '==', whichPost()), where('tags', 'array-contains', queryText));
+      const tagsResults = await getDocs(tagsQuery);
+
+      const typologyQuery = query(postsCollection, where('postType', '==', whichPost()), where('typology', '>=', queryText), where('typology', '<=', queryText + '\uf8ff'));
+      const typologyResults = await getDocs(typologyQuery);
+
+      const architectQuery = query(postsCollection, where('postType', '==', whichPost()), where('architect', '>=', queryText), where('architect', '<=', queryText + '\uf8ff'));
+      const architectResults = await getDocs(architectQuery);
+
+
+      const results = [];
+      authorResults.forEach((doc) => results.push(doc.data()));
+
+
+      titleResults.forEach((doc) => {
+        if (!results.find((result) => result.id === doc.id)) {
+          results.push(doc.data());
+        }
+      });
+      tagsResults.forEach((doc) => {
+        if (!results.find((result) => result.id === doc.id)) {
+          results.push(doc.data());
+        }
+      });
+      typologyResults.forEach((doc) => {
+        if (!results.find((result) => result.id === doc.id)) {
+          results.push(doc.data());
+        }
+      });
+      architectResults.forEach((doc) => {
+        if (!results.find((result) => result.id === doc.id)) {
+          results.push(doc.data());
+        }
+      });
+      console.log(results)
+
+
+      setSearchResult(results)
+      setSearching(false)
+      return;
+    }
+
+
+
+
     if (!(searchParameter === null || '')) {
       performSearch(searchParameter)
     }
-    return
+
   }, [searchParameter, whichResultType]);
 
   //   ////////////////////////////////////////////////////////////////////
@@ -154,14 +158,14 @@ const Search = () => {
       const parsedSearches = JSON.parse(savedSearches);
       setRecentSearches(parsedSearches);
     }
-    return()=>{}
+    return () => { }
   }, []);
 
   ///////////////////////////////////////
   // Save searches to local storage
   useEffect(() => {
     localStorage.setItem('searches', JSON.stringify(recentSearches));
-    return()=>{}
+    return () => { }
   }, [recentSearches]);
 
   // Add a new search to the list
@@ -237,8 +241,8 @@ const Search = () => {
 
       {
         searchParameter === '' &&
-        
-          <h2>😒 Empty search?</h2>
+
+        <h2>😒 Empty search?</h2>
       }
 
 
@@ -304,7 +308,7 @@ const Search = () => {
           </div>
 
         </section>
-      )}  
+      )}
 
 
     </main>

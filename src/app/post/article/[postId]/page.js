@@ -4,36 +4,37 @@ import { collection, getDocs, getDoc, doc, query, where } from "firebase/firesto
 import { db } from "@/utils/firebase";
 import { useState, useEffect } from "react";
 import Image from "next/image";
- 
+
 
 export default function Page({ params }) {
     const [postData, setPostData] = useState({})
 
     const { postId } = params
-    const getPost = async () => {
-        const postsCollectionRef = doc(db, `posts/${postId}`);
-        const postDocs = await getDoc(postsCollectionRef);
-        setPostData(postDocs.data())
-    }
+
 
     useEffect(() => {
+        const getPost = async () => {
+            const postsCollectionRef = doc(db, `posts/${postId}`);
+            const postDocs = await getDoc(postsCollectionRef);
+            setPostData(postDocs.data())
+        }
         getPost()
-        return
-    }, [])
+
+    }, [postId])
 
 
     return (
-            <main className='content-container'>
-                My Post: {params.postId}
-                <h1>{postData.postTitle}</h1>
-                <Image
-                    src={postData.imageURL}
-                    width={1000}
-                    height={500}
-                    layout="responsive"
-                />
-                <div dangerouslySetInnerHTML={{ __html: postData.postContent }} />
-            </main>
+        <main className='content-container'>
+            My Post: {params.postId}
+            <h1>{postData.postTitle}</h1>
+            <Image
+                src={postData.imageURL}
+                width={1000}
+                height={500}
+                layout="responsive"
+            />
+            <div dangerouslySetInnerHTML={{ __html: postData.postContent }} />
+        </main>
 
     )
 }

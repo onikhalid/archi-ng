@@ -17,7 +17,7 @@ export default function Page({ params }) {
         //     console.log(doc.data())
         // })
     }
-    ol()
+    // ol()
     const content = postData.postContent
     return (
         <div className='content-container'>

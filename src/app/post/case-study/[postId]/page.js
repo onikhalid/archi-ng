@@ -11,16 +11,16 @@ export default function Page({ params }) {
     const router = useRouter()
     const [postData, setPostData] = useState({})
     const { postId } = params
-    const getPost = async () => {
-        const postsCollectionRef = doc(db, `posts/${postId}`);
-        const postDocs = await getDoc(postsCollectionRef);
-        setPostData(postDocs.data())
-    }
+
 
     useEffect(() => {
+        const getPost = async () => {
+            const postsCollectionRef = doc(db, `posts/${postId}`);
+            const postDocs = await getDoc(postsCollectionRef);
+            setPostData(postDocs.data())
+        }
         getPost()
-        return
-    }, [])
+    }, [postId])
 
 
     const content = postData?.postContent
@@ -34,7 +34,7 @@ export default function Page({ params }) {
                     <div dangerouslySetInnerHTML={{ __html: content }} />
                 </div> :
 
-                router.push('/404')
+                    router.push('/404')
             }
         </>
 
