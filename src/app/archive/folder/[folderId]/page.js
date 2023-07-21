@@ -53,6 +53,7 @@ export default function Page({ params }) {
 
     useEffect(() => {
         getFolderBookmarks()
+        return()=>{}
     }, [folderId])
 
 

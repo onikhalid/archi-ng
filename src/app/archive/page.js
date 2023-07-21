@@ -87,7 +87,7 @@ const Archive = () => {
 
   useEffect(() => {
     getArchivedPosts();
-    return
+    return()=>{}
   }, [whichOne]);
 
   

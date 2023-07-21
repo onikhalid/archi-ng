@@ -154,12 +154,14 @@ const Search = () => {
       const parsedSearches = JSON.parse(savedSearches);
       setRecentSearches(parsedSearches);
     }
+    return()=>{}
   }, []);
 
   ///////////////////////////////////////
   // Save searches to local storage
   useEffect(() => {
     localStorage.setItem('searches', JSON.stringify(recentSearches));
+    return()=>{}
   }, [recentSearches]);
 
   // Add a new search to the list

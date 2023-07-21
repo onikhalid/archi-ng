@@ -32,6 +32,7 @@ export const BookmarkCard = ({ post }) => {
     }
     useLayoutEffect(() => {
         getArchivedPostsInfo()
+        return () => { }
     }, []);
 
 
@@ -86,7 +87,7 @@ export const BookmarkCard = ({ post }) => {
                     alt="post cover image"
                 />
             </section>
-                
+
             <section className={width < 1020 ? `${styles.bottom} ${styles.menuisopen}` : bottomclass}>
                 <h3 title={archivedPost?.title}>{archivedPost?.title?.substring(0, 40)}{(loadingPosts == false && archivedPost?.title.length > 39) && '...'}</h3>
                 <div className={styles.other}>
