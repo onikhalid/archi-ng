@@ -13,9 +13,9 @@ import { useWindowWidth } from "@/utils/Hooks/ResponsiveHook"
 
 export const BookmarkCard = ({ post }) => {
 
-    const [archivedPost, setArchivedPost] = useState({});
+    const [archivedPost, setArchivedPost] = useState(null);
     const [user, loading] = useAuthState(auth);
-    const [loadingPosts, setLoadingPosts] = useState(null);
+    const [loadingPosts, setLoadingPosts] = useState(false);
     const [showmenu, setshowmenu] = useState(null);
     const width = useWindowWidth();
     const bookmarkId = `${post.userId}_${post.postId}`
@@ -23,9 +23,9 @@ export const BookmarkCard = ({ post }) => {
 
 
     useLayoutEffect(() => {
+        setLoadingPosts(true)
         const postId = post.postId
         const getArchivedPostsInfo = async () => {
-            setLoadingPosts(true)
 
             const postRef = doc(db, `posts/${postId}`)
             const result = await getDoc(postRef)
@@ -34,7 +34,7 @@ export const BookmarkCard = ({ post }) => {
             setLoadingPosts(false)
         }
         getArchivedPostsInfo()
-    }, [post?.postId]);
+    }, []);
 
 
 
@@ -69,44 +69,54 @@ export const BookmarkCard = ({ post }) => {
 
 
     return (
-        <article className={styles.bookmarkcard} title={archivedPost?.title}
-            onMouseOver={() => setshowmenu(true)} onMouseLeave={() => setshowmenu(false)}
-        >
-            {user && (showmenu || width < 1020) &&
-                <AddToFolderMenu
-                    userId={user.uid}
-                    bookmarkId={bookmarkId}
-                    bookmarkOwnerId={bookmarkOwnerId}
-                />}
+        <>
+            {
+                !archivedPost && <div className="infobox">Loading...</div>
+            }
+    
+            {!loadingPosts&&archivedPost &&
+                <article className={styles.bookmarkcard} title={archivedPost.title}
+                    onMouseOver={() => setshowmenu(true)} onMouseLeave={() => setshowmenu(false)}
+                >
+                    {user && (showmenu || width < 1020) &&
+                        <AddToFolderMenu
+                            userId={user.uid}
+                            bookmarkId={bookmarkId}
+                            bookmarkOwnerId={bookmarkOwnerId}
+                        />}
 
-            <section className={styles.up}>
-                <aside className={styles.posttype} >{type()}</aside>
-                <img
-                    src={archivedPost?.coverImageURL}
-                    width={300}
-                    height={170}
-                    alt="post cover image"
-                />
-            </section>
-
-            <section className={width < 1020 ? `${styles.bottom} ${styles.menuisopen}` : bottomclass}>
-                <h3 title={archivedPost?.title}>{archivedPost?.title?.substring(0, 40)}{(loadingPosts == false && archivedPost?.title.length > 39) && '...'}</h3>
-                <div className={styles.other}>
-                    <div className={styles.author}>
+                    <section className={styles.up}>
+                        <aside className={styles.posttype} >{type()}</aside>
                         <img
-                            src={archivedPost?.authorAvatar}
-                            width={30}
-                            height={30}
-                            alt="post author avatar"
+                            src={archivedPost?.coverImageURL}
+                            width={300}
+                            height={170}
+                            alt="post cover image"
                         />
-                        <h6>{archivedPost.authorName}</h6>
-                    </div>
-                    <Button name={"Read"} icon={<FontAwesomeIcon icon={faArrowUpRightFromSquare} />} link={`/post/${type()}/${post.postId}`} type={"type4"} />
+                    </section>
 
-                </div>
+                    <section className={width < 1020 ? `${styles.bottom} ${styles.menuisopen}` : bottomclass}>
+                        <h3 title={archivedPost.title}>{archivedPost.title.substring(0, 40)}{(loadingPosts == false && archivedPost.title.length > 39) && '...'}</h3>
+                        <div className={styles.other}>
+                            <div className={styles.author}>
+                                <img
+                                    src={archivedPost.authorAvatar}
+                                    width={30}
+                                    height={30}
+                                    alt="post author avatar"
+                                />
+                                <h6>{archivedPost.authorName}</h6>
+                            </div>
+                            <Button name={"Read"} icon={<FontAwesomeIcon icon={faArrowUpRightFromSquare} />} link={`/post/${type()}/${post.postId}`} type={"type4"} />
 
-            </section>
-        </article>
+                        </div>
+
+                    </section>
+                </article>
+            }
+
+        </>
+
     )
 }
 

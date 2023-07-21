@@ -36,7 +36,7 @@ export const AddToFolderMenu = ({ userId, bookmarkId, bookmarkOwnerId }) => {
         }
         getUserFolders()
 
-    }, [user, userId]);
+    }, [userId]);
 
 
     const toggleMenu = () => {
