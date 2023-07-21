@@ -1,0 +1,15 @@
+.allposts{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3.5rem;
+    align-items: center;
+    justify-content: center;
+    margin-top: 4rem;
+}
+.allposts.dockets{
+    align-items: start;
+}
+
+.createfolder{
+    margin-block: 1.2rem;
+}

@@ -1,0 +1,56 @@
+.container {
+
+    @media (min-width: 720px) {
+        position: relative;
+        display: flex;
+
+        .sidebarandnav {
+            --sidebar-width: 300px;
+            width: var(--sidebar-width);
+            max-width: 30%;
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .content {
+            flex-grow: 1;
+            margin-left: var(--sidebar-width);
+            overflow-y: auto;
+        }
+    }
+
+    .content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        padding: 1rem;
+
+        @media (min-width: 1020px) {
+            padding: 1.5rem 10vw;
+        }
+
+    }
+
+}
+
+.topbtn {
+    position: fixed;
+    top: 85%;
+    left: 90%;
+    z-index: 190;
+    transition: opacity 0.3s;
+    
+    &:hover {
+        opacity: 0.8;
+    }
+    
+    @media (max-width: 719px) {
+        left: 70%;
+    }
+    @media (min-width: 720px) and (max-width: 1019px) {
+        top: 90%;
+        left: 85%;
+    }
+}

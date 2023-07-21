@@ -1,0 +1,46 @@
+.form {
+
+    .inputdiv {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: .75rem;
+        align-items: flex-start;
+        justify-content: center;
+
+        span {
+            font-family: var(--text-poppins);
+            color: red;
+            font-size: 0.85rem;
+        }
+
+        input[type="email"],
+        input[type="password"] {
+            padding: 0.5rem;
+            min-width: 100%;
+            border-radius: 10px;
+
+        }
+    }
+
+
+    button[type="submit"] {
+        color: var(--text-on-accent);
+        background-color: var(--accent);
+        padding: 0.5rem 3.5rem;
+        border-radius: var(--border-radius);
+        text-align: center;
+        transition: all 250ms ease-out;
+        font-family: var(--text-lora) !important;
+        border: solid 3px transparent;
+        cursor: pointer;
+        z-index: 200;
+        width: 375px;
+
+        &:hover {
+            --border-radius: 5px;
+            background-color: var(--background);
+            border: solid 3px var(--accent);
+            color: var(--main-text-clr);
+        }
+    }
+}

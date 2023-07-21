@@ -1,0 +1,18 @@
+
+.showmoreIcon {
+    cursor: pointer;
+    margin-left: 1rem;
+
+    @media (max-width: 720px) {
+        margin-left: 0.5rem;
+    }
+
+    svg {
+        font-size: 1.6rem !important;
+        color: var(--accent);
+
+        @media (max-width: 720px) {
+            font-size: 1.2rem !important;
+        }
+    }
+}

@@ -1,0 +1,10 @@
+.menuwrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .toggle {
+
+        cursor: pointer;
+    }
+}

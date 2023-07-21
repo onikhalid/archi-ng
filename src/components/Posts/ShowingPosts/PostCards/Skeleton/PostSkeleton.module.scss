@@ -1,0 +1,88 @@
+// THE CARD 
+.cardimg {
+    display: block;
+    height: 50%;
+    padding-bottom: 45%;
+    width: 100%;
+    border-bottom: solid 1.5px var(--main-text-clr);
+    position: relative;
+    background-image: url('/assets/img/silhoutte.jpeg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-color: var(--background);
+    background-position-y: 90%;
+
+    @media (max-width: 719px) {
+        height: 55%;
+    }
+}
+
+.cardbody {
+    padding: 1.5rem;
+    min-height: 50%;
+    @media (max-width: 719px) {
+        max-height: 45%;
+    }
+}
+
+.cardtitle {
+    font-size: 1.25rem;
+    line-height: 1.33;
+    font-weight: 700;
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+    max-height: 38px;
+
+    @media (max-width: 719px) {
+        max-height: 28px;
+        height: 75%;
+    }
+}
+
+.cardsubtitle {
+    width: 70%;
+    margin-top: .5rem;
+}
+
+.cardintro {
+    font-size: 1.25rem;
+    line-height: 1.33;
+    font-weight: 700;
+    max-width: 100%;
+    height: 30%;
+    max-height: 7px;
+    border-radius: 4px;
+    margin-bottom: .5rem;
+
+    @media (max-width: 719px) {
+        height: 20%;
+    }
+}
+
+.cardintro1 {
+    margin-top: 2rem;
+}
+
+.cardintroshort {
+    max-width: 55%;
+}
+
+.buttongroup{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 2.5rem;
+
+    .button{
+        width: 100px;
+        border-radius: 50px;
+        height: 40px;
+    }
+    .button2{
+        width: 100px;
+        border-radius: 50px;
+        height: 12px;
+        margin-top: 18px;
+    }
+}

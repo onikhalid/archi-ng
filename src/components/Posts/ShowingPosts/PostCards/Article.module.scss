@@ -1,0 +1,129 @@
+.article {
+    border: solid 3.5px var(--main-text-clr);
+    border-radius: 10px;
+    font-family: var(--text-poppins);
+    max-width: 500px;
+    transition: all 250ms ease-in-out;
+
+    
+    @media (max-width: 720px) {
+        width: 100%;
+        max-width: 450px;
+        
+    }
+
+    &:hover {
+        transform: translate(2%, -2%);
+        box-shadow: -10px 10px var(--main-text-clr);
+    }
+
+    .postheader {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        justify-content: space-between;
+
+        .authorandtime {
+            display: flex;
+            align-items: center;
+            // justify-content: space-between;
+
+            gap: 1rem;
+
+            .authorinfo {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+
+                img {
+                    width: 9vw;
+                    max-width: 30px;
+                    border-radius: 50px;
+                    border: solid 1px var(--accent);
+                }
+            }
+
+            .posttime {
+                display: flex;
+                align-items: center;
+                white-space: nowrap;
+
+
+                .dot {
+
+                    display: flex;
+                    margin-right: 25%;
+                    font-size: .5rem;
+                }
+
+            }
+
+
+        }
+    }
+
+
+
+
+
+
+
+    .postimage {
+
+        img {
+            aspect-ratio: 16/9 !important;
+            width: 100%;
+            border-block: solid 1.5px var(--main-text-clr);
+        }
+    }
+
+
+
+
+
+
+    .postinfo {
+        padding: 1.65rem;
+
+        .title {
+            display: block;
+
+        }
+
+        .desc {
+            line-height: 1.75;
+            margin-bottom: 1.5rem;
+            text-align: justify;
+        }
+
+        .postags {
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: flex;
+            flex-wrap: wrap;
+
+            a {
+                color: var(--sec-text-clr);
+                text-decoration: underline;
+                text-decoration-color: var(--sec-text-clr);
+                text-decoration-thickness: 2px;
+                margin-left: 0.2rem;
+
+                &:hover {
+                    color: var(--main-text-clr);
+                    text-decoration-color: var(--main-text-clr);
+                }
+            }
+
+        }
+
+        .buttongroup {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+
+        }
+    }
+
+}

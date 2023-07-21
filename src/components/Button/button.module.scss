@@ -1,0 +1,97 @@
+.primary {
+    color: var(--text-on-accent);
+    background-color: var(--accent);
+    width: 100%;
+    padding: 0.5rem 1.35rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    transition: all 250ms ease-out;
+    font-family: var(--text-lora) !important;
+    border: solid 3px transparent;
+
+    &:hover {
+        --border-radius: 5px;
+        background-color: var(--background);
+        border: solid 3px var(--accent);
+        color: var(--main-text-clr);
+    }
+
+    &:visited {
+        --border-radius: 50px;
+    }
+}
+
+
+
+
+
+
+
+.secondary {
+    color: var(--text-on-accent);
+    background-color: var(--accent);
+    padding: 0.5rem 1.35rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    transition: all 250ms ease-out;
+    font-family: var(--text-lora) !important;
+    border: solid 3px transparent;
+    cursor: pointer;
+    z-index: 2000;
+    font-size: 1rem;
+    font-weight: 500;
+    min-width: 100%;
+
+    &:hover {
+        --border-radius: 5px;
+        background-color: var(--background);
+        border: solid 3px var(--accent);
+        color: var(--main-text-clr);
+    }
+}
+
+
+
+
+
+
+
+.tertiary {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    color: var(--main-text-clr);
+    background-color: var(--background);
+    padding: 0.5rem 1.35rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    transition: all 250ms ease-out;
+    border: solid 3px var(--accent);
+    cursor: pointer;
+
+    &:hover {
+        --border-radius: 5px;
+        background-color: var(--accent);
+        border: solid 3px var(--accent);
+        color: var(--text-on-accent);
+    }
+}
+
+
+
+
+
+
+
+
+.type4 {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+
+    &:hover {
+        text-decoration: underline;
+        text-decoration-color: var(--accent);
+        text-decoration-thickness: 4px
+    }
+}

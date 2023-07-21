@@ -1,0 +1,48 @@
+.whoseoption {
+    display: flex;
+    gap: 0.15rem;
+    margin-block: 1vh;
+    padding: 0.15rem;
+    border: solid 2px var(--main-text-clr);
+    border-radius: 50px;
+    max-width: max-content;
+}
+
+.option {
+    position: relative;
+    background-color: transparent;
+    padding: 0.3rem 1.2rem;
+    border-radius: 50px;
+    border: solid .2px transparent;
+    cursor: pointer;
+    transition: all ease-in-out 250ms;
+    overflow: hidden;
+
+    &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        background-color: var(--accent-light);
+        transition: all 0.5s;
+        z-index: -1;
+        transform: translateX(-100%);
+    }
+      
+    &:hover::after {
+        transform: translateX(0%);
+    }
+    &.active::after {
+        transform: translateX(0%);
+        background-color: var(--accent);
+    }
+
+    
+    &.active {
+        color: var(--text-on-accent);
+    }
+}

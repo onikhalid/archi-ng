@@ -1,0 +1,89 @@
+.desktopNav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10vh;
+    // font-family: Poppins, Helvetica, sans-serif;
+    font-size: clamp(0.85rem, 1.25vw, 1.5rem);
+    font-weight: 600;
+    width: 100%;
+    max-width: 230px;
+    height: 100vh;
+    padding: 2rem 1.5rem;
+    border-right: 0.2vw solid var(--main-text-clr);
+    color: var(--main-text-clr);
+    z-index: 20;
+
+}
+
+.allLinks {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
+}
+
+
+.navlinks {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+.navlink,
+.settingslink {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: color 250ms ease-out;
+    cursor: pointer;
+
+    &:hover {
+
+        &::after {
+            content: '';
+            position: absolute;
+            left: -1vw;
+            width: 100%;
+            height: 100%;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            background-color: var(--accent-light);
+            animation: slide-in 300ms ease-out forwards;
+            z-index: -1;
+
+        }
+    }
+
+}
+
+.settingslink {
+    &:hover {
+        &::after {
+            left: -1.2vw;
+            padding: 0.5rem 0rem;
+        }
+    }
+}
+
+.navlink.active {
+    color: var(--accent);
+    font-weight: 700;
+}
+
+
+
+
+
+.settings {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    a {
+        left: -1vw;
+        min-width: max-content;
+    }
+}

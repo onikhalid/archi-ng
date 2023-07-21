@@ -1,0 +1,149 @@
+.searchpage {
+  .header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .searchbar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 5vh;
+    margin-bottom: 2.5vh;
+
+
+    .searchinput {
+      width: 70vw;
+      height: 30px;
+      padding: 1.2rem;
+      border-radius: 50px;
+      border: solid 3px var(--main-text-clr);
+      color: var(--main-text-clr);
+      background-color: var(--background);
+
+      font-size: 1rem;
+      font-weight: 500;
+      font-family: "Poppins", Arial, Helvetica, sans-serif;
+      transition: all 500ms ease-in-out;
+      outline: none;
+
+
+      @media (min-width: 720px) {
+        flex: 5;
+        font-size: 1.35rem;
+        padding: 1.35rem;
+      }
+
+      @media (min-width: 1019px) {
+        width: 58vw;
+        height: 40px;
+        font-size: 1.25rem;
+        padding: 1.5rem;
+      }
+    }
+
+    button {
+      color: var(--main-text-clr);
+      background-color: transparent;
+      max-width: 50px !important;
+      width: 100%;
+      height: 50px;
+      border-radius: var(--border-radius);
+      border: solid 3px var(--main-text-clr);
+      text-align: center;
+      transition: all 250ms ease-out;
+      cursor: pointer;
+
+      @media (max-width: 720px) {
+        max-width: 40px !important;
+        height: 40px;
+
+
+      }
+
+      @media(min-width: 720px) and (max-width: 1019px) {
+        max-width: 45px !important;
+        height: 45px;
+
+      }
+
+      svg {
+        font-size: 1.2rem;
+
+      }
+
+      &:hover {
+        background-color: var(--accent);
+        border: solid 3px var(--accent);
+        color: var(--text-on-accent);
+
+      }
+    }
+  }
+
+
+
+
+  .recentcontainer {
+
+    padding: 1.2rem 2rem;
+    border: solid;
+    border-radius: 12px;
+    min-height: 40vh;
+    margin-top: 2rem;
+
+    @media (min-width: 720px) {
+      align-self: flex-start;
+      width: 100%;
+    }
+
+    .recentsearches {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 1.2rem;
+      text-transform: lowercase;
+      font-family: var(--text-poppins);
+    }
+
+    .recentsearchitem {
+      display: flex;
+      justify-content: space-between;
+
+      h6,
+      span {
+        cursor: pointer;
+      }
+
+    }
+  }
+}
+
+
+
+  .pageheader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 4rem;
+    text-align: center;
+  }
+
+.resultspage {
+  max-width: 100%;
+
+
+
+
+
+  .resultcontainer {
+    display: flex;
+    gap: 5rem;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+  }
+}

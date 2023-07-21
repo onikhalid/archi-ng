@@ -1,0 +1,102 @@
+.userDetails {
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 3rem;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--glass);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    margin-top: 0;
+    padding-block: 4rem;
+    padding-inline: 5vw;
+    z-index: 250000;
+    overflow-y: scroll;
+
+
+
+    .caseinfo {
+        width: 100%;
+        max-width: 650px;
+        display: flex;
+        flex-direction: column;
+
+        .inputdiv {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: .75rem;
+
+            span {
+                font-family: var(--text-poppins);
+                color: red;
+                font-size: 0.85rem;
+            }
+        }
+    }
+
+
+
+    select {
+        width: 100%;
+        padding: .35rem .75rem;
+        border-radius: 7px;
+        border: solid 2px var(--main-text-clr);
+        outline: none;
+        color: var(--main-text-clr);
+        background-color: var(--background);
+        font-size: 1rem;
+        font-weight: 400;
+        font-family: "Poppins", Arial, Helvetica, sans-serif;
+        transition: all 350ms ease-in-out;
+        cursor: pointer;
+
+        &:focus {
+            border-color: var(--accent);
+        }
+
+    }
+
+
+
+
+    .buttongroup {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 650px;
+
+
+        .submitbutton {
+            align-self: center;
+            color: var(--text-on-accent);
+            background-color: var(--accent);
+            border: solid 3px transparent;
+            padding: 0.5rem 1.2rem;
+            border-radius: var(--border-radius);
+            transition: all 250ms ease-out;
+            font-family: var(--text-lora) !important;
+            font-size: 1rem;
+            text-align: center;
+            cursor: pointer;
+
+            &:hover {
+                --border-radius: 5px;
+                background-color: var(--background);
+                border: solid 3px var(--accent);
+                color: var(--main-text-clr);
+            }
+
+            &:visited {
+                --border-radius: 50px;
+            }
+        }
+    }
+
+}

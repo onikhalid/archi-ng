@@ -1,0 +1,84 @@
+.casestudy {
+    border: solid 3.5px var(--main-text-clr);
+    border-radius: 10px;
+    font-family: var(--text-poppins);
+    max-width: 600px;
+    transition: all 250ms ease-in-out;
+
+    &:hover {
+        transform: translate(2%, -2%);
+        box-shadow: -10px 10px var(--main-text-clr);
+
+        &::after {}
+    }
+
+
+
+
+
+
+
+    .postheader {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+
+        .authorinfo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+
+            img {
+                width: 9vw;
+                max-width: 40px;
+                border-radius: 50px;
+                border: solid 1px var(--accent);
+            }
+        }
+
+        .posttime {
+            display: flex;
+            align-items: center;
+
+            .dot {
+
+                display: flex;
+                margin-right: 25%;
+                font-size: .5rem;
+            }
+
+        }
+
+
+    }
+
+
+
+
+    .postimage {
+
+        img {
+            aspect-ratio: 16/9 !important;
+            width: 100%;
+            border-block: solid 1.5px var(--main-text-clr);
+        }
+    }
+
+
+    .postinfo {
+        padding: 1.65rem;
+
+        .title {
+            display: block;
+
+        }
+
+        .desc {
+            line-height: 1.75;
+            margin-bottom: 1.5rem;
+            text-align: justify;
+        }
+    }
+
+}

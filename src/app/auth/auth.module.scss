@@ -1,0 +1,69 @@
+.authpage {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--glass);
+    backdrop-filter: blur(5px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    margin-top: 0;
+    padding-block: 17vh;
+    z-index: 250000;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+
+}
+
+
+
+.auth {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    width: 90%;
+    max-width: 550px;
+  
+
+    header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        h1{
+            @media (max-width:720px) {
+                max-width: 7ch;
+            }
+        }
+    }
+
+
+
+
+    .form {
+        display: flex;
+        flex-direction: column;
+        gap: 5rem;
+
+        .google {
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            .googlebutton {
+                display: inline-block;
+                max-width: 150px;
+            }
+        }
+
+
+
+
+    }
+
+}

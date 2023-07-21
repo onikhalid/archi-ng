@@ -1,0 +1,16 @@
+.imageuploader{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    input[type="file"] {
+        width: max-content;
+        padding: .5rem;
+        border: solid 2px var(--main-text-clr);
+        border-radius: 10px;
+    }
+
+    .uploadedimage{
+        aspect-ratio: 16 / 9;
+    }
+}

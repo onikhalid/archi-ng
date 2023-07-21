@@ -1,0 +1,83 @@
+.tabletNav {
+    color: var(--main-text-clr);
+
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12vh;
+    min-height: 100vh;
+    width: 100%;
+    max-width: 300px;
+    padding: 5rem 2rem;
+    border-right: solid 2px var(--main-text-clr);
+    font-size: 1.25rem;
+    font-weight: 600;
+    transition: max-width 400ms ease-in-out;
+    z-index: 20;
+
+    
+}
+
+.allLinks {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    flex-grow: 1;
+}
+
+.navlinks {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 5vh;
+    --after: 5%; 
+}
+
+// individual links styles
+.navlink,
+.settingslink {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: color 250ms ease-out;
+
+    &.active {
+        color: var(--accent);
+        gap: 1rem;
+
+        &::after {
+            content: '';
+            position: absolute;
+            width: var(--after);
+            height: 100%;
+            right: 110%;
+            background-color: var(--accent);
+            border-radius: 20%;
+            animation: pop-in 250ms ease-out forwards;
+        }
+    }
+}
+
+@keyframes pop-in {
+    0% {
+        opacity: 0;
+        transform: scale(0);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+
+.settings {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}

@@ -1,0 +1,631 @@
+ @import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap');
+
+ * {
+   box-sizing: border-box;
+   padding: 0;
+   margin: 0;
+   position: relative;
+   scrollbar-width: thin;
+ }
+
+ :root {
+   --max-width: 1300px;
+   --border-radius: 50px;
+   --z-index: -1200;
+   --text-lora: Lora, serif !important;
+
+   --background: #1b1b1b;
+   --accent: #04e762;
+   --accent-light: rgba(119, 204, 155, 0.4);
+   --main-text-clr: #fffdff;
+   --glass: rgba(7, 7, 7, 0.6);
+   --thickglass: rgba(7, 7, 7, 0.75);
+   --sec-text-clr: #b2b2b2;
+   --text-on-accent: #070707;
+   --random: #C792DF;
+ }
+
+ body[data-theme="light"] {
+   --background: #FFFDFF;
+   --accent: #ff7f11;
+   --accent-light: rgb(232, 158, 94, 0.4);
+   --main-text-clr: #070707;
+   --glass: rgba(255, 253, 255, 0.47);
+   --thickglass: rgba(255, 253, 255, 0.75);
+   --sec-text-clr: #484747;
+ }
+
+ html,
+ body {
+   max-width: 100vw;
+   min-height: 100vh;
+   overflow-x: hidden;
+   scrollbar-color: var(--accent) var(--background);
+   scrollbar-width: thin;
+   scrollbar-gutter: stable;
+
+ }
+
+ body {
+   color: var(--main-text-clr);
+   background: var(--background);
+   transition: all 200ms ease-out;
+ }
+
+
+
+
+
+
+ //////////////////////////////////////////////////////////
+ //////////////////////////////////////////////////////////
+ /////////////      GLOBAL ELEMENTS         ///////////////
+ //////////////////////////////////////////////////////////
+ //////////////////////////////////////////////////////////
+
+ a {
+   color: inherit;
+   text-decoration: none;
+ }
+
+ button,
+ a {
+   max-width: max-content;
+ }
+
+ img {
+   max-width: 100%;
+   max-height: 100%;
+ }
+
+ ul {
+   list-style: none;
+ }
+
+ input[type="text"] {
+   height: 30px;
+
+ }
+
+ input[type="text"],
+ input[type="email"],
+ input[type="password"],
+ textarea {
+   max-width: 100%;
+   padding: 1rem 0.75rem;
+   border-radius: 7px;
+   border: solid 2px var(--main-text-clr);
+   color: var(--main-text-clr);
+   background-color: var(--background);
+
+   font-size: 1rem;
+   font-weight: 400;
+   transition: all 350ms ease-in-out;
+   outline: none;
+   resize: none;
+
+   &:focus {
+     border: solid 2px var(--accent);
+   }
+
+ }
+
+
+ input[type="submit"] {
+   color: var(--text-on-accent);
+   background-color: var(--accent);
+   padding: 0.5rem 1.35rem;
+   border-radius: var(--border-radius);
+   text-align: center;
+   transition: all 250ms ease-out;
+   font-family: var(--text-lora) !important;
+   border: solid 3px transparent;
+   cursor: pointer;
+   z-index: 200;
+
+   &:hover {
+     --border-radius: 5px;
+     background-color: var(--background);
+     border: solid 3px var(--accent);
+     color: var(--main-text-clr);
+   }
+ }
+
+ input::file-selector-button {
+   color: var(--main-text-clr);
+   background-color: var(--background);
+   border: solid 2px var(--accent);
+   border-radius: 10px;
+   padding: .5rem 1rem;
+   font-family: var(--text-poppins);
+   transition: all 0.25s;
+   cursor: pointer;
+ }
+
+ input::file-selector-button:hover {
+   color: var(--text-on-accent);
+   background-color: var(--accent);
+ }
+
+ textarea,
+ input {
+   font-family: var(--text-poppins);
+ }
+
+
+
+
+
+
+
+ ////////////////////////////////////////////////////
+ ////////////////////////////////////////////////////
+ /////////////      TYPOGRAPHY    ///////////////////
+ ////////////////////////////////////////////////////
+ ////////////////////////////////////////////////////
+
+ h1 {
+   position: relative;
+   font-weight: 700;
+   font-size: clamp(2.8rem, 4.2vw, 4.2rem);
+   line-height: 1.15;
+   text-align: center;
+
+   ul {
+     position: absolute;
+
+     font-family: "Poppins";
+     font-weight: 300;
+     font-size: 1.05rem;
+     min-width: max-content;
+
+   }
+
+   em {
+    color: var(--accent);
+    margin-right: .5rem;
+  }
+
+   @media (max-width: 372px) {
+     font-size: 2.5rem;
+   }
+ }
+
+ h2 {
+   font-family: var(--text-poppins) !important;
+   font-weight: 600;
+   font-size: clamp(2.1rem, 3.2vw, 3.2rem);
+ }
+
+ h3 {
+   font-size: clamp(1.7rem, 2.4vw, 2.4rem);
+   line-height: 1.15;
+   margin-bottom: .5rem;
+   font-weight: 600;
+
+   em {
+     color: var(--accent);
+     margin-right: .5rem;
+   }
+ }
+
+ h4 {
+   font-family: var(--text-lora) !important;
+   font-size: clamp(1.35rem, 1.75vw, 1.6rem);
+   font-weight: 600;
+ }
+
+ h5 {
+   font-size: clamp(1.2rem, 1.45vw, 1.45rem);
+   font-weight: 500;
+ }
+
+ h6 {
+   font-size: clamp(1rem, 1.2vw, 1.3rem);
+   font-weight: 400;
+
+   span {
+     font-weight: 500;
+     margin-left: .1rem;
+   }
+ }
+
+ p {
+   font-family: var(--text-lora);
+ }
+
+
+
+
+
+
+
+ ////////////////////////////////////////////////////////////////
+ ////////////////////////////////////////////////////////////////
+ ////////////////////     GLOBAL CLASSES    ////////////////////
+ ///////////////////////////////////////////////////////////////
+ //////////////////////////////////////////////////////////////
+
+ ////////////////////////////////////
+ //  main content styling <main/>////
+ ////////////////////////////////////
+ .content-container {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   margin-block: 1rem 5rem;
+   padding-inline: 1.5vw;
+   max-width: 100%;
+
+   @media (max-width: 719px) {
+     margin-block: 6rem;
+   }
+
+   @media (min-width: 720px) and (max-width: 1019px) {
+     margin-block: 4rem;
+   }
+ }
+
+ /////////////////////////////////////
+ /////  loading posts skeletomn   ////
+ /////////////////////////////////////
+ .skeletoncard {
+   display: flex;
+   flex-direction: column;
+   flex-basis: 300px;
+   flex-shrink: 0;
+   flex-grow: 0;
+   height: 55vh;
+   max-height: 650px;
+   max-width: 600px;
+   width: 85vw;
+   background-color: var(--glass);
+   border: solid 3px var(--main-text-clr);
+   box-shadow: 0 5px 10px 0 rgba(#000, .15);
+   border-radius: 10px;
+   overflow: hidden;
+   margin: 1rem;
+
+   @media (min-width:720px) {
+     height: 600px;
+   }
+ }
+
+ .skeleton {
+   background-color: var(--sec-text-clr);
+   background-image:
+     linear-gradient(90deg,
+       rgba(#fff, 0),
+       rgba(#fff, 0.5),
+       rgba(#fff, 0));
+   background-size: 40px 100%;
+   background-repeat: no-repeat;
+   background-position: left -40px top 0;
+   animation: shine 1s ease infinite;
+ }
+
+ @keyframes shine {
+   to {
+     background-position: right -40px top 0;
+   }
+ }
+
+
+ ///////////////////////////////////
+ ////////  form inputs   ///////////
+ .inputdiv {
+   display: flex;
+   flex-direction: column;
+   margin-bottom: 1.2rem;
+
+   label {
+     font-weight: 500;
+   }
+
+   span {
+     font-family: var(--text-poppins);
+     color: red;
+     font-size: 0.85rem;
+   }
+
+   select {
+     width: 100%;
+     padding: .35rem .75rem;
+     border-radius: 7px;
+     border: solid 2px var(--main-text-clr);
+     outline: none;
+     color: var(--main-text-clr);
+     background-color: var(--background);
+     font-size: 1rem;
+     font-weight: 400;
+     font-family: "Poppins", Arial, Helvetica, sans-serif;
+     transition: all 350ms ease-in-out;
+     cursor: pointer;
+
+     &:focus {
+       border-color: var(--accent);
+     }
+
+   }
+
+   textarea {
+     resize: none;
+   }
+ }
+
+
+
+ .infobox {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   margin-block: 5rem;
+
+   h2 {
+     max-width: 20ch;
+     text-align: center;
+   }
+ }
+
+ .infobox.main {
+   margin-block: 0rem;
+ }
+
+
+
+ ///////////////////////////////////////
+ ///////////   popup menu    //////////
+ ul.menu {
+   position: absolute;
+   opacity: 0;
+   background-color: var(--glass);
+   backdrop-filter: blur(5px);
+   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+   border: solid 2px var(--main-text-clr);
+   padding: 1rem .75rem;
+   text-align: center;
+   top: 100%;
+   left: 70% !important;
+   z-index: -250;
+   //  max-height: 200px;
+   overflow-y: scroll;
+
+   &.wide {
+     min-width: 220px;
+     width: max-content;
+     height: 250px;
+     overflow: auto;
+     padding: .5rem;
+     left: 0% !important;
+
+   }
+
+   &.open {
+     animation: intro 350ms ease-in-out forwards;
+   }
+
+   &.close {
+     animation: outro 350ms ease-in-out forwards;
+   }
+
+
+   @keyframes intro {
+     0% {
+       opacity: 0;
+       left: 50%;
+       z-index: -250;
+     }
+
+     1% {
+       opacity: 0;
+       left: 50%;
+       z-index: 250;
+     }
+
+     100% {
+       opacity: 1;
+       left: 50%;
+       z-index: 250;
+     }
+   }
+
+   @keyframes outro {
+     0% {
+       opacity: 1;
+       left: 50%;
+       z-index: 250;
+     }
+
+     99% {
+       opacity: 0;
+       left: 50%;
+     }
+
+     100% {
+       opacity: 0;
+       left: 50%;
+       z-index: -250;
+     }
+   }
+
+
+   // individual option styles
+   .option {
+     padding: .5rem 1rem;
+     cursor: pointer;
+
+     &:hover {
+       background-color: var(--main-text-clr);
+       color: var(--background);
+     }
+   }
+ }
+
+
+
+
+
+
+
+
+
+ ////////////////////////////////////////////////////////////////
+ ////////////////////////////////////////////////////////////////
+ /////////////      CUSTOMIZING INSTALLED PACKAGES     /////////
+ ///////////////////////////////////////////////////////////////
+ ///////////////////////////////////////////////////////////////
+
+
+ /////////////////////////////////
+ /////// Tiny MCE EDITOR /////////
+ /// ///////////////////////////
+
+ //  editor menubar buttons
+ .tox .tox-mbtn__select-label,
+ .tox .tox-mbtn {
+   color: var(--main-text-clr) !important;
+   cursor: default;
+   font-weight: 400;
+   margin: 0 4px;
+ }
+
+ .tox-edit-area {
+   color: var(--main-text-clr) !important;
+
+ }
+
+ .tox .tox-edit-area__iframe {
+   color: var(--main-text-clr) !important;
+   border: 0;
+   box-sizing: border-box;
+   flex: 1;
+   height: 100%;
+   position: absolute;
+   width: 100%;
+
+   html,
+   body,
+   #tinymce,
+   #tiny-react_97929219211689547405062_ifr {
+     color: var(--main-text-clr) !important;
+   }
+
+   html {
+     body#tinymce.mce-content-body {
+       color: var(--main-text-clr) !important;
+
+       p {
+
+         color: var(--main-text-clr) !important;
+       }
+     }
+   }
+ }
+
+ // editor container
+ .tox .tox-editor-container {
+   display: flex;
+   flex: 1 1 auto;
+   flex-direction: column;
+   overflow: hidden;
+   width: 75vw;
+
+
+   .tox-editor-header,
+   .tox-menubar,
+   .tox-toolbar-overlord,
+   .tox-statusbar {
+     background-color: var(--background) !important;
+     color: var(--main-text-clr) !important;
+     ;
+   }
+
+   @media (min-width: 720px) and (max-width: 1019px) {
+     width: 65vw;
+   }
+ }
+
+ .tox-tinymce {
+   border: 2.5px solid var(--main-text-clr) !important;
+ }
+
+
+
+
+ /////////////////////////////////
+ //////////  TOATIfY ////////////
+ /// ///////////////////////////
+ .Toastify {
+   z-index: 2000000000000;
+
+
+   .Toastify__toast-container {
+     max-width: 450px !important;
+
+     @media (min-width: 720px) {
+       width: 80vw !important;
+     }
+   }
+
+   .Toastify__toast-theme--light {
+     background-color: var(--glass) !important;
+     backdrop-filter: blur(8px) !important;
+     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1) !important;
+     color: var(--main-text-clr) !important;
+     font-family: var(--text-poppins) !important;
+     border: solid 1px var(--main-text-clr) !important;
+
+     .Toastify__close-button--light {
+       color: var(--main-text-clr);
+       z-index: 3999999999 !important;
+     }
+   }
+
+   .Toastify__toast-icon {
+     width: 35px !important;
+   }
+
+   .Toastify__toast-body {
+     z-index: 2999999999 !important;
+
+   }
+
+   .Toastify__progress-bar {
+     width: 100% !important;
+     height: 100% !important;
+     right: 25px !important;
+     border-radius: 5px !important;
+     z-index: 1999999999 !important;
+     opacity: 0.5 !important;
+
+     transform-origin: right !important;
+   }
+
+   .Toastify__progress-bar--info {
+     background: rgba(32, 32, 159, 0.572) !important;
+   }
+
+ }
+
+
+
+
+ ////////////////////////////////////
+ //////////  NPROGRESS BAR /////////
+ //////////////////////////////////
+ #nprogress .bar {
+   background: var(--accent) !important;
+   height: 4px !important;
+ }
+
+ #nprogress .peg {
+   box-shadow: none !important;
+ }
+
+ #nprogress .spinner-icon {
+   width: 18px;
+   height: 18px;
+   box-sizing: border-box;
+   border-top-color: var(--accent) !important;
+   border-left-color: var(--accent) !important;
+ }
