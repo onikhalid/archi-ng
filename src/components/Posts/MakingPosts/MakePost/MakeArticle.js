@@ -127,7 +127,7 @@ const MakeArticle = ({ postToEditId }) => {
       }
     }
     checkPostToEdit()
-  }, []);
+  }, [postToEditId]);
 
 
 

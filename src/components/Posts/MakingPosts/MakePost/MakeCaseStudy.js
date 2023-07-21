@@ -41,7 +41,9 @@ const MakeCaseStudy = ({ postToEditId }) => {
   };
 
   useEffect(() => {
-    setValue("Title", title || ""); 
+  const { setValue } = useForm()
+
+    setValue("Title", title || "");
     setValue("Client", client || "");
     setValue("Location", location || "");
     setValue("Architect", architect || "");
@@ -128,7 +130,9 @@ const MakeCaseStudy = ({ postToEditId }) => {
   ////////////       CHECK IF USER WANTS TO CREATE NEW POST OR EDIT PREVIOUS POSTS       //////////////////
   //////////////////////////////////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
-  const checkPostToEdit = async () => {
+
+  useEffect(() => {
+      const checkPostToEdit = async () => {
     if (postToEditId == null || '' || undefined) {
       return
     }
@@ -148,7 +152,7 @@ const MakeCaseStudy = ({ postToEditId }) => {
       setTags(tags.join(','))
     }
   }
-  useEffect(() => {
+  
     checkPostToEdit()
   }, []);
 
@@ -209,7 +213,7 @@ const MakeCaseStudy = ({ postToEditId }) => {
       <article>
         <input type="file" onChange={handleImageUpload} /> <h6>Please make sure your image is in landscape form</h6>
         {postToEditId && <img className={styles.uploadedimage} src={coverImgURL} alt="Preview" />}
-        {selectedImage&&coverImgURL && <img className={styles.uploadedimage} src={coverImgURL} alt="Preview" />}
+        {selectedImage && coverImgURL && <img className={styles.uploadedimage} src={coverImgURL} alt="Preview" />}
       </article>
 
 

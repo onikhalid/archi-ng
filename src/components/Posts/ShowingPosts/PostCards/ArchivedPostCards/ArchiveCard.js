@@ -23,10 +23,11 @@ export const BookmarkCard = ({ post }) => {
 
 
     useLayoutEffect(() => {
+        const postId = post.postId
         const getArchivedPostsInfo = async () => {
             setLoadingPosts(true)
 
-            const postRef = doc(db, `posts/${post.postId}`)
+            const postRef = doc(db, `posts/${postId}`)
             const result = await getDoc(postRef)
             setArchivedPost(result.data())
 
