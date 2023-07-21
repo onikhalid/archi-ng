@@ -1,5 +1,4 @@
 "use client"
-import styles from "./Archive.module.scss"
 import { useEffect, useState } from "react";
 import { auth, db } from "@/utils/firebase";
 import { collection, query, where, orderBy, onSnapshot } from "firebase/firestore";
