@@ -53,10 +53,9 @@ export default function Page({ params }) {
 
     useEffect(() => {
         getFolderBookmarks()
-        return()=>{}
     }, [folderId])
 
-
+     
 
 
 
@@ -67,7 +66,7 @@ export default function Page({ params }) {
                 <h1>{folderName} <FontAwesomeIcon icon={faFolder} /></h1>
             </header>
             {bookmarks == null && <div className="infobox">
-                <h2>Folder doesn't exist</h2>
+                <h2>Folder doesnt exist</h2>
             </div>}
             {bookmarks != null &&
                 <section className={styles.allBookmarks}>

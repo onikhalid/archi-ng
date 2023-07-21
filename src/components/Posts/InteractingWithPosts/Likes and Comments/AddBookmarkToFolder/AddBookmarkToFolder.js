@@ -36,8 +36,7 @@ export const AddToFolderMenu = ({ userId, bookmarkId, bookmarkOwnerId }) => {
     }
     useEffect(() => {
         getUserFolders()
-        return () => {
-        };
+
     }, []);
 
 
