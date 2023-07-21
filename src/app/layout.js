@@ -6,10 +6,10 @@ config.autoAddCss = false;
 import { ThemeProvider } from '@/utils/ContextandProviders/Providers'
 import Body from '@/components/Layout/html/body';
 
-export const metadata = {
-  title: 'archi NG',
-  description: 'Documenting architecture by Nigerians for Nigerians',
-}
+// export const metadata = {
+//   title: 'archi NG',
+//   description: 'Documenting architecture by Nigerians for Nigerians',
+// }
 
 
 import { Poppins, Lora } from 'next/font/google'
