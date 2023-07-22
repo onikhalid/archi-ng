@@ -1,6 +1,6 @@
 "use client"
 import styles from "./Archive.module.scss"
-import { useEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { auth, db } from "@/utils/firebase";
 import { collection, query, where, orderBy, onSnapshot } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -13,7 +13,7 @@ import { createFolder } from "@/components/Posts/InteractingWithPosts/Likes and 
 
 
 const Archive = () => {
-  const [whichOne, setwhichOne] = useState("Bookmarks");
+  const [archiveType, setArchiveType] = useState("Bookmarks");
   const [user, loading] = useAuthState(auth);
   const router = useRouter()
   const { register, handleSubmit, formState: { errors }, setValue } = useForm();
@@ -43,7 +43,7 @@ const Archive = () => {
 
 
 
-  useEffect(() => {
+  useLayoutEffect(() => {
 
     const getArchivedPosts = async () => {
       setLoadingPosts(true)
@@ -56,11 +56,11 @@ const Archive = () => {
       const getQuery = () => {
 
         // bookmarks
-        if (user && whichOne === "Bookmarks") {
+        if (user && archiveType === "Bookmarks") {
           return query(bookmarksCollectionRef, where('userId', '==', currentUser))
         }
 
-        else if (user && whichOne === "Folders") {
+        else if (user && archiveType === "Folders") {
           return query(foldersCollectionRef, where('userId', '==', currentUser))
         }
 
@@ -90,7 +90,7 @@ const Archive = () => {
 
     getArchivedPosts();
     return () => { }
-  }, [whichOne, user]);
+  }, [archiveType, user]);
 
 
 
@@ -107,25 +107,29 @@ const Archive = () => {
     <main className="content-container">
       <header>
         <h1>Archives</h1>
-        <WhoseandWhichpost variations={whichpostvariation} currentwhosePost={whichOne} setCurrentWhosePost={setwhichOne} />
+        <WhoseandWhichpost variations={whichpostvariation} currentwhosePost={archiveType} setCurrentWhosePost={setArchiveType} />
       </header>
 
 
-      {whichOne == "Folders" &&
-        <form id='createfolder' className={styles.createfolder} onSubmit={handleSubmit(CreateNewFolder)}>
+      {archiveType == "Folders" &&
+        <>
+          {user &&
+            <form id='createfolder' className={styles.createfolder} onSubmit={handleSubmit(CreateNewFolder)}>
 
-          <div className='inputdiv'>
-            <label htmlFor="Name">New Folder Name<span>*</span></label>
-            <input
-              id="Name" name="Name" type="text"
-              placeholder="Studio works"
-              {...register("Name", { required: true })} />
-            {errors.Name && <span>This field is required</span>}
-          </div>
-          <button form="createfolder" type="submit">Create Folder</button>
+              <div className={`inputdiv ${styles.inputdiv}`}>
+                <label htmlFor="Name">New Folder Name<span>*</span></label>
+                <input
+                  id="Name" name="Name" type="text"
+                  placeholder="Studio works"
+                  {...register("Name", { required: true })} />
+                {errors.Name && <span>This field is required</span>}
+              </div>
+              <button form="createfolder" type="submit" className={styles.createFolderButton}>Create Folder</button>
 
 
-        </form>
+            </form>
+          }
+        </>
       }
 
       {
@@ -135,28 +139,28 @@ const Archive = () => {
         </div>
       }
       {
-        user && whichOne == 'Bookmarks' && allPosts.length < 1 &&
+        user && archiveType == 'Bookmarks' && allPosts.length < 1 &&
         <div className='infobox'>
           <h2>😒 You haven&apos;t saved any posts</h2>
         </div>
       }
       {
-        user && whichOne == 'Folders' && allPosts.length < 1 &&
+        user && archiveType == 'Folders' && allPosts.length < 1 &&
         <div className='infobox'>
           <h2>🤔 You haven&apos;t created any folders yet</h2>
         </div>
       }
 
       {
-        user && allPosts.length > 0 && <section className={whichOne == 'Folders' ? `${styles.allposts} ${styles.dockets}` : `${styles.allposts}`}>
+        user && allPosts.length > 0 && <section className={archiveType == 'Folders' ? `${styles.allposts} ${styles.dockets}` : `${styles.allposts}`}>
           {allPosts?.map((post, index) => {
 
             if (loadingPosts) {
               return <PostSkeleton key={index} />
-            } else if (whichOne === 'Bookmarks') {
+            } else if (archiveType === 'Bookmarks') {
               return <BookmarkCard key={index} post={post} />
             }
-            else if (whichOne === 'Folders') {
+            else if (archiveType === 'Folders') {
               return <FolderCard key={index} post={post} />
             }
           })}

@@ -41,6 +41,23 @@ export const addBookmark = async (postId, userId) => {
 };
 
 
+export const deleteBookmark = async (bookmarkId) => {
+  const foldersCollectionRef = collection(db, 'folders');
+  const bookmarkRef = doc(db, `bookmarks/${bookmarkId}`);
+  await deleteDoc(bookmarkRef)
+
+  const q = query(foldersCollectionRef, where('bookmarks', 'array-contains', bookmarkId))
+  const foldersSnap = await getDocs(q);
+  const foldersThatContainBookmark = [];
+  foldersSnap.forEach((doc) => foldersThatContainBookmark.push(doc.data()));
+  foldersThatContainBookmark.forEach(async(folder) => {
+    const folderDocRef = doc(db, `folders/${folder.folderId}`)
+    await updateDoc(folderDocRef, { bookmarks: arrayRemove(bookmarkId) })
+  })
+}
+
+
+
 
 
 

@@ -21,8 +21,21 @@
     overflow-y: scroll;
 
 
+    .imagecontainer {
+        display: flex;
+        align-items: center;
+    
+    
+        .picture {
+            width: 100px;
+            height: 100px;
+            border-radius: 100px;
+        }
+    }
 
-    .caseinfo {
+
+
+    .userInfoForm {
         width: 100%;
         max-width: 650px;
         display: flex;

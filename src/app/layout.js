@@ -5,11 +5,7 @@ config.autoAddCss = false;
 
 import { ThemeProvider } from '@/utils/ContextandProviders/Providers'
 import Body from '@/components/Layout/html/body';
-
-// export const metadata = {
-//   title: 'archi NG',
-//   description: 'Documenting architecture by Nigerians for Nigerians',
-// }
+import { metadata } from '@/components/Metadata/Metada';
 
 
 import { Poppins, Lora } from 'next/font/google'
@@ -40,6 +36,8 @@ export default function RootLayout({ children }) {
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css"
           />
+          <title>{metadata.title}</title>
+          <meta name="description" content="{metadata.description}" />
         </head>
         <Body>
           {children}

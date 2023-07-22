@@ -131,21 +131,24 @@
    }
  }
 
- input::file-selector-button {
-   color: var(--main-text-clr);
-   background-color: var(--background);
-   border: solid 2px var(--accent);
-   border-radius: 10px;
-   padding: .5rem 1rem;
-   font-family: var(--text-poppins);
-   transition: all 0.25s;
-   cursor: pointer;
- }
-
- input::file-selector-button:hover {
-   color: var(--text-on-accent);
-   background-color: var(--accent);
- }
+ input::file-selector-button{
+  appearance: none;
+  font-family: var(--text-poppins);
+  background-color: transparent;
+  color: var(--main-text-clr);
+  padding: .25rem .7rem;
+  border: solid 2px var(--main-text-clr);
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all ease-in-out 250ms;
+  
+  &:hover{
+      border-radius: 5px;
+      color: var(--background);
+      background-color: var(--accent);
+      border: solid 2px transparent;
+  }
+}
 
  textarea,
  input {
@@ -233,6 +236,9 @@
  p {
    font-family: var(--text-lora);
  }
+
+
+
 
 
 

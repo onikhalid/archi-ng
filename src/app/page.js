@@ -21,7 +21,6 @@ import Button from '@/components/Button/button';
 export default function Home() {
   const [user, loading] = useAuthState(auth);
   const [currentPost, setCurrentPost] = useState("Articles");
-  // const [postOptionsOpen, setPostOptionsOpen] = useState(null);
   const [currentwhosePost, setCurrentWhosePost] = useState("Feed");
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [followedUserIds, setfollowedUserIds] = useState([]);
@@ -90,11 +89,8 @@ export default function Home() {
   //////////////////////////////////////////////////////
   //////////////////////////////////////////////////////
   const [allPosts, setAllPosts] = useState([]);
-  const pageSize = 1;
+  const postsPerFetch = 20;
   const [fetchedPosts, setfetchedPosts] = useState(null);
-
-
-
 
 
 
@@ -107,9 +103,6 @@ export default function Home() {
     const followsCollectionRef = collection(db, 'follows');
     const currentUserId = user?.uid
 
-
-
-
     const GetFollowedUsersIds = async () => {
       const followedUsersQuerySnapshot = user && await getDocs(
         query(followsCollectionRef, where('followerId', '==', currentUserId)));
@@ -119,6 +112,8 @@ export default function Home() {
     }
 
 
+
+
     const getPosts = async () => {
       // start fetching
       setLoadingPosts(true)
@@ -126,7 +121,7 @@ export default function Home() {
 
       const getQuery = () => {
         if (currentwhosePost === "Feed") {
-          return query(postsCollectionRef, where('postType', '==', currentPost), orderBy("createdAt"), limit(pageSize))
+          return query(postsCollectionRef, where('postType', '==', currentPost), orderBy("createdAt"), limit(postsPerFetch))
         }
         // when user is signed in but doesn't follow anyone
         else if (user && followedUserIds.length < 1 && (currentwhosePost === "Following")) {
@@ -134,7 +129,7 @@ export default function Home() {
           return null
         }
         else if (user && (currentwhosePost === "Following")) {
-          return query(postsCollectionRef, where('postType', '==', currentPost), where('authorId', 'in', followedUserIds), orderBy("createdAt"), limit(pageSize));
+          return query(postsCollectionRef, where('postType', '==', currentPost), where('authorId', 'in', followedUserIds), orderBy("createdAt"), limit(postsPerFetch));
         }
         // when user isn't signed in and wants to see posts from their imaginary followed user
         else if (!user && (currentwhosePost === "Following")) {
@@ -195,7 +190,7 @@ export default function Home() {
 
           const getQuery = () => {
             if (currentwhosePost === "Feed") {
-              return query(postsCollectionRef, where('postType', '==', currentPost), orderBy("createdAt"), limit(pageSize), startAfter(fetchedPosts))
+              return query(postsCollectionRef, where('postType', '==', currentPost), orderBy("createdAt"), limit(postsPerFetch), startAfter(fetchedPosts))
             }
 
             // when user is signed in but doesn't follow anyone
@@ -205,7 +200,7 @@ export default function Home() {
             }
 
             else if (user && (currentwhosePost === "Following")) {
-              return query(postsCollectionRef, where('postType', '==', currentPost), where('authorId', 'in', followedUserIds), orderBy("createdAt"), limit(pageSize), startAfter(fetchedPosts));
+              return query(postsCollectionRef, where('postType', '==', currentPost), where('authorId', 'in', followedUserIds), orderBy("createdAt"), limit(postsPerFetch), startAfter(fetchedPosts));
             }
 
             // when user isn't signed in and wants to see posts from their imaginary followed user

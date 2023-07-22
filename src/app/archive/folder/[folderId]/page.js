@@ -16,6 +16,7 @@ import { AddToFolderMenu } from "@/components/Posts/InteractingWithPosts/Likes a
 
 export default function Page({ params }) {
     const { folderId } = params
+    console.log(folderId)
     const [folderName, setFolderName] = useState()
     const [folderOwner, setFolderOwner] = useState('')
     const [user, loading] = useAuthState(auth)
@@ -28,29 +29,28 @@ export default function Page({ params }) {
         const folderDocRef = doc(db, `folders/${folderId}`);
 
         const getFolderBookmarks = async () => {
-            // if (!user) {
-            //     return
-            // }
-            const folderDocsSnap = await getDoc(folderDocRef);
 
-            if (folderDocsSnap.exists()) {
+            const unsub = onSnapshot(folderDocRef, async (snapshot) => {
+                if (snapshot.data()) {
+                    const folder = snapshot.data();
+                    setFolderName(folder.folderName)
+                    const folderBookmarks = folder.bookmarks
+                    console.log(folderBookmarks)
 
-                const bookmarkIdsArray = folderDocsSnap.data().bookmarks
-                setFolderName(folderDocsSnap.data().folderName)
-                setFolderOwner(folderDocsSnap.data().userId)
+                    const getBookmarkData = folderBookmarks.map(async (item) => {
+                        const ref = doc(db, `bookmarks/${item}`)
+                        const bookmarkDocSnap = await getDoc(ref)
+                        const bookmarkData = bookmarkDocSnap.data()
+                        return bookmarkData
+                    })
+                    const bookmarkData = await Promise.all(getBookmarkData);
+                    setBookmarks(bookmarkData)
 
-                const getBookmarkData = bookmarkIdsArray.map(async (item) => {
-                    const ref = doc(db, `bookmarks/${item}`)
-                    const bookmarkDocSnap = await getDoc(ref)
-                    const bookmarkData = bookmarkDocSnap.data()
-                    return bookmarkData
-                })
+                }
 
-                const bookmarkData = await Promise.all(getBookmarkData);
-                setBookmarks(bookmarkData)
-
-            }
-            else setBookmarks(null)
+                else setBookmarks(null)
+            });
+            return unsub
         }
 
 
@@ -69,17 +69,29 @@ export default function Page({ params }) {
                 <h1>{folderName} <FontAwesomeIcon icon={faFolder} /></h1>
             </header>
             {bookmarks == null && <div className="infobox">
-                <h2>Folder doesnt exist</h2>
+                <h2>Folder doesn&apos;t exist</h2>
             </div>}
             {bookmarks != null &&
                 <section className={styles.allBookmarks}>
                     {
+                        bookmarks.length < 1 &&
+                        <div className='infobox'>
+                            <h1>😶</h1>
+                            <h2 >
+                                Empty folder
+                            </h2>
+                        </div>
+                    }
+                    {
                         bookmarks.map((bookmark, index) => {
                             return (
-                                <article key={index} >
-                                    <BookmarkCard post={bookmark} />
-                                    {user && user.uid == bookmark.userId && <button>delete</button>}
+                                <article className={styles.folderBookmarkCard} key={index} >
+                                    {bookmark &&
+                                        <BookmarkCard post={bookmark} />
+                                    }
+                                    {user && user.uid == folderOwner && <button className={styles.button}>Remove from folder</button>}
                                 </article>
+
                             )
                         })
                     }

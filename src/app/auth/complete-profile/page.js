@@ -1,31 +1,152 @@
 "use client"
-import styles from "./userInfo.module.scss"
-import { useState } from "react";
+import styles from "./complete-profile.module.scss"
+import { useRouter } from "next/navigation";
+import { useState, useEffect, useLayoutEffect } from "react";
 import { useForm } from "react-hook-form";
 import { db, auth, storage } from '@/utils/firebase';
+import { updateProfile } from "firebase/auth";
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { getMetadata, getDownloadURL, ref } from "firebase/storage";
-import { doc, collection, addDoc, updateDoc, getDoc, setDoc, getDocs, serverTimestamp, query, where } from 'firebase/firestore';
+import { doc, collection, updateDoc, getDoc, setDoc, getDocs, query, where } from 'firebase/firestore';
 import Button from "@/components/Button/button";
-import ProfilePictureUploader from "@/components/Posts/MakingPosts/ImageUploader/ProfilePictureUploader";
 import { toast } from "react-toastify";
 
 const Page = () => {
-  const { register, handleSubmit, watch, formState: { errors } } = useForm();
+  const { register, handleSubmit, watch, formState: { errors }, setValue } = useForm();
   const [user, loading] = useAuthState(auth)
-  const [userInfo, setUserInfo] = useState({})
+  const router = useRouter()
+  const [savingProfile, setSavingProfile] = useState(false)
+  const [pictureURL, setPictureURL] = useState(null)
+  const [selectedImage, setSelectedImage] = useState(null)
 
 
+
+
+  /////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////
+  ///////////////       PREPOPULATE FORM     //////////////////
+  /////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////
   // form fields
   const [name, setName] = useState('');
   const [bio, setBio] = useState('');
-  const [userName, setuserName] = useState('');
+  const [username, setuserName] = useState('');
   const [occupation, setOccupation] = useState([]);
 
+  const handleInputChange = (e) => {
+    setValue(e.target.name, e.target.value);
+  };
+  useEffect(() => {
+    setValue("Name", name || "");
+    setValue("Bio", bio || "");
+    setValue("Username", username || "");
+    setValue("Occupation", occupation || "");
+  }, [name, bio, username, occupation]);
+
+
+
+  //Get User Info to prepopulate the form with
+  useLayoutEffect(() => {
+    const GetUserInfo = async () => {
+      if (!loading) {
+        const userProfileRef = doc(db, `users/${user?.uid}`)
+        const userProfileSnap = await getDoc(userProfileRef)
+        const userData = userProfileSnap.data()
+
+        const { name, username, bio, profilePicture, occupation } = userData
+
+        setPictureURL(profilePicture)
+        setName(name)
+        setuserName(username)
+        setBio(bio)
+        setOccupation(occupation)
+      }
+
+
+    }
+    GetUserInfo()
+  }, [user]);
 
 
 
 
+
+
+
+  //////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////
+  //////////////////      FORM SUBMISSION        ///////////////////////
+  //////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////
+
+  // check If Username Is Taken
+  const checkIfUsernameTaken = async (username) => {
+    const q = query(collection(db, 'users'), where('username', '==', username));
+    const querySnapshot = await getDocs(q);
+    let userWithUserName
+    querySnapshot.docs.forEach((doc) => {
+      const data = doc.data();
+      userWithUserName = data
+    });
+    if (user.uid == userWithUserName.id) {
+      return true
+    } else return querySnapshot.empty;
+  };
+
+
+
+
+  const createOrUpdateProfile = async (data) => {
+    const newImageURL = selectedImage && await uploadImage(selectedImage)
+
+    const userData = {
+      id: user?.uid,
+      name: data.Name,
+      username: data.Username,
+      bio: data.Bio,
+      profilePicture: selectedImage ? newImageURL : pictureURL,
+      occupation: data.Occupation
+    }
+
+    const userDocRef = doc(db, `users/${user?.uid}`);
+    await setDoc(userDocRef, { ...userData });
+
+    await updateProfile(user, { photoURL: selectedImage ? newImageURL : pictureURL, displayName: data.Name })
+
+    const allUsersPostsQuery = query(collection(db, 'posts'), where('authorId', '==', user?.uid));
+    const allUsersPostsSnap = await getDocs(allUsersPostsQuery)
+
+    allUsersPostsSnap.docs.forEach(async (posts) => {
+      const post = posts.data();
+      const postDocRef = doc(db, `posts/${post.postId}`)
+
+      await updateDoc(postDocRef, {
+        authorName: data.Name,
+        authorAvatar: selectedImage ? newImageURL : pictureURL
+      })
+    });
+
+
+
+
+    toast.success("Profile updated successfully", {
+      position: 'top-center',
+      autoClose: 2000,
+    })
+
+    router.push('/')
+  }
+
+
+
+
+
+
+  /////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////
+  ///////////////////     IMAGE UPLOAD     ////////////////////
+  /////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////
   // Check if profile picture exists
   async function checkFileExists(picRef) {
     try {
@@ -40,115 +161,126 @@ const Page = () => {
   }
 
 
-  const createProfile = async (data) => {
+  // select local file image upload
+  const handleImageUpload = async (event) => {
+    const file = event.target.files[0];
+    setSelectedImage(file);
 
-    const fileName = `pic__${user.displayName}_${user.uid}.jpg`;
-    const picRef = ref(storage, `profile_pictures/${fileName}`);
+    const newImgPreviewURL = URL.createObjectURL(file)
+    setPictureURL(newImgPreviewURL)
+  };
+
+
+  //upload selected image to firebase
+  const uploadImage = async (imageFile) => {
+
+    const picRef = ref(storage, `profile_pictures/pic_${user?.uid}.jpg`);
     const fileExists = await checkFileExists(picRef);
-    const pic = fileExists && await getDownloadURL(picRef)
 
-
-    const userData = {
-      id: user?.uid,
-      name: data.Name,
-      username: data.Username,
-      bio: data.Bio,
-      profilePicture: fileExists ? pic : user?.photoURL,
+    if (fileExists) {
+      await deleteObject(picRef)
     }
 
-    const userCollectionRef = collection(db, 'users');
-    const userDocRef = doc(db, 'users', user.uid);
-    const userDocSnap = await getDoc(userDocRef);
-    if (userDocSnap.exists()) {
-      // route.push("/auth/userInfo");
-    }
-    else {
-      const newUserProfile = await setDoc(userDocRef, { ...userData });
-    }
+    const snapshot = await uploadBytes(picRef, imageFile)
+    const downloadURL = await getDownloadURL(snapshot.ref)
+    console.log(downloadURL)
 
-  }
-  // check If Username Is Taken
-  const checkIfUsernameTaken = async (username) => {
-    console.log(username)
-    const q = query(collection(db, 'users'), where('username', '==', username));
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.empty;
+    return downloadURL;
   };
 
 
 
+
+
+
+
+
   return (
-    <div className={styles.userDetails}>
-      <h1>Complete your profile</h1>
+    <>
+      {
+        loading && <div>Loading..</div>
+      }
+      {
+        user && <div className={styles.userDetails}>
+          <h1>Complete your profile</h1>
+
+          <article className={styles.imagecontainer}>
+            <input type="file" onChange={handleImageUpload} />
+            {pictureURL && <img className={styles.picture} src={pictureURL} alt="Preview" />}
+          </article>
+          <form id='userDetails' className={styles.userInfoForm} onSubmit={handleSubmit(createOrUpdateProfile)}>
+            <div className={styles.inputdiv}>
+              <label htmlFor="Name">Full name<span>*</span></label>
+              <input id="Name" type="text" name="Name"
+                placeholder="Adanna Nwoku Elizabeth" onChange={handleInputChange}
+                {...register("Name", { required: true })} />
+              {errors.Name && <span>Full Name field is required</span>}
+            </div>
+            <div className={styles.inputdiv}>
+              <label htmlFor="Bio">About me<span>*</span></label>
+              <textarea name="Bio" rows="3" maxLength="150" onChange={handleInputChange}
+                placeholder="Write a little about yourself" {...register("Bio", { required: true })}></textarea>
+              {errors.Bio && <span>About me field is required</span>}
+            </div>
+
+            <div className={styles.inputdiv}>
+              <label htmlFor="Username">Username<span>*</span></label>
+              <input id="Username" type="text" name="Username"
+                placeholder="Choose a unique username" onChange={handleInputChange}
+                {...register("Username", {
+                  required: true,
+                  pattern: {
+                    value: /^[a-zA-Z0-9_]+$/,
+                    message: 'Field can only contain letters, numbers and underscores',
+                  },
+                  validate: checkIfUsernameTaken
+                })}
+              />
+              {errors.Username && errors.Username.type === 'required' && (
+                <span>Username is required</span>
+              )}
+              {errors.Username && errors.Username.type === 'pattern' && (
+                <span>Username must only contain letters</span>
+              )}
+              {errors.Username && errors.Username.type === 'validate' && (
+                <span>Username taken, please choose something else</span>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="occupation">Occupation</label>
+              <select id="occupation" name="Occupation"
+                onChange={handleInputChange}
+                {...register("Occupation")}>
+                <option value="Architecture: Firm">Architecture: Firm</option>
+                <option value="Architecture: Freelancer">Architecture: Freelancer / Freelancer</option>
+                <option value="Architecture: Construction / Real Estate">Architecture: Construction / Real Estate</option>
+                <option value="Architecture: Academic Organization">Architecture: Academic Organization</option>
+                <option value="Architecture: Student">Architecture: Student</option>
+                <option value="Landscape">Landscape</option>
+                <option value="Urban Designer">Urban Designer</option>
+                <option value="Interior Designer">Interior Designer</option>
+                <option value="Graphic Designer">Graphic Designer</option>
+                <option value="Photographer">Photographer</option>
+                <option value="Real Estate">Real Estate</option>
+                <option value="Engineering">Engineering</option>
+                <option value="Media / PR Agency">Media / PR Agency</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
 
 
-      <ProfilePictureUploader user={user} checkFileExists={checkFileExists} />
-      <form id='userDetails' className={styles.caseinfo} onSubmit={handleSubmit(createProfile)}>
-        <div className={styles.inputdiv}>
-          <label htmlFor="Name">Full name<span>*</span></label>
-          <input id="Name" type="text" placeholder="Adanna Nwoku Elizabeth"  {...register("Name", { required: true })} />
-          {errors.Name && <span>Full Name field is required</span>}
+
+          </form>
+
+          <div className={styles.buttongroup}>
+            <Button name='Skip ⏭' type='primary' link='/' />
+            <button className={styles.submitbutton} form='userDetails' type="submit">Save and Continue ▶</button>
+
+          </div>
         </div>
-        <div className={styles.inputdiv}>
-          <label htmlFor="Bio">About me<span>*</span></label>
-          <textarea name="Bio" rows="3" maxLength="150" placeholder="Write a little about yourself" {...register("Bio", { required: true })}></textarea>
-          {errors.Bio && <span>About me field is required</span>}
-        </div>
-
-        <div className={styles.inputdiv}>
-          <label htmlFor="Username">Username<span>*</span></label>
-          <input id="Username" type="text" name="Username"
-            placeholder="Choose a unique username"
-            {...register("Username", {
-              required: true,
-              pattern: {
-                value: /^[a-zA-Z0-9_]+$/,
-                message: 'Field can only contain letters, numbers and underscores',
-              },
-              validate: checkIfUsernameTaken
-            })}
-          />
-          {errors.Username && errors.Username.type === 'required' && (
-            <span>Username is required</span>
-          )}
-          {errors.Username && errors.Username.type === 'pattern' && (
-            <span>Username must only contain letters</span>
-          )}
-          {errors.Username && errors.Username.type === 'validate' && (
-            <span>Username taken, please choose something else</span>
-          )}
-        </div>
-
-        <div>
-          <label htmlFor="occupation">Occupation</label>
-          <select id="occupation" {...register("Occupation")}>
-            <option value="Architecture: Firm">Architecture: Firm</option>
-            <option value="Architecture: Freelancer">Architecture: Freelancer / Freelancer</option>
-            <option value="Architecture: Construction / Real Estate">Architecture: Construction / Real Estate</option>
-            <option value="Architecture: Academic Organization">Architecture: Academic Organization</option>
-            <option value="Architecture: Student">Architecture: Student</option>
-            <option value="Landscape">Landscape</option>
-            <option value="Urban Designer">Urban Designer</option>
-            <option value="Interior Designer">Interior Designer</option>
-            <option value="Graphic Designer">Graphic Designer</option>
-            <option value="Photographer">Photographer</option>
-            <option value="Real Estate">Real Estate</option>
-            <option value="Engineering">Engineering</option>
-            <option value="Media / PR Agency">Media / PR Agency</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-
-
-
-      </form>
-
-      <div className={styles.buttongroup}>
-        <Button name='Skip ⏭' type='primary' link='/' />
-        <button className={styles.submitbutton} form='userDetails' type="submit">Save and Continue ▶</button>
-
-      </div>
-    </div>
+      }
+    </>
   )
 }
 

@@ -37,7 +37,6 @@ const Search = () => {
       });
       return
     }
-    addSearch(searchInput);
     router.push(`/search?q=${searchInput}`);
   };
 
@@ -49,12 +48,12 @@ const Search = () => {
   //perform Search once the q parameter in the URL changes
   useEffect(() => {
     async function performSearch(queryText) {
-      if (queryText == '') {
+      if (queryText == '' || queryText.trim() === '') {
         return
       }
       else
         setSearching(true)
-
+        addSearch(queryText);
       const postsCollection = collection(db, 'posts');
       const whichPost = () => {
         if (whichResultType === 'Studies') { return 'Case Studies' }
@@ -62,9 +61,9 @@ const Search = () => {
         else if (whichResultType === 'Photos') { return 'Photography' }
         else 'Case Studies'
       }
-      console.log(whichPost())
 
-      const authorQuery = query(postsCollection, where('postType', '==', whichPost()), where('authorName', '>=', ""), where('authorName', '<=', queryText + '\uf8ff'), orderBy('authorName'));
+      const lowercaseQueryText = queryText.toLowerCase()
+      const authorQuery = query(postsCollection, where('postType', '==', whichPost()), where('authorName', '>=', queryText), where('authorName', '<=', queryText + '\uf8ff'), orderBy('authorName'));
       const authorResults = await getDocs(authorQuery);
 
       const titleQuery = query(postsCollection, where('postType', '==', whichPost()), where('title', '>=', queryText), where('title', '<=', queryText + '\uf8ff'));
@@ -104,7 +103,6 @@ const Search = () => {
           results.push(doc.data());
         }
       });
-      console.log(results)
 
 
       setSearchResult(results)
@@ -115,7 +113,7 @@ const Search = () => {
 
 
 
-    if (!(searchParameter === null || '')) {
+    if (!(searchParameter === null || '' || searchParameter.trim() === '')) {
       performSearch(searchParameter)
     }
 

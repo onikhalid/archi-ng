@@ -68,6 +68,18 @@
 
         &.menuisopen {
             min-height: 30%;
+            padding-block: .5rem;
+        }
+
+        .bottomtop {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+
+            h3 {
+                word-break: break-word;
+                hyphens: auto;
+            }
         }
 
         .other {
@@ -88,19 +100,69 @@
     }
 }
 
+.deleteicon {
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    justify-content: center;
+    font-size: 0.65rem;
+    text-align: center;
+    transition: color ease-in-out 250ms;
+
+    svg {
+        font-size: 1.25rem;
+    }
+
+    &:hover {
+        color: var(--accent);
+    }
+}
+
+
+.deletedbookmark {
+
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border: solid 3px var(--main-text-clr);
+    border-radius: 20px;
+    padding: 1.65rem;
+    max-width: 280px;
+    min-height: 350px;
+
+    @media (min-width: 900px) {
+        width: 300px;
+        height: 360px;
+    }
+}
 
 
 
 
 
-.olderCard {
-    width: 100px;
+.folderCard {
+    width: 120px;
+    line-break: anywhere;
+
+    a {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    h5 {
+        text-align: center;
+        font-size: clamp(1.15rem, 1.35vw, 1.3rem);
+    }
 
     .docket {
         display: flex;
         align-items: flex-start;
-        height: 100px;
-        font-size: 6rem;
+        height: 120px;
+        font-size: 8rem;
         color: var(--sec-text-clr);
     }
 }

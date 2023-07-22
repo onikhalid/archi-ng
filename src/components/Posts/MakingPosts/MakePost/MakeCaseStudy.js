@@ -180,7 +180,7 @@ const MakeCaseStudy = ({ postToEditId }) => {
     }
 
 
-    const newImgURL = selectedImage && URL.createObjectURL(selectedImage)
+    const newImgURL = URL.createObjectURL(file)
     setCoverImgURL(newImgURL)
 
   };

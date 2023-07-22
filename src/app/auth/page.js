@@ -45,7 +45,7 @@ export default function Login() {
       }
       else if (userDocSnap.exists()) {
         const data = userDocSnap.data()
-        if (data.hasOwnProperty('bio')) {
+        if (data.hasOwnProperty('username')) {
           route.push('/')
         } else {
           route.push('/auth/complete-profile')

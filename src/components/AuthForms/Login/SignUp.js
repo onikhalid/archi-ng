@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { auth, db } from '@/utils/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
 
 
 export const SignupForm = () => {
@@ -17,13 +17,13 @@ export const SignupForm = () => {
             const { email, password } = data;
             const result = await createUserWithEmailAndPassword(auth, email, password)
             const user = result.user
-            console.log(user)
 
             const userDocRef = doc(db, 'users', user.uid)
             const userDocSnap = await getDoc(userDocRef)
 
             if (!userDocSnap.exists()) {
                 const unknownUserPhotoURL = 'https://firebasestorage.googleapis.com/v0/b/archi-nigeria.appspot.com/o/profile_pictures%2Funknown_user%2FUnknown%20Profile%20Picture.png?alt=media&token=be2b9913-ab2d-4bb3-8f7c-822e5db30009'
+                await updateProfile(user, {photoURL: unknownUserPhotoURL})
                 const userData = {
                     id: user.uid,
                     name: user.displayName === null ? `Architect_${user.uid}` : user.displayName,
@@ -103,9 +103,9 @@ export const LoginForm = () => {
             const userDocRef = doc(db, 'users', user.user.uid)
             const userDocSnap = await getDoc(userDocRef)
 
-            const datz = userDocSnap.data()
-            console.log(datz)
-            if (datz.hasOwnProperty('bio')) {
+            const userData = userDocSnap.data()
+
+            if (userData.hasOwnProperty('username')) {
                 router.push('/')
             }
             else {

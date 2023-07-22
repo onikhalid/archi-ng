@@ -153,7 +153,7 @@ const MakeArticle = ({ postToEditId }) => {
       await deleteObject(previousImageRef)
     }
 
-    const newImgURL = selectedImage && URL.createObjectURL(selectedImage)
+    const newImgURL = URL.createObjectURL(file)
     setCoverImgURL(newImgURL)
 
   };

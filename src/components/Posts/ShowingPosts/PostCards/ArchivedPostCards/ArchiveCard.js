@@ -6,10 +6,12 @@ import { useLayoutEffect, useState } from "react"
 import Link from "next/link"
 import Button from "@/components/Button/button"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFolder, faArrowUpRightFromSquare, faFolderPlus } from "@fortawesome/free-solid-svg-icons";
+import { faFolder, faArrowUpRightFromSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { AddToFolderMenu } from "@/components/Posts/InteractingWithPosts/Likes and Comments/AddBookmarkToFolder/AddBookmarkToFolder"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { useWindowWidth } from "@/utils/Hooks/ResponsiveHook"
+import { deleteBookmark } from "@/components/Posts/InteractingWithPosts/Likes and Comments/Bookmark"
+
 
 export const BookmarkCard = ({ post }) => {
 
@@ -71,10 +73,21 @@ export const BookmarkCard = ({ post }) => {
     return (
         <>
             {
-                !archivedPost && <div className="infobox">Loading...</div>
+                post && loadingPosts && !archivedPost && <div className="infobox">Loading...</div>
             }
-    
-            {!loadingPosts&&archivedPost &&
+            {
+                post && !loadingPosts && !archivedPost &&
+                <div className={styles.deletedbookmark}>
+                    Bookmarked post doesn&apos;t exist or it has been deleted by author
+                    {post.userId == user?.uid &&
+                        <span title="delete bookmark" onClick={()=>deleteBookmark(bookmarkId)}  className={styles.deleteicon}>
+                            <FontAwesomeIcon icon={faTrash} />
+                            Delete Bookmark
+                        </span>
+                    }
+                </div>
+            }
+            {!loadingPosts && archivedPost &&
                 <article className={styles.bookmarkcard} title={archivedPost.title}
                     onMouseOver={() => setshowmenu(true)} onMouseLeave={() => setshowmenu(false)}
                 >
@@ -96,7 +109,16 @@ export const BookmarkCard = ({ post }) => {
                     </section>
 
                     <section className={width < 1020 ? `${styles.bottom} ${styles.menuisopen}` : bottomclass}>
-                        <h3 title={archivedPost.title}>{archivedPost.title.substring(0, 40)}{(loadingPosts == false && archivedPost.title.length > 39) && '...'}</h3>
+                        <div className={styles.bottomtop}>
+                            <h3 title={archivedPost.title}>{archivedPost.title.substring(0, 34)}{(loadingPosts == false && archivedPost.title.length > 35) && '...'}</h3>
+                            {
+                                post.userId == user?.uid &&
+                                <span title="delete bookmark" onClick={()=>deleteBookmark(bookmarkId)} className={styles.deleteicon}>
+                                    <FontAwesomeIcon icon={faTrash} />
+                                    Delete Bookmark
+                                </span>
+                            }
+                        </div>
                         <div className={styles.other}>
                             <div className={styles.author}>
                                 <img
@@ -127,39 +149,25 @@ export const BookmarkCard = ({ post }) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
+////////////////       FOLDER CARD       ////////////////////////
+/////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
 
 
 export const FolderCard = ({ post }) => {
     return (
-        <article className={styles.olderCard}>
+        <article className={styles.folderCard}>
             <Link href={`/archive/folder/${post.folderId}`}>
                 <div className={styles.docket}>
                     <FontAwesomeIcon icon={faFolder} />
                 </div>
-                <h5>{post.folderName}</h5>
-                <span>{post.bookmarks?.length} posts</span>
+                <h5 title={post.folderName}>{post.folderName?.substring(0, 9)}{post.folderName?.length > 9 && "..."}</h5>
+                <h6>{post.bookmarks?.length} posts</h6>
             </Link>
 
         </article>

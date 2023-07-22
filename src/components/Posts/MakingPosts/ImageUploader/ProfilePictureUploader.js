@@ -10,6 +10,8 @@ import { auth, db, storage } from '@/utils/firebase';
 export default function ProfilePictureUploader({ user, checkFileExists }) {
     const [profilePicture, setProfilePicture] = useState('');
 
+
+
     useEffect(() => {
         const fetchProfilePicture = async () => {
             if (!user) return;
@@ -36,9 +38,7 @@ export default function ProfilePictureUploader({ user, checkFileExists }) {
         fetchProfilePicture();
     }, [user]);
 
-
-
-    const getProfilePictureURL = (userData) => {
+      const getProfilePictureURL = (userData) => {
         if (userData.profilePicture) {
             return userData.profilePicture;
         } else {
@@ -56,10 +56,11 @@ export default function ProfilePictureUploader({ user, checkFileExists }) {
 
     const handleProfilePictureChange = async (event) => {
         const file = event.target.files[0];
+        // const chosenImage = URL.createObjectURL(file)
         const userId = user.uid;
 
         try {
-            const fileName = `pic__${user.displayName}_${userId}.jpg`;
+            const fileName = `pic_${userId}.jpg`;
             const picRef = ref(storage, `profile_pictures/${fileName}`);
 
             const fileExists = await checkFileExists(picRef);
@@ -84,7 +85,7 @@ export default function ProfilePictureUploader({ user, checkFileExists }) {
 
 
     return (
-        <div>
+        <div className={styles.container}>
             <input type="file" accept="image/*" onChange={handleProfilePictureChange} />
             {profilePicture && <img className={styles.picture} src={profilePicture} alt="Profile Picture" />}
         </div>
