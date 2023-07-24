@@ -19,6 +19,15 @@ const CaseStudyCard = ({ post }) => {
     const [menuOpen, setMenuOpen] = useState(null)
     const [user, loading] = useAuthState(auth)
 
+    const postId = post.postId
+    const postTitle = post.title
+    const postType = post.postType
+    const postAuthorId = post.authorId
+    const postAuthorName = post.authorName
+    const postAuthorPhoto = post.authorAvatar
+    const postCoverPhoto = post.coverImageURL
+
+
     const avatar = post.authorAvatar
     const tags = post?.tags.slice(0, 3)
     const postTime = post.createdAt;
@@ -26,7 +35,7 @@ const CaseStudyCard = ({ post }) => {
     const currentDate = new Date();
     let timeDifference = currentDate.getTime() - serverDate.getTime();
 
-    
+
     // Calculate the number of seconds, minutes, hours, days, months, and years ago
     const secondsAgo = Math.floor(timeDifference / 1000);
     const minutesAgo = Math.floor(timeDifference / (1000 * 60));
@@ -53,19 +62,19 @@ const CaseStudyCard = ({ post }) => {
 
     // change icon to show user has bookmarked post
     const bookmarkPost = () => {
-        if(!user){
-            toast.error('Sign in to save posts', {
-                position: 'top-center',
-                autoClose: 3000
-            })
-            return
-        }
-        setSaved(true)
-        addBookmark(post.postId, user.uid)
+        if (!user || user.uid == undefined) {
+            toast.error("Sign in to save posts", {
+                position: toast.POSITION.TOP_CENTER,
+                autoClose: 3500,
+            });
+        } else {
+            setSaved(true)
+            addBookmark(user.uid, postId, postTitle, postType, postAuthorId, postCoverPhoto, postAuthorName, postAuthorPhoto)
 
-        setTimeout(() => {
-            setSaved(false)
-        }, 2500);
+            setTimeout(() => {
+                setSaved(false)
+            }, 2500);
+        }
     }
 
 

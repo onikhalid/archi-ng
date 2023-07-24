@@ -19,6 +19,16 @@ const ArticleCard = ({ post }) => {
     const [menuOpen, setMenuOpen] = useState(null)
     const [user, loading] = useAuthState(auth)
 
+    const postId = post.postId
+    const postTitle = post.title
+    const postType = post.postType
+    const postAuthorId = post.authorId
+    const postAuthorName = post.authorName
+    const postAuthorPhoto = post.authorAvatar
+    const postCoverPhoto = post.coverImageURL
+
+
+
     const avatar = post.authorAvatar
     const tags = post?.tags.slice(0, 3)
     const postTime = post.createdAt;
@@ -61,7 +71,8 @@ const ArticleCard = ({ post }) => {
             return
         }
         setSaved(true)
-        addBookmark(post.postId, user.uid)
+        addBookmark(user.uid, postId, postTitle, postType, postAuthorId, postCoverPhoto, postAuthorName, postAuthorPhoto)
+        
 
         setTimeout(() => {
             setSaved(false)
@@ -107,7 +118,7 @@ const ArticleCard = ({ post }) => {
                         <PostMenu
                             menuOpen={menuOpen}
                             setOpen={setMenuOpen}
-                            post ={post}
+                            post={post}
                             authorId={post.authorId}
                             postId={post.postId}
                             postAuthor={post.authorName}

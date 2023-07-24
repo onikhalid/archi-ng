@@ -30,7 +30,7 @@ export const addBookmark = async (userId, postId, postTitle, postType, postAutho
       postTitle,
       postType,
       postCoverPhoto,
-      bookmarkId: `${userId}_${postId}`,
+      bookmarkId,
       userId: userId,
     })
   }

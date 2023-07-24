@@ -22,7 +22,7 @@ export default function PostMenu({ menuOpen, setOpen, post }) {
     const postTitle = post.title
     const postAuthorName = post.authorName
     const postAuthorPhoto = post.authorAvatar
-    const postAuthorId = post.authorId
+    const postAuthorId = post.userId
     const postCoverPhoto = post.coverImageURL
 
     const [user, loading] = useAuthState(auth)
