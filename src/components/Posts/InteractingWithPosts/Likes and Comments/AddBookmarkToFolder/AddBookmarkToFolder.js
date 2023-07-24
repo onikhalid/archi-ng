@@ -1,8 +1,7 @@
 import { db } from '@/utils/firebase';
 import { useState, useEffect, useRef } from 'react';
 import {
-    collection, addDoc, doc, updateDoc, deleteDoc, arrayUnion, arrayRemove,
-    getDoc, setDoc, query, where, getDocs,
+    collection, query, where, getDocs,
 } from 'firebase/firestore';
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

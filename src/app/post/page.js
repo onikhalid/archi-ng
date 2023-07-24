@@ -3,29 +3,30 @@
 import styles from './post.module.scss'
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { auth } from "@/utils/firebase";
+import { auth, db } from "@/utils/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useSearchParams } from 'next/navigation';
 
-import { SubmitProvider } from '@/utils/ContextandProviders/Providers';
 import WhoseandWhichpostH1 from '@/components/Posts/ShowingPosts/Whosepost/whosepostH1Variation';
 import MakeArticle from '@/components/Posts/MakingPosts/MakePost/MakeArticle';
 import MakeCaseStudy from '@/components/Posts/MakingPosts/MakePost/MakeCaseStudy';
 import MakePhoto from '@/components/Posts/MakingPosts/MakePost/MakePhoto';
+import { doc, getDoc } from 'firebase/firestore';
 
 
 export default function Home() {
   const [user, loading] = useAuthState(auth);
-  const [currentPostToMake, setCurrentPostToMake] = useState("");
+  const [currentPostToMake, setCurrentPostToMake] = useState("Article");
   const router = useRouter()
   const searchParams = useSearchParams()
   const postToEdit = searchParams.get('edit')
   const postTypeToEdit = searchParams.get('type')
+  const [userHasPermToEditPost, setUserHasPermToEditPost] = useState(null);
 
 
 
   // handle change to what's displayed to the user about which post they can currently make
-   const variation = [
+  const variation = [
     {
       number: 1,
       name: "an article",
@@ -56,10 +57,80 @@ export default function Home() {
 
 
 
+  ////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////
+  /////////       CHECK OWNER OF POST TO EDIT     ///////////
+  ////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////
+
+
+
+  useEffect(() => {
+    const checkPostToEditOwner = async () => {
+      if (!user) {
+        return
+      }
+      else if (!postToEdit || !postTypeToEdit) {
+        return
+      }
+      else {
+        const postRef = doc(db, `posts/${postToEdit}`)
+        const postDocSnap = await getDoc(postRef)
+        const postData = postDocSnap.data()
+        if (user.uid === postData.authorId) {
+          setUserHasPermToEditPost('yes')
+        }
+        else setUserHasPermToEditPost('no')
+      }
+    }
+
+
+    checkPostToEditOwner()
+
+  }, [user]);
+
+
+
+
+
+
+
+
+  ////////////////////////////////////////////////////////////
+  /////////                PAGE TITLE              ///////////
+  let pageTitle
+  if (currentPostToMake == "case study") {
+    if ((postToEdit || postTypeToEdit) === null) {
+      pageTitle = `Make Post: Case Study | archi NG`
+    } else pageTitle = `Edit Post: ${postTypeToEdit} | archi NG`
+
+  }
+  else if (currentPostToMake == "an article") {
+    if ((postToEdit || postTypeToEdit) === null) {
+      pageTitle = `Make Post: Article | archi NG`
+    } else pageTitle = `Edit Post: ${postTypeToEdit} | archi NG`
+
+  } else if (currentPostToMake == "a photo") {
+    if ((postToEdit || postTypeToEdit) === null) {
+      pageTitle = `Make Post: Photo | archi NG`
+    } else pageTitle = `Edit Post: ${postTypeToEdit} | archi NG`
+
+  } else pageTitle = "Loading Make Post.."
+
+
+
+
+
+
+
+
+
 
 
   return (
-    <SubmitProvider>
+    <>
+      <title>{pageTitle}</title>
+
       {
         loading && <h1> Loading...</h1>
       }
@@ -78,13 +149,9 @@ export default function Home() {
 
 
 
-          {/* ///////////////////////////////////////////////////////////// */}
-          {/* ///////////////////////////////////////////////////////////// */}
-          {/* ///////////////////////////////////////////////////////////// */}
-          {/* /////////////////     NEW POST HEADER     ////////////////// */}
-          {/* ///////////////////////////////////////////////////////////// */}
-          {/* ///////////////////////////////////////////////////////////// */}
-          {/* ///////////////////////////////////////////////////////////// */}
+          {/* ///////////////////////////////////////////// */}
+          {/* //////////     NEW POST HEADER     ////////// */}
+          {/* ///////////////////////////////////////////// */}
           <header className={styles.header}>
             {(postToEdit || postTypeToEdit) === null && <>
 
@@ -100,42 +167,51 @@ export default function Home() {
 
 
 
-            {/* ///////////////////////////////////////////////////////////// */}
-            {/* ///////////////////////////////////////////////////////////// */}
-            {/* ///////////////////////////////////////////////////////////// */}
-            {/* /////////////////     EDIT POST HEADER     ////////////////// */}
-            {/* ///////////////////////////////////////////////////////////// */}
-            {/* ///////////////////////////////////////////////////////////// */}
-            {/* ///////////////////////////////////////////////////////////// */}
+            {/* ///////////////////////////////////////////// */}
+            {/* /////////     EDIT POST HEADER     ////////// */}
+            {/* ///////////////////////////////////////////// */}
             {(postToEdit || postTypeToEdit) !== null && <>
-              <h4>Edit your</h4>
+              <h4>Edit {userHasPermToEditPost ? "your" : "someone else's 🙄?"}</h4>
               <h1>{postTypeToEdit === 'Case Studies' ? 'Case Study' : 'Article'}</h1>
             </>
             }
-
-
-
-
           </header>
+
+
+
 
 
           {/* //////////////////////////////////// */}
           {/* /////////   MAKE NEW POST  ///////// */}
           {/* //////////////////////////////////// */}
-          {(currentPostToMake === "an article" && (postTypeToEdit === null)) && <MakeArticle/>}
+          {(currentPostToMake === "an article" && (postTypeToEdit === null)) && <MakeArticle />}
           {(currentPostToMake === "case study" && (postTypeToEdit === null)) && <MakeCaseStudy />}
           {(currentPostToMake === "a photo" && (postTypeToEdit === null)) && <MakePhoto />}
-          
+
           {/* //////////////////////////////////// */}
           {/* ///////////   EDIT POST   ////////// */}
           {/* //////////////////////////////////// */}
-          {postTypeToEdit === "Articles" && <MakeArticle postToEditId={postToEdit} />}
-          {postTypeToEdit === "Case Studies" && <MakeCaseStudy postToEditId={postToEdit} />}
+          {userHasPermToEditPost=='yes' && postTypeToEdit === "Articles" && <MakeArticle postToEditId={postToEdit} />}
+          {userHasPermToEditPost=='yes' && postTypeToEdit === "Case Studies" && <MakeCaseStudy postToEditId={postToEdit} />}
+
+
+
+
+          {/* //////////////////////////////////////////// */}
+          {/* /////   NO PERMISSION TO EDIT POST   /////// */}
+          {/* //////////////////////////////////////////// */}
+          {userHasPermToEditPost=='no' &&
+            <div className='infobox'>
+              <h2>
+                How did you get here? 😯, this is not your post you can&apos;t edit it
+              </h2>
+            </div>
+          }
 
         </main>
       }
 
-    </SubmitProvider>
+    </>
 
   )
 }

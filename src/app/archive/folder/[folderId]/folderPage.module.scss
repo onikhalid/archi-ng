@@ -31,6 +31,29 @@
             color: var(--text-on-accent);
             background-color: var(--accent);
             border: solid 2px transparent;
+
+            svg {
+                color: red;
+            }
         }
     }
+}
+
+.pageHeader {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .folderNameandOwner {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+
+        h1,
+        h6 {
+            max-width: max-content;
+        }
+    }
+
 }

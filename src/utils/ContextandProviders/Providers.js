@@ -36,21 +36,36 @@ export const ThemeProvider = ({ children }) => {
 };
 
 
+export const ThemeProvder = ({ children }) => {
 
-export const SubmitProvider = ({ children }) => {
-
-  const [submitted, setSubmitted] = useState(false);
+  const [theme, setTheme] = useState('light');
   
 
-  const toggleSubmitted = () => {
-    setSubmitted((submitted) => !submitted  );
+  const toggleTheme = () => {
+    setTheme((theme) => theme === 'dark' ? 'light' : 'dark');
   };
 
+  useEffect(() => {
+    if (localStorage.getItem("theme") === null) {
+      setTheme('light')
+    } else {
+      const currentTheme = localStorage.getItem('theme');
+      setTheme(currentTheme);
+    }
+
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('theme', theme);
+
+  }, [theme]);
 
 
   return (
-    <SubmitContext.Provider value={{ submitted, toggleSubmitted }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
       {children}
-    </SubmitContext.Provider>
+    </ThemeContext.Provider>
   );
 };
+
+

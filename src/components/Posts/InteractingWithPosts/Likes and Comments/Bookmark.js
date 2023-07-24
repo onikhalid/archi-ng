@@ -1,25 +1,15 @@
 
 import { db } from '@/utils/firebase';
 import {
-  collection,
-  addDoc,
-  doc,
-  updateDoc,
-  deleteDoc,
-  arrayUnion,
-  arrayRemove,
-  getDoc,
-  setDoc,
-  query,
-  where,
-  getDocs,
+  collection, addDoc, doc, updateDoc, deleteDoc, arrayUnion, arrayRemove,
+  getDoc, setDoc, query, where, getDocs,
 } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 
 
 
-// Function to add a bookmark
-export const addBookmark = async (postId, userId) => {
+//  add a bookmark
+export const addBookmark = async (userId, postId, postTitle, postType, postAuthorId, postCoverPhoto, postAuthorName, postAuthorPhoto) => {
   const bookmarkId = `${userId}_${postId}`
   const bookmarkRef = doc(collection(db, 'bookmarks'), bookmarkId);
   const bookmarkDoc = await getDoc(bookmarkRef);
@@ -33,14 +23,25 @@ export const addBookmark = async (postId, userId) => {
   } else {
     // Create a new bookmark document
     await setDoc(bookmarkRef, {
+      postAuthorId,
+      postAuthorPhoto,
+      postAuthorName,
+      postId,
+      postTitle,
+      postType,
+      postCoverPhoto,
+      bookmarkId: `${userId}_${postId}`,
       userId: userId,
-      postId: postId,
     })
   }
   return bookmarkId
 };
 
 
+
+
+
+//delete bookmark
 export const deleteBookmark = async (bookmarkId) => {
   const foldersCollectionRef = collection(db, 'folders');
   const bookmarkRef = doc(db, `bookmarks/${bookmarkId}`);
@@ -50,7 +51,7 @@ export const deleteBookmark = async (bookmarkId) => {
   const foldersSnap = await getDocs(q);
   const foldersThatContainBookmark = [];
   foldersSnap.forEach((doc) => foldersThatContainBookmark.push(doc.data()));
-  foldersThatContainBookmark.forEach(async(folder) => {
+  foldersThatContainBookmark.forEach(async (folder) => {
     const folderDocRef = doc(db, `folders/${folder.folderId}`)
     await updateDoc(folderDocRef, { bookmarks: arrayRemove(bookmarkId) })
   })
@@ -62,16 +63,16 @@ export const deleteBookmark = async (bookmarkId) => {
 
 
 
-// Function to create a folder
-export const createFolder = async (folderName, userId) => {
+//  create a folder
+export const createFolder = async (folderName, userId, userDisplayName) => {
   const foldersCollectionRef = collection(db, 'folders');
 
-  // Create a new folder document
   const newFolderRef = await addDoc(foldersCollectionRef, { folderName, userId });
   const folderId = newFolderRef.id
   await updateDoc(doc(foldersCollectionRef, newFolderRef.id), {
     folderId: folderId,
-    bookmarks: []
+    bookmarks: [],
+    folderOwnerName: userDisplayName
   });
 };
 
@@ -79,20 +80,19 @@ export const createFolder = async (folderName, userId) => {
 
 
 
-// Function to add a bookmark to a folder FROM BOOKMARK MENU
-export const addBookmarkToFolder = async (userId, bookmarkId, folderId, bookmarkOwnerId) => {
+//  add a bookmark to a folder 
+export const addBookmarkToFolder = async (userId, bookmarkId, folderId, bookmarkPostOwnerId, preventError) => {
   const folderDocRef = doc(db, 'folders', folderId);
-
-  if (userId == bookmarkOwnerId) {
+ 
+  if ((userId == bookmarkPostOwnerId) || preventError) {
     await updateDoc(folderDocRef, { bookmarks: arrayUnion(bookmarkId) });
     return
   } else {
     const parts = bookmarkId.split("_");
     const postId = (parts[1])
-    const newBookmark = await addBookmark(postId, userId)
     await updateDoc(folderDocRef, { bookmarks: arrayUnion(newBookmark) });
+    const newBookmark = await addBookmark(postId, userId)
   }
-
 };
 
 
@@ -100,11 +100,9 @@ export const addBookmarkToFolder = async (userId, bookmarkId, folderId, bookmark
 
 
 
-// Function to remove a bookmark from a folder
+//  remove a bookmark from a folder
 export const removeBookmarkFromFolder = async (bookmarkId, folderId) => {
   const folderDocRef = doc(db, 'folders', folderId);
-
-  // Update the folder document to remove the bookmark ID from the bookmarks array
   await updateDoc(folderDocRef, { bookmarks: arrayRemove(bookmarkId) });
 
 };
@@ -112,14 +110,8 @@ export const removeBookmarkFromFolder = async (bookmarkId, folderId) => {
 
 
 
-// Function to delete a folder
+//  delete a folder
 export const deleteFolder = async (folderId) => {
   const folderDocRef = doc(db, 'folders', folderId);
-
-  // Delete the folder document
   await deleteDoc(folderDocRef);
-
-  // Other logic for deleting the folder
 };
-
-

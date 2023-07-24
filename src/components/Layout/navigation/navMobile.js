@@ -3,9 +3,8 @@
 import styles from './navMobile.module.scss'
 
 import Link from "next/link"
-import Image from "next/image";
 import { usePathname } from 'next/navigation'
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass, faHouse, faUser, faFolder, faRightFromBracket, faGear, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
@@ -14,6 +13,7 @@ import { faMagnifyingGlass, faHouse, faUser, faFolder, faRightFromBracket, faGea
 const MobileNav = () => {
 
   const currentPath = usePathname()
+  const wrapperRef = useRef()
 
   const pages = [
     {
@@ -73,10 +73,24 @@ const MobileNav = () => {
 
 
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+        setHidden((hidden) => !hidden);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [hidden]);
+
+
 
 
   return (
-    <nav className={classes}>
+    <nav className={classes} ref={wrapperRef}>
       {
         pages.map((link, index) => (
           <Link

@@ -1,6 +1,7 @@
 
 
 import { createContext } from 'react';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 
 export const ThemeContext = createContext({
@@ -8,7 +9,8 @@ export const ThemeContext = createContext({
   toggleTheme: () => { },
 });
 
-export const SubmitContext = createContext({
+
+export const userContext = createContext({
   submitted: false,
   toggleSubmitted: () => { },
 });

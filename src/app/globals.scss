@@ -6,6 +6,11 @@
    margin: 0;
    position: relative;
    scrollbar-width: thin;
+
+   &::selection {
+     color: var(--text-on-accent);
+     background: var(--accent);
+   }
  }
 
  :root {
@@ -131,24 +136,24 @@
    }
  }
 
- input::file-selector-button{
-  appearance: none;
-  font-family: var(--text-poppins);
-  background-color: transparent;
-  color: var(--main-text-clr);
-  padding: .25rem .7rem;
-  border: solid 2px var(--main-text-clr);
-  border-radius: 50px;
-  cursor: pointer;
-  transition: all ease-in-out 250ms;
-  
-  &:hover{
-      border-radius: 5px;
-      color: var(--background);
-      background-color: var(--accent);
-      border: solid 2px transparent;
-  }
-}
+ input::file-selector-button {
+   appearance: none;
+   font-family: var(--text-poppins);
+   background-color: transparent;
+   color: var(--main-text-clr);
+   padding: .25rem .7rem;
+   border: solid 2px var(--main-text-clr);
+   border-radius: 50px;
+   cursor: pointer;
+   transition: all ease-in-out 250ms;
+
+   &:hover {
+     border-radius: 5px;
+     color: var(--background);
+     background-color: var(--accent);
+     border: solid 2px transparent;
+   }
+ }
 
  textarea,
  input {
@@ -185,9 +190,9 @@
    }
 
    em {
-    color: var(--accent);
-    margin-right: .5rem;
-  }
+     color: var(--accent);
+     margin-right: .5rem;
+   }
 
    @media (max-width: 372px) {
      font-size: 2.5rem;
@@ -262,7 +267,7 @@
    margin-block: 1rem 5rem;
    padding-inline: 1.5vw;
    max-width: 100%;
-
+   width: 100%;
    @media (max-width: 719px) {
      margin-block: 6rem;
    }
@@ -352,6 +357,13 @@
        border-color: var(--accent);
      }
 
+     option {
+       @media (max-width: 1019px) {
+         font-size: 0.8em;
+         padding: 0;
+       }
+     }
+
    }
 
    textarea {
@@ -384,6 +396,9 @@
  ul.menu {
    position: absolute;
    opacity: 0;
+   display: flex;
+   flex-direction: column;
+   gap: 0.5rem;
    background-color: var(--glass);
    backdrop-filter: blur(5px);
    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
@@ -391,18 +406,79 @@
    padding: 1rem .75rem;
    text-align: center;
    top: 100%;
-   left: 70% !important;
+   left: 70%;
    z-index: -250;
-   //  max-height: 200px;
    overflow-y: scroll;
 
+   @media (max-width: 720px) {
+     left: 0%;
+   }
+
    &.wide {
+     display: initial;
      min-width: 220px;
      width: max-content;
      height: 250px;
      overflow: auto;
      padding: .5rem;
      left: 0% !important;
+
+   }
+
+   &.bookmarks {
+     position: fixed;
+     top: 0;
+     left: 0;
+     right: 0;
+     bottom: 0;
+     backdrop-filter: blur(10px);
+     overflow-y: hidden;
+
+     @media (min-width: 1019px) {
+       display: block;
+       columns: 2 auto;
+     }
+
+     li {
+       display: block;
+       text-align: left;
+       break-inside: avoid;
+       padding-top: .25rem;
+
+       .title {
+         font-weight: 500;
+         font-size: 1rem;
+       }
+
+       .author {
+         font-size: 0.8rem;
+         font-weight: 400;
+         display: flex;
+         align-items: center;
+         gap: 0.35rem;
+
+         img {
+           border-radius: 50px;
+         }
+       }
+
+
+       &:not(:nth-child(1))::after {
+         content: "";
+         position: absolute;
+         top: 0;
+         right: 0;
+         height: 1px;
+         width: 100%;
+         background-color: var(--main-text-clr);
+       }
+     }
+
+     @media (max-width: 720px) {
+       &.open {
+         left: 27% !important;
+       }
+     }
 
    }
 
@@ -425,13 +501,13 @@
      1% {
        opacity: 0;
        left: 50%;
-       z-index: 250;
+       z-index: 600;
      }
 
      100% {
        opacity: 1;
        left: 50%;
-       z-index: 250;
+       z-index: 600;
      }
    }
 
@@ -439,7 +515,7 @@
      0% {
        opacity: 1;
        left: 50%;
-       z-index: 250;
+       z-index: 600;
      }
 
      99% {
@@ -555,7 +631,10 @@
    border: 2.5px solid var(--main-text-clr) !important;
  }
 
-
+ .tox-editor-container {
+   width: 100% !important;
+   ;
+ }
 
 
  /////////////////////////////////

@@ -6,8 +6,8 @@ import { useForm } from "react-hook-form";
 import { db, auth, storage } from '@/utils/firebase';
 import { updateProfile } from "firebase/auth";
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { getMetadata, getDownloadURL, ref } from "firebase/storage";
-import { doc, collection, updateDoc, getDoc, setDoc, getDocs, query, where } from 'firebase/firestore';
+import { getMetadata, getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { doc, collection, updateDoc, getDoc, setDoc, getDocs, query, where, writeBatch } from 'firebase/firestore';
 import Button from "@/components/Button/button";
 import { toast } from "react-toastify";
 
@@ -88,14 +88,15 @@ const Page = () => {
       const data = doc.data();
       userWithUserName = data
     });
-    if (user.uid == userWithUserName.id) {
+    if (user.uid == userWithUserName?.id) {
       return true
     } else return querySnapshot.empty;
   };
 
 
 
-
+  //////////////////////////////////////////////////////////////////////
+  //////////////////      UPDATE PROFILE        ///////////////////////
   const createOrUpdateProfile = async (data) => {
     const newImageURL = selectedImage && await uploadImage(selectedImage)
 
@@ -110,23 +111,56 @@ const Page = () => {
 
     const userDocRef = doc(db, `users/${user?.uid}`);
     await setDoc(userDocRef, { ...userData });
-
     await updateProfile(user, { photoURL: selectedImage ? newImageURL : pictureURL, displayName: data.Name })
+    const batch = writeBatch(db);
 
+
+
+    //////////////////////////////////////////////////////////////////////////////////
+    /////   UPDATE NAME AND AVATAR IN POSTS USER HAS PREVIOUSLY CREATED/FEATURED IN
+    /////  POSTS
     const allUsersPostsQuery = query(collection(db, 'posts'), where('authorId', '==', user?.uid));
     const allUsersPostsSnap = await getDocs(allUsersPostsQuery)
-
+    
     allUsersPostsSnap.docs.forEach(async (posts) => {
       const post = posts.data();
       const postDocRef = doc(db, `posts/${post.postId}`)
 
-      await updateDoc(postDocRef, {
+      batch.update(postDocRef, {
         authorName: data.Name,
         authorAvatar: selectedImage ? newImageURL : pictureURL
+      })
+    })
+
+
+    /////  BOOKMARKS
+    const allUsersPostsBookmarkssQuery = query(collection(db, 'bookmarks'), where('authorId', '==', user?.uid));
+    const allUsersPostsBookmarksSnap = await getDocs(allUsersPostsBookmarkssQuery)
+    allUsersPostsBookmarksSnap.docs.forEach(async (allBookmarks) => {
+      const bookmark = allBookmarks.data();
+      const bookmsrkDocRef = doc(db, `bookmarks/${bookmark.bookmarkId}`)
+
+      batch.update(bookmsrkDocRef, {
+        postAuthorName: data.Name,
+        postAuthorPhoto: selectedImage ? newImageURL : pictureURL
       })
     });
 
 
+    /////  FOLDERS
+    const allUsersFoldersQuery = query(collection(db, 'folders'), where('userId', '==', user?.uid));
+    const allUsersFoldersSnap = await getDocs(allUsersFoldersQuery)
+    allUsersFoldersSnap.docs.forEach(async (allFolders) => {
+      const folder = allFolders.data();
+      const folderDocRef = doc(db, `folders/${folder.folderId}`)
+
+      batch.update(folderDocRef, {
+        folderOwnerName: data.Name,
+        folderOwnerAvatar: selectedImage ? newImageURL : pictureURL
+      })
+    });
+
+    await batch.commit();
 
 
     toast.success("Profile updated successfully", {
@@ -174,7 +208,7 @@ const Page = () => {
   //upload selected image to firebase
   const uploadImage = async (imageFile) => {
 
-    const picRef = ref(storage, `profile_pictures/pic_${user?.uid}.jpg`);
+    const picRef = ref(storage, `profile_pictures/authorized_users/pic_${user?.uid}.jpg`);
     const fileExists = await checkFileExists(picRef);
 
     if (fileExists) {

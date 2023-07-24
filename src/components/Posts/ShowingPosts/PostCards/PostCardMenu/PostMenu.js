@@ -12,10 +12,21 @@ import { doc, getDoc } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 
 
-export default function PostMenu({ menuOpen, setOpen, authorId, postId, postType, postLink }) {
+export default function PostMenu({ menuOpen, setOpen, post }) {
+    const baseURL = typeof window !== 'undefined' ? window.location.origin : '';
+    const postType = post.postType
+    const linkType = postType == "Articles" ? 'article' : 'case-study'
+    const postLink = `${baseURL}/post/${linkType}/${post.postId}`
+    const authorId = post.authorId
+    const postId = post.postId
+    const postTitle = post.title
+    const postAuthorName = post.authorName
+    const postAuthorPhoto = post.authorAvatar
+    const postAuthorId = post.authorId
+    const postCoverPhoto = post.coverImageURL
+
     const [user, loading] = useAuthState(auth)
     const [following, setFollowing] = useState(true);
-    const [subMenu, setsubMenu] = useState(null);
     const wrapperRef = useRef(null);
     const router = useRouter()
 
@@ -94,6 +105,9 @@ export default function PostMenu({ menuOpen, setOpen, authorId, postId, postType
     }
 
 
+
+    /////////////////////////////////
+    // add/create bookmark
     const bookmark = (postId, userid) => {
         if (!user || userid == undefined) {
             toast.error("Sign in to save posts", {
@@ -102,7 +116,8 @@ export default function PostMenu({ menuOpen, setOpen, authorId, postId, postType
             });
         } else {
             setOpen(false)
-            addBookmark(postId, userid)
+            // userId, postId, postTitle, postType, postAuthorId, postCoverPhoto, postAuthorName, postAuthorPhoto
+            addBookmark(userid, postId, postTitle, postType, postAuthorId, postCoverPhoto, postAuthorName, postAuthorPhoto)
         }
 
     }

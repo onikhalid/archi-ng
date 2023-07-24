@@ -1,4 +1,4 @@
-.casestudy {
+.postcard {
     display: flex;
     flex-direction: column;
     border: solid 3.5px var(--main-text-clr);
@@ -53,6 +53,9 @@
                 height: 100%;
                 object-position: 5 0;
             }
+            @media (max-width: 719px) {
+                aspect-ratio: 15/10 !important;
+            }
         }
     }
 
@@ -80,7 +83,6 @@
             .authorandtime {
                 display: flex;
                 align-items: center;
-                // justify-content: space-between;
 
                 gap: 1rem;
 
@@ -130,36 +132,36 @@
             }
 
             .desc {
+          
                 display: flex;
                 flex-direction: column;
-                gap: .5rem;
+                gap: 0.15rem;
                 align-items: flex-start;
                 line-height: 1.75;
-                margin-block: 1.5rem;
+                margin-top: 1.5rem;
                 text-align: justify;
             }
 
         }
 
         .bottomsection {
-            margin-top: 2rem;
+            margin-top: 1rem;
         }
 
         .postags {
             font-weight: 500;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             display: flex;
-flex-wrap: wrap;
+            flex-wrap: wrap;
+            text-transform: lowercase;
 
             a {
                 color: var(--sec-text-clr);
                 text-decoration: underline;
-                text-transform: uppercase;
+                text-transform: lowercase;
                 text-decoration-color: var(--sec-text-clr);
                 text-decoration-thickness: 2px;
                 margin-left: 0.2rem;
-
-                
 
                 &:hover {
                     color: var(--main-text-clr);

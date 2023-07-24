@@ -1,4 +1,4 @@
-import styles from './Casestudy.module.scss'
+import styles from './Case-Article.module.scss'
 import Link from 'next/link';
 import { useState } from 'react';
 import { useWindowWidth } from '@/utils/Hooks/ResponsiveHook';
@@ -14,7 +14,6 @@ import PostMenu from './PostCardMenu/PostMenu';
 
 
 const CaseStudyCard = ({ post }) => {
-    const baseURL = typeof window !== 'undefined' ? window.location.origin : '';
     const width = useWindowWidth()
     const [saved, setSaved] = useState(false)
     const [menuOpen, setMenuOpen] = useState(null)
@@ -72,7 +71,7 @@ const CaseStudyCard = ({ post }) => {
 
 
     return (
-        <article className={styles.casestudy}>
+        <article className={styles.postcard}>
             <section className={styles.postimage}>
                 <img src={post.coverImageURL} alt={'case study cover image'} />
             </section>
@@ -93,10 +92,7 @@ const CaseStudyCard = ({ post }) => {
                         <PostMenu
                             menuOpen={menuOpen}
                             setOpen={setMenuOpen}
-                            authorId={post.authorId}
-                            postId={post.postId}
-                            postType={post?.postType}
-                            postLink={`${baseURL}/post/article/${post.postId}`}
+                            post={post}
                         />
                     </section>
 
@@ -105,7 +101,7 @@ const CaseStudyCard = ({ post }) => {
                         <div className={styles.desc}>
                             <h6><FontAwesomeIcon icon={faUserTie} /> <span>Architect: </span> {post.architect}</h6>
                             <h6><FontAwesomeIcon icon={faCalendarDays} /> <span>Year: </span> {post.year}</h6>
-                            <h6><FontAwesomeIcon icon={faLocationDot} /> <span>Location: </span> {post.location}</h6>
+                            <h6><FontAwesomeIcon icon={faLocationDot} /> <span>Location: </span> {post.location.join(',')}</h6>
                         </div>
                     </section>
                 </section>

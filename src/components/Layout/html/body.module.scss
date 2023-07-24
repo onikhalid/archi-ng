@@ -26,6 +26,7 @@
         align-items: center;
         min-height: 100vh;
         padding: 1rem;
+        max-height: 100vh;
 
         @media (min-width: 1020px) {
             padding: 1.5rem 10vw;

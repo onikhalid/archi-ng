@@ -1,6 +1,5 @@
 
 "use client"
-import styles from './nav.module.scss'
 import { useWindowWidth } from '@/utils/Hooks/ResponsiveHook';
 
 import DesktopNav from './navDesktop';

@@ -43,17 +43,19 @@ const Search = () => {
 
 
 
-
-  ////////////////////////////////////////////////////////
-  //perform Search once the q parameter in the URL changes
+  ///////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////
+  ///////   perform Search once the q parameter in the URL changes
+  ///////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////
   useEffect(() => {
     async function performSearch(queryText) {
-      if (queryText == '' || queryText.trim() === '') {
-        return
-      }
+      if (queryText == '' || queryText.trim() === '') { return}
+
       else
         setSearching(true)
-        addSearch(queryText);
+      addSearch(queryText);
       const postsCollection = collection(db, 'posts');
       const whichPost = () => {
         if (whichResultType === 'Studies') { return 'Case Studies' }
@@ -62,7 +64,6 @@ const Search = () => {
         else 'Case Studies'
       }
 
-      const lowercaseQueryText = queryText.toLowerCase()
       const authorQuery = query(postsCollection, where('postType', '==', whichPost()), where('authorName', '>=', queryText), where('authorName', '<=', queryText + '\uf8ff'), orderBy('authorName'));
       const authorResults = await getDocs(authorQuery);
 
@@ -78,31 +79,46 @@ const Search = () => {
       const architectQuery = query(postsCollection, where('postType', '==', whichPost()), where('architect', '>=', queryText), where('architect', '<=', queryText + '\uf8ff'));
       const architectResults = await getDocs(architectQuery);
 
+      //////////////////////////////////////
+      //////   case-insensitive search
+      const sentenceCaseQueryText = queryText.charAt(0).toUpperCase() + queryText.slice(1).toLowerCase()
+      const lowerCaseQueryText = queryText.toLowerCase()
+      const upperCaseQueryText = queryText.toUpperCase()
+      const caseInsensitiveQueryText = [sentenceCaseQueryText, lowerCaseQueryText, upperCaseQueryText, queryText]
+      
+      //CI = caseInsensitive
+      const authorCIQuery = query(postsCollection , where('postType', '==', whichPost()), where('authorName', 'in', caseInsensitiveQueryText), orderBy('authorName'));
+      const authorCIResults = await getDocs(authorCIQuery);
+      
+      const titleCIQuery = query(postsCollection , where('postType', '==', whichPost()), where('title', 'in', caseInsensitiveQueryText), orderBy('title'));
+      const titleCIResults = await getDocs(titleCIQuery);
+      
+      const tagsCIQuery = query(postsCollection , where('postType', '==', whichPost()), where('tags', 'array-contains', caseInsensitiveQueryText));
+      const tagsCIResults = await getDocs(tagsCIQuery);
+      
+      const typologyCIQuery = query(postsCollection , where('postType', '==', whichPost()), where('typology', 'in', caseInsensitiveQueryText), orderBy('typology'));
+      const typologyCIResults = await getDocs(typologyCIQuery);
+      
+      const architectCIQuery = query(postsCollection , where('postType', '==', whichPost()), where('architect', 'in', caseInsensitiveQueryText));
+      const architectCIResults = await getDocs(architectCIQuery);
+
+      const locationCIQuery = query(postsCollection , where('postType', '==', whichPost()), where('location', 'array-contains-any', caseInsensitiveQueryText));
+      const locationCIResults = await getDocs(locationCIQuery);
 
       const results = [];
       authorResults.forEach((doc) => results.push(doc.data()));
 
 
-      titleResults.forEach((doc) => {
-        if (!results.find((result) => result.id === doc.id)) {
-          results.push(doc.data());
-        }
-      });
-      tagsResults.forEach((doc) => {
-        if (!results.find((result) => result.id === doc.id)) {
-          results.push(doc.data());
-        }
-      });
-      typologyResults.forEach((doc) => {
-        if (!results.find((result) => result.id === doc.id)) {
-          results.push(doc.data());
-        }
-      });
-      architectResults.forEach((doc) => {
-        if (!results.find((result) => result.id === doc.id)) {
-          results.push(doc.data());
-        }
-      });
+      authorCIResults.forEach((doc) => {if (!results.find((result) => result.id === doc.id)) {results.push(doc.data());}});
+      titleResults.forEach((doc) => {if (!results.find((result) => result.id === doc.id)) {results.push(doc.data());}});
+      titleCIResults.forEach((doc) => {if (!results.find((result) => result.id === doc.id)) {results.push(doc.data());}});
+      tagsResults.forEach((doc) => {if (!results.find((result) => result.id === doc.id)) {results.push(doc.data());}});
+      tagsCIResults.forEach((doc) => {if (!results.find((result) => result.id === doc.id)) {results.push(doc.data());}});
+      typologyResults.forEach((doc) => {if (!results.find((result) => result.id === doc.id)) {results.push(doc.data());}});
+      typologyCIResults.forEach((doc) => {if (!results.find((result) => result.id === doc.id)) {results.push(doc.data());}});
+      architectResults.forEach((doc) => {if (!results.find((result) => result.id === doc.id)) {results.push(doc.data());}});
+      architectCIResults.forEach((doc) => {if (!results.find((result) => result.id === doc.id)) {results.push(doc.data());}});
+      locationCIResults.forEach((doc) => {if (!results.find((result) => result.id === doc.id)) {results.push(doc.data());}});
 
 
       setSearchResult(results)
@@ -111,17 +127,21 @@ const Search = () => {
     }
 
 
-
-
     if (!(searchParameter === null || '' || searchParameter.trim() === '')) {
       performSearch(searchParameter)
     }
 
   }, [searchParameter, whichResultType]);
 
-  //   ////////////////////////////////////////////////////////////////////
-  ///// handle change UI that show user ehose which results to display///////
-  // ////////////////////////////////////////////////////////////////////
+
+
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  ///// handle change UI that show user ehose which results to display/////////
+  /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   const resultypevariations = [
     {
       number: 1,
@@ -141,13 +161,11 @@ const Search = () => {
 
 
 
-  /////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////
-  //////////////      RECENT SEARCHES    //////////////////
-  /////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////
+  /////////////////////      RECENT SEARCHES    /////////////////////////
+  ///////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////
   // Load searches from local storage on component mount
   const [recentSearches, setRecentSearches] = useState([]);
   useEffect(() => {
@@ -181,6 +199,20 @@ const Search = () => {
 
 
 
+  let pageTitle
+  if (searchParameter == null || '') {
+    pageTitle = `Search |  Archi NG`
+  } else pageTitle = `Search - ${searchParameter} |  Archi NG`
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -188,128 +220,131 @@ const Search = () => {
 
 
   return (
-    <main className="content-container">
+    <>
+      <title>{pageTitle}</title>
+      <main className="content-container">
 
-      {/* ///////////////////////////////////////////////////////////// */}
-      {/* ///////////////////////////////////////////////////////////// */}
-      {/* ///////////////////////////////////////////////////////////// */}
-      {/* //////////////       SEARCH BAR      //////////////////////// */}
-      {/* ///////////////////////////////////////////////////////////// */}
-      {/* ///////////////////////////////////////////////////////////// */}
-      {/* ///////////////////////////////////////////////////////////// */}
+        {/* ///////////////////////////////////////////////////////////// */}
+        {/* ///////////////////////////////////////////////////////////// */}
+        {/* ///////////////////////////////////////////////////////////// */}
+        {/* //////////////       SEARCH BAR      //////////////////////// */}
+        {/* ///////////////////////////////////////////////////////////// */}
+        {/* ///////////////////////////////////////////////////////////// */}
+        {/* ///////////////////////////////////////////////////////////// */}
 
-      {
-        searchParameter === null &&
-        <div className={styles.searchpage}>
-          <header className={styles.header}>
-            <h1>Explore</h1>
-            <p>Search tags, titles, authors, building typologies ... etc</p>
+        {
+          searchParameter === null &&
+          <div className={styles.searchpage}>
+            <header className={styles.header}>
+              <h1>Explore</h1>
+              <p>Search tags, titles, authors, building typologies ... etc</p>
+            </header>
+
+            <form className={styles.searchbar} onSubmit={handleSearch}>
+              <input
+                placeholder="Search..."
+                type="search"
+                className={styles.searchinput}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+              />
+              <button type="submit" >{<FontAwesomeIcon icon={faMagnifyingGlass} />}</button>
+
+            </form>
+
+            <div className={styles.recentcontainer}>
+              <h5>RECENT SEARCHES</h5>
+              <ul className={styles.recentsearches}>
+                {recentSearches.slice(0, 7).map((search, index) => (
+                  <li
+                    className={styles.recentsearchitem}
+                    key={index}
+
+                  >
+                    <h6 onClick={() => router.push(`/search?q=${search}`)}
+                      title={`search ${search} again`}>{search}</h6>
+                    <span title="remove from history" onClick={() => removeSearch(index)}><FontAwesomeIcon icon={faTrashCan} /></span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        }
+
+        {
+          searchParameter === '' &&
+
+          <h2>😒 Empty search?</h2>
+        }
+
+
+
+
+
+
+
+
+
+        {/* ///////////////////////////////////////////////////////////// */}
+        {/* ///////////////////////////////////////////////////////////// */}
+        {/* ///////////////////////////////////////////////////////////// */}
+        {/* //////////////       PERFORM RESULT      //////////////////// */}
+        {/* ///////////////////////////////////////////////////////////// */}
+        {/* ///////////////////////////////////////////////////////////// */}
+        {/* ///////////////////////////////////////////////////////////// */}
+
+
+        {
+          searchParameter !== null &&
+          <header className={styles.pageheader}>
+            <h1>Search</h1>
+            <WhoseandWhichpost variations={resultypevariations} currentwhosePost={whichResultType} setCurrentWhosePost={setwhichResultType} />
+            {searchResult.length < 1 && <h3>No Results for <em>{searchParameter}</em> in {whichResultType}</h3>}
+            {searchResult.length > 0 && <h3>Results for <em>{searchParameter}</em> in {whichResultType}</h3>}
           </header>
-
-          <form className={styles.searchbar} onSubmit={handleSearch}>
-            <input
-              placeholder="Search..."
-              type="search"
-              className={styles.searchinput}
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-            />
-            <button type="submit" >{<FontAwesomeIcon icon={faMagnifyingGlass} />}</button>
-
-          </form>
-
-          <div className={styles.recentcontainer}>
-            <h5>RECENT SEARCHES</h5>
-            <ul className={styles.recentsearches}>
-              {recentSearches.slice(0, 7).map((search, index) => (
-                <li
-                  className={styles.recentsearchitem}
-                  key={index}
-
-                >
-                  <h6 onClick={() => router.push(`/search?q=${search}`)}
-                    title={`search ${search} again`}>{search}</h6>
-                  <span title="remove from history" onClick={() => removeSearch(index)}><FontAwesomeIcon icon={faTrashCan} /></span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      }
-
-      {
-        searchParameter === '' &&
-
-        <h2>😒 Empty search?</h2>
-      }
+        }
 
 
 
 
 
+        {/* ///////////////////////////////////////////////////////////// */}
+        {/* ////////////       SEARCHING/LOADING       ////////////////// */}
+        {/* ///////////////////////////////////////////////////////////// */}
+        {
+          searching && <section>
+            <h3>Searching...</h3>
+          </section>
+        }
 
 
 
 
-      {/* ///////////////////////////////////////////////////////////// */}
-      {/* ///////////////////////////////////////////////////////////// */}
-      {/* ///////////////////////////////////////////////////////////// */}
-      {/* //////////////       PERFORM RESULT      //////////////////// */}
-      {/* ///////////////////////////////////////////////////////////// */}
-      {/* ///////////////////////////////////////////////////////////// */}
-      {/* ///////////////////////////////////////////////////////////// */}
+        {/* ///////////////////////////////////////////////////////////// */}
+        {/* ///////////       DISPLAY SEARCH RESULTS       ////////////// */}
+        {/* ///////////////////////////////////////////////////////////// */}
+        {!searching && !(searchParameter === null || '') && (
+          <section className={styles.resultspage}>
+            <div className={styles.resultcontainer}>
+              {searchResult.map((result, index) => {
 
 
-      {
-        searchParameter !== null &&
-        <header className={styles.pageheader}>
-          <h1>Search</h1>
-          <WhoseandWhichpost variations={resultypevariations} currentwhosePost={whichResultType} setCurrentWhosePost={setwhichResultType} />
-          {searchResult.length < 1 && <h3>No Results for <em>{searchParameter}</em> in {whichResultType}</h3>}
-          {searchResult.length > 0 && <h3>Results for <em>{searchParameter}</em> in {whichResultType}</h3>}
-        </header>
-      }
+                if (whichResultType === 'Articles') {
+                  return <ArticleCard key={index} post={result} />
+                } else if (whichResultType === 'Studies') {
+                  return <CaseStudyCard key={index} post={result} />
+                } else if (whichResultType === 'Photos') {
+                  return <PhotoCard key={index} post={result} />
+                }
+              })}
+            </div>
+
+          </section>
+        )}
 
 
-
-
-
-      {/* ///////////////////////////////////////////////////////////// */}
-      {/* ////////////       SEARCHING/LOADING       ////////////////// */}
-      {/* ///////////////////////////////////////////////////////////// */}
-      {
-        searching && <section>
-          <h3>Searching...</h3>
-        </section>
-      }
-
-
-
-
-      {/* ///////////////////////////////////////////////////////////// */}
-      {/* ///////////       DISPLAY SEARCH RESULTS       ////////////// */}
-      {/* ///////////////////////////////////////////////////////////// */}
-      {!searching && !(searchParameter === null || '') && (
-        <section className={styles.resultspage}>
-          <div className={styles.resultcontainer}>
-            {searchResult.map((result, index) => {
-
-
-              if (whichResultType === 'Articles') {
-                return <ArticleCard key={index} post={result} />
-              } else if (whichResultType === 'Studies') {
-                return <CaseStudyCard key={index} post={result} />
-              } else if (whichResultType === 'Photos') {
-                return <PhotoCard key={index} post={result} />
-              }
-            })}
-          </div>
-
-        </section>
-      )}
-
-
-    </main>
+      </main>
+    </>
   )
 }
 

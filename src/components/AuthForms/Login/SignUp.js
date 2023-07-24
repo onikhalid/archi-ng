@@ -1,13 +1,10 @@
 import styles from './SignUp.module.scss'
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { auth, db } from '@/utils/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
-
 
 export const SignupForm = () => {
     const { register, handleSubmit, formState: { errors } } = useForm()
@@ -34,9 +31,16 @@ export const SignupForm = () => {
             }
 
 
-
-            console.log('Signed up successfully!')
+            toast.success("Welcome to archi NG 😎", {
+                position: 'top-center',
+                autoClose: 4000 
+            })
+            
         } catch (error) {
+            toast.error("Error signing up 😪", {
+                position: 'top-center',
+                autoClose: 3000 
+            })
             console.log('Error signing up:', error)
         }
     };
@@ -98,8 +102,7 @@ export const LoginForm = () => {
         try {
             const { email, password } = data;
             const user = await signInWithEmailAndPassword(auth, email, password)
-            console.log(user)
-
+            
             const userDocRef = doc(db, 'users', user.user.uid)
             const userDocSnap = await getDoc(userDocRef)
 
@@ -112,7 +115,10 @@ export const LoginForm = () => {
                 router.push('/auth/complete-profile')
             }
 
-            console.log('Logged in successfully!');
+            toast.success(`Welcome back ${user?.displayName} 😎`, {
+                position: 'top-center',
+                autoClose: 4000 
+            })
         }
 
         catch (error) {
@@ -129,6 +135,10 @@ export const LoginForm = () => {
             }
 
             else {
+                toast.error("Error Logging up 😪", {
+                    position: 'top-center',
+                    autoClose: 3000 
+                })
                 console.log('Error logging in:', error);
             }
         }

@@ -42,9 +42,7 @@ const Archive = () => {
   const [loadingPosts, setLoadingPosts] = useState([]);
 
 
-
   useLayoutEffect(() => {
-
     const getArchivedPosts = async () => {
       setLoadingPosts(true)
 
@@ -97,79 +95,84 @@ const Archive = () => {
 
   //create a older
   const CreateNewFolder = (data) => {
-    createFolder(data.Name, user.uid)
+    createFolder(data.Name, user.uid, user.displayName)
   }
 
-
+const pageTitle =`Archives - ${archiveType} |  Archi NG`
 
 
   return (
-    <main className="content-container">
-      <header>
-        <h1>Archives</h1>
-        <WhoseandWhichpost variations={whichpostvariation} currentwhosePost={archiveType} setCurrentWhosePost={setArchiveType} />
-      </header>
+    <>
+      <title>{pageTitle}</title>
+
+      <main className="content-container">
+        <header className={styles.authPageHeader}>
+          <h1>Archives</h1>
+          <WhoseandWhichpost variations={whichpostvariation} currentwhosePost={archiveType} setCurrentWhosePost={setArchiveType} />
+        </header>
 
 
-      {archiveType == "Folders" &&
-        <>
-          {user &&
-            <form id='createfolder' className={styles.createfolder} onSubmit={handleSubmit(CreateNewFolder)}>
+        {archiveType == "Folders" &&
+          <>
+            {user &&
+              <form id='createfolder' className={styles.createfolder} onSubmit={handleSubmit(CreateNewFolder)}>
 
-              <div className={`inputdiv ${styles.inputdiv}`}>
-                <label htmlFor="Name">New Folder Name<span>*</span></label>
-                <input
-                  id="Name" name="Name" type="text"
-                  placeholder="Studio works"
-                  {...register("Name", { required: true })} />
-                {errors.Name && <span>This field is required</span>}
-              </div>
-              <button form="createfolder" type="submit" className={styles.createFolderButton}>Create Folder</button>
+                <div className={`inputdiv ${styles.inputdiv}`}>
+                  <label htmlFor="Name">New Folder Name<span>*</span></label>
+                  <input
+                    id="Name" name="Name" type="text"
+                    placeholder="Studio works"
+                    {...register("Name", { required: true })} />
+                  {errors.Name && <span>This field is required</span>}
+                </div>
+                <button form="createfolder" type="submit" className={styles.createFolderButton}>Create Folder</button>
 
 
-            </form>
-          }
-        </>
-      }
-
-      {
-        !loading && !user &&
-        <div className='infobox'>
-          <h2>😒 Can&apos;t save any post without logging in</h2>
-        </div>
-      }
-      {
-        user && archiveType == 'Bookmarks' && allPosts.length < 1 &&
-        <div className='infobox'>
-          <h2>😒 You haven&apos;t saved any posts</h2>
-        </div>
-      }
-      {
-        user && archiveType == 'Folders' && allPosts.length < 1 &&
-        <div className='infobox'>
-          <h2>🤔 You haven&apos;t created any folders yet</h2>
-        </div>
-      }
-
-      {
-        user && allPosts.length > 0 && <section className={archiveType == 'Folders' ? `${styles.allposts} ${styles.dockets}` : `${styles.allposts}`}>
-          {allPosts?.map((post, index) => {
-
-            if (loadingPosts) {
-              return <PostSkeleton key={index} />
-            } else if (archiveType === 'Bookmarks') {
-              return <BookmarkCard key={index} post={post} />
+              </form>
             }
-            else if (archiveType === 'Folders') {
-              return <FolderCard key={index} post={post} />
-            }
-          })}
-        </section>
-      }
+          </>
+        }
+
+        {
+          !loading && !user &&
+          <div className='infobox'>
+            <h2>😒 Can&apos;t save any post without logging in</h2>
+          </div>
+        }
+        {
+          user && archiveType == 'Bookmarks' && allPosts.length < 1 &&
+          <div className='infobox'>
+            <h2>😒 You haven&apos;t saved any posts</h2>
+          </div>
+        }
+        {
+          user && archiveType == 'Folders' && allPosts.length < 1 &&
+          <div className='infobox'>
+            <h2>🤔 You haven&apos;t created any folders yet</h2>
+          </div>
+        }
+
+        {
+          user && allPosts.length > 0 && <section className={archiveType == 'Folders' ? `${styles.allposts} ${styles.dockets}` : `${styles.allposts}`}>
+            {allPosts?.map((post, index) => {
+
+              if (loadingPosts) {
+                return <PostSkeleton key={index} />
+              } else if (archiveType === 'Bookmarks') {
+                return <BookmarkCard key={index} post={post} />
+              }
+              else if (archiveType === 'Folders') {
+                return <FolderCard key={index} post={post} />
+              }
+            })}
+          </section>
+        }
 
 
 
-    </main>
+      </main>
+    </>
+
   )
 }
 
