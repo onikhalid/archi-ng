@@ -116,14 +116,14 @@ const MakeArticle = ({ postToEditId }) => {
         postId: postId
       });
     }
-    setSavingPost(false)
-
-    router.push('/')
+    
     toast.success(`Your article has been ${postToEditId ? 'updated' : 'posted'} 😎`, {
       position: toast.POSITION.TOP_CENTER,
       autoClose: 3500,
     });
-
+    router.push('/')
+    window.scrollTo({top: 0, behavior: "smooth"})
+    setSavingPost(false)
   }
 
 
@@ -222,7 +222,8 @@ const MakeArticle = ({ postToEditId }) => {
       }
       <div className={styles.makearticle}>
         <article className='ImageUploader'>
-          <input type="file" onChange={handleImageUpload} /> <h6>Please make sure your image is in landscape form</h6>
+          <input type="file" onChange={handleImageUpload} />
+          {!selectedImage && <h6>Please make sure your image is in landscape form</h6>}
           {(selectedImage || coverImgURL) && <img className={styles.uploadedimage} src={coverImgURL} alt="Preview" />}
         </article>
 

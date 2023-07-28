@@ -2,31 +2,27 @@ import styles from './PostMenu.module.scss'
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { faEllipsis, faUserMinus, faUserPlus, faShare, faPen, faBookmark, faClipboard, faPaste } from "@fortawesome/free-solid-svg-icons";
+import { faEllipsis, faUserMinus, faUserPlus, faShare, faPen, faBookmark, faClipboard, faPaste, faMapPin, faThumbTack, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { addFollow, removeFollow } from '@/components/Posts/InteractingWithPosts/Likes and Comments/Following';
-import { addBookmark } from '@/components/Posts/InteractingWithPosts/Likes and Comments/Bookmark';
+import { addBookmark, pinPost, unpinPost } from '@/components/Posts/InteractingWithPosts/Likes and Comments/Bookmark';
+import { deletePost } from '@/components/Posts/InteractingWithPosts/Delete/Delete';
 import { auth, db } from '@/utils/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 
 
-export default function PostMenu({ menuOpen, setOpen, post }) {
+export default function PostMenu({ menuOpen, setOpen, post, smallpost }) {
     const baseURL = typeof window !== 'undefined' ? window.location.origin : '';
-    const postType = post.postType
+    const { postId, postType, postContent, title, coverImageURL, authorId, authorName, authorAvatar } = post
+
     const linkType = postType == "Articles" ? 'article' : 'case-study'
     const postLink = `${baseURL}/post/${linkType}/${post.postId}`
-    const authorId = post.authorId
-    const postId = post.postId
-    const postTitle = post.title
-    const postAuthorName = post.authorName
-    const postAuthorPhoto = post.authorAvatar
-    const postAuthorId = post.userId
-    const postCoverPhoto = post.coverImageURL
 
     const [user, loading] = useAuthState(auth)
     const [following, setFollowing] = useState(true);
+    const [pinned, setPinned] = useState(true);
     const wrapperRef = useRef(null);
     const router = useRouter()
 
@@ -34,11 +30,11 @@ export default function PostMenu({ menuOpen, setOpen, post }) {
     // menu and submenu class to show or hide menu
     let menuclass = `${styles.menuitems}`
     if (menuOpen === null) {
-        menuclass = `${styles.menuitems}`
+        menuclass = !smallpost ? `${styles.menuitems}` : `${styles.menuitems} ${styles.small}`
     } else if (menuOpen === false) {
-        menuclass = `${styles.menuitems} ${styles.close}`
+        menuclass = !smallpost ? `${styles.menuitems} ${styles.close}` : `${styles.menuitems} ${styles.close} ${styles.small}`
     } else {
-        menuclass = `${styles.menuitems} ${styles.open}`
+        menuclass = !smallpost ? `${styles.menuitems} ${styles.open}` : `${styles.menuitems} ${styles.open} ${styles.small}`
     }
     const openMenu = () => {
         if (menuOpen === null) {
@@ -49,6 +45,7 @@ export default function PostMenu({ menuOpen, setOpen, post }) {
             setOpen(false)
         }
     }
+
 
 
 
@@ -67,6 +64,21 @@ export default function PostMenu({ menuOpen, setOpen, post }) {
             }
         }
 
+
+        const checkPinned = async () => {
+            const userDocRef = doc(db, `users/${authorId}`)
+            const userDocSnap = await getDoc(userDocRef)
+            const userData = userDocSnap.data()
+            if (userData.pinnedPosts && userData.pinnedPosts.includes(postId)) {
+                setPinned(true);
+            } else {
+                setPinned(false);
+            }
+        }
+
+
+
+        checkPinned()
         checkFollow()
     }, [user, authorId]);
 
@@ -83,6 +95,22 @@ export default function PostMenu({ menuOpen, setOpen, post }) {
             setFollowing(true)
         }
     }
+    
+
+
+    ///////////////////////////////
+    // handle follow and unfollow
+    const pinNotPin = async () => {
+        setOpen(false)
+        if (pinned === true) {
+            await unpinPost(authorId, postId)
+            setPinned(false)
+        } else {
+            await pinPost(authorId, postId)
+            setPinned(true)
+        }
+    }
+
 
 
     ///////////////////////////////
@@ -116,12 +144,11 @@ export default function PostMenu({ menuOpen, setOpen, post }) {
             });
         } else {
             setOpen(false)
-            // userId, postId, postTitle, postType, postAuthorId, postCoverPhoto, postAuthorName, postAuthorPhoto
-            addBookmark(userid, postId, postTitle, postType, postAuthorId, postCoverPhoto, postAuthorName, postAuthorPhoto)
+            // userId, postId, title, postType, authorId, coverImageURL, authorName, authorAvatar
+            addBookmark(userid, postId, title, postType, authorId, coverImageURL, authorName, authorAvatar)
         }
 
     }
-
 
 
     //////////////////////////////////////////
@@ -164,7 +191,17 @@ export default function PostMenu({ menuOpen, setOpen, post }) {
                         }
                     </li>
                 }
+                {user && user?.uid == authorId &&
+                    <li onClick={pinNotPin}>
+                        {
+                            pinned ?
+                                <span><FontAwesomeIcon icon={faThumbTack} /> Unpin Post </span> :
+                                <span><FontAwesomeIcon icon={faThumbTack} /> Pin to Profile  </span>
+                        }
+                    </li>
+                }
                 {user && user?.uid == authorId && <li onClick={() => router.push(`/post?edit=${postId}&type=${postType}`)}><FontAwesomeIcon icon={faPen} /> Edit Post</li>}
+                {user && user?.uid == authorId && <li onClick={() => deletePost(postId, postContent, coverImageURL)}><FontAwesomeIcon icon={faTrash} /> Delete Post</li>}
                 <li onClick={() => copyTextToClipboard(postLink)}><FontAwesomeIcon icon={faPaste} /> Copy Link</li>
                 <li onClick={() => bookmark(postId, user?.uid)}><FontAwesomeIcon icon={faBookmark} /> Bookmark</li>
             </ul>

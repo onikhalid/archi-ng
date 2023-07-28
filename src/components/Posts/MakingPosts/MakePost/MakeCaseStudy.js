@@ -93,7 +93,7 @@ const MakeCaseStudy = ({ postToEditId }) => {
       client: data.Client == '' ? 'unknown' : data.Client,
       coverImageURL: downloadURL,
       createdAt: new Date(),
-      location: data.Location.split(","),
+      location: data.Location.split(",").map(item => item.trim()),
       postContent: caseContent,
       postId: postToEditId ? postToEditId : user.uid,
       postType: 'Case Studies',
@@ -131,13 +131,15 @@ const MakeCaseStudy = ({ postToEditId }) => {
       });
     }
     
-    router.push('/')
     
-    setSavingPost(false)
     toast.success(`Your article has been ${postToEditId ? 'updated' : 'posted'} 😎`, {
       position: toast.POSITION.TOP_CENTER,
       autoClose: 3500,
     });
+    
+    router.push('/')
+    window.scrollTo({top: 0, behavior: "smooth"})
+    setSavingPost(false)
   }
 
 
@@ -163,7 +165,7 @@ const MakeCaseStudy = ({ postToEditId }) => {
         setCoverImgURL(coverImageURL)
         setTitle(title)
         setClient(client)
-        setLocation(location)
+        setLocation(location.join(','))
         setArchitect(architect)
         setYear(year)
         setTypology(typology)
@@ -238,7 +240,8 @@ const MakeCaseStudy = ({ postToEditId }) => {
       }
       <div className={styles.makecase}>
         <article>
-          <input type="file" onChange={handleImageUpload} /> <h6>Please make sure your image is in landscape form</h6>
+          <input type="file" onChange={handleImageUpload} /> 
+          {!selectedImage&&!coverImgURL && <h6>Please make sure your image is in landscape form</h6>}
           {(selectedImage || coverImgURL) && <img className={styles.uploadedimage} src={coverImgURL} alt="Preview" />}
         </article>
 

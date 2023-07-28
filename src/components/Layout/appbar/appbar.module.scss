@@ -1,18 +1,17 @@
 .appbar {
     position: fixed;
     top: 3vh;
-    left: 85%;
+    left: clamp(300px, 85%, 3500px);
     display: flex;
     flex-grow: 1;
     align-items: center;
     justify-content: space-between;
     width: max-content;
     background-color: transparent;
-    // border-radius: 50px;
     z-index: 500;
     overflow: hidden;
 
-    &::after{
+    &::after {
         content: '';
         position: absolute;
         left: 0%;
@@ -25,7 +24,7 @@
         z-index: -1;
     }
 
-    
+
     @media (max-width: 720px) {
         border-radius: 50px;
         font-size: 1rem;
@@ -36,6 +35,13 @@
 
 }
 
+.left {
+    .logo {
+        z-index: 2000000;
+        display: flex;
+        align-items: center;
+    }
+}
 
 
 .right {
@@ -44,7 +50,8 @@
     gap: 1rem;
     font-weight: 700;
 }
-.test{
+
+.test {
     z-index: 200000;
 }
 
@@ -53,13 +60,13 @@
     position: fixed;
     top: -10vh;
     bottom: 0;
-    right: -15vw;
+    right: -10.5vw;
     width: 120vw;
     max-width: none;
     height: 120vh;
     border: solid 15px var(--accent);
     padding: 15vh 15vw;
-    
+
     opacity: 0;
     background-color: var(--glass);
     backdrop-filter: blur(25px);
@@ -67,16 +74,18 @@
     transform: translateX(100%);
     overflow-y: scroll;
     --duration: 650ms;
-    
+
     @media (min-width: 720px) and (max-width: 1019px) {
         right: -10vw;
     }
+
     @media (max-width: 719px) {
         --duration: 350ms;
         left: -10vw;
         background-color: var(--thickglass);
         backdrop-filter: blur(10px);
     }
+
     @media (min-width: 1500px) {
         background-color: var(--thickglass);
         backdrop-filter: blur(20px);
@@ -85,38 +94,44 @@
 }
 
 .menuOpen {
-    animation: slidein var(--duration) cubic-bezier(.1,.73,1,.46) forwards;
+    animation: slidein var(--duration) cubic-bezier(.1, .73, 1, .46) forwards;
 }
-.menuClose{
+
+.menuClose {
     animation: slideout 300ms ease-out forwards;
-    
+
 }
+
 @keyframes slidein {
-    0%{
+    0% {
         opacity: 1;
         z-index: -3000;
         transform: translateX(100%);
     }
-    1%{
+
+    1% {
         z-index: 1500;
     }
-    100%{
+
+    100% {
         opacity: 1;
         z-index: 1500;
         transform: translateX(0%);
     }
 }
+
 @keyframes slideout {
-    0%{
+    0% {
         opacity: 1;
         z-index: 1500;
         transform: translateX(0%);
     }
-    100%{
+
+    100% {
         opacity: 1;
         z-index: -3000;
         transform: translateX(100%);
-        
+
     }
-    
+
 }

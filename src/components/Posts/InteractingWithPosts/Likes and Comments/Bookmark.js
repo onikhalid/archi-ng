@@ -83,7 +83,7 @@ export const createFolder = async (folderName, userId, userDisplayName) => {
 //  add a bookmark to a folder 
 export const addBookmarkToFolder = async (userId, bookmarkId, folderId, bookmarkPostOwnerId, preventError) => {
   const folderDocRef = doc(db, 'folders', folderId);
- 
+
   if ((userId == bookmarkPostOwnerId) || preventError) {
     await updateDoc(folderDocRef, { bookmarks: arrayUnion(bookmarkId) });
     return
@@ -114,4 +114,43 @@ export const removeBookmarkFromFolder = async (bookmarkId, folderId) => {
 export const deleteFolder = async (folderId) => {
   const folderDocRef = doc(db, 'folders', folderId);
   await deleteDoc(folderDocRef);
+};
+
+
+
+
+
+// pin a post
+export const pinPost = async (userId, postId) => {
+  const userDocRef = doc(db, `users/${userId}`);
+  const userDoc = await getDoc(userDocRef);
+  const userData = userDoc.data();
+
+  if (!userData.pinnedPosts || userData.pinnedPosts.length < 2) {
+    await updateDoc(userDocRef, { pinnedPosts: arrayUnion(postId) });
+  } else {
+    const updatedPinnedPosts = userData.pinnedPosts.slice(1);
+    updatedPinnedPosts.unshift(postId);
+    await updateDoc(userDocRef, { pinnedPosts: updatedPinnedPosts });
+    toast.info("One of your pinned post has been replaced",{
+      position: "top-center",
+      autoClose: 3500
+    })
+  }
+};
+
+
+
+
+// unpin a post
+export const unpinPost = async (userId, postId) => {
+  const userDocRef = doc(db, `users/${userId}`);
+  const userDoc = await getDoc(userDocRef);
+  const userData = userDoc.data();
+
+  if (userData.pinnedPosts && userData.pinnedPosts.includes(postId)) {
+    await updateDoc(userDocRef, { pinnedPosts: arrayRemove(postId) });
+  } else {
+    console.log('Post not found in pinnedPosts.');
+  }
 };

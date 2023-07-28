@@ -42,7 +42,7 @@ const AppBar = () => {
       <div className={styles.left}>
         {
           width < 720 &&
-          <Link href={'/'} title="go to homepage">
+          <Link href={'/'} title="go to homepage" className={styles.logo}>
             <Image
               priority
               src={logo}
@@ -57,9 +57,8 @@ const AppBar = () => {
       </div>
       <div className={styles.right}>
         {/* show menu if user is logged in else show sign in */}
-        {
-          user ? <Button name={menuOpen ? "Close" : "Menu"} type='secondary' link={showmenu} /> : <Button name='Sign in' type='primary' link='/auth' />
-        }
+        {!loading&&user && <Button name={menuOpen ? "Close" : "Menu"} type='secondary' link={showmenu} />}
+        {!loading&&!user && <Button name='Sign in' type='primary' link='/auth' />}
       </div>
 
 

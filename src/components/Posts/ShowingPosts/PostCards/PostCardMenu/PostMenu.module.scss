@@ -25,6 +25,11 @@
         min-width: max-content;
 
 
+        &.small {
+            top: -265%;
+            right: 180%;
+        }
+
         &.open {
             animation: intro 450ms ease-in-out forwards;
         }

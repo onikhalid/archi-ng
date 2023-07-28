@@ -19,19 +19,13 @@ const CaseStudyCard = ({ post }) => {
     const [menuOpen, setMenuOpen] = useState(null)
     const [user, loading] = useAuthState(auth)
 
-    const postId = post.postId
-    const postTitle = post.title
-    const postType = post.postType
-    const postAuthorId = post.authorId
-    const postAuthorName = post.authorName
-    const postAuthorPhoto = post.authorAvatar
-    const postCoverPhoto = post.coverImageURL
+
+    const {postId,title, authorId, authorName, authorAvatar, coverImageURL, location, tags, typology, createdAt, postType }= post
 
 
-    const avatar = post.authorAvatar
-    const tags = post?.tags.slice(0, 3)
-    const postTime = post.createdAt;
-    const serverDate = postTime.toDate();
+
+    const Stags = tags.slice(0, 3)
+    const serverDate = createdAt.toDate();
     const currentDate = new Date();
     let timeDifference = currentDate.getTime() - serverDate.getTime();
 
@@ -65,11 +59,11 @@ const CaseStudyCard = ({ post }) => {
         if (!user || user.uid == undefined) {
             toast.error("Sign in to save posts", {
                 position: toast.POSITION.TOP_CENTER,
-                autoClose: 3500,
+                autoClose: 3000,
             });
         } else {
             setSaved(true)
-            addBookmark(user.uid, postId, postTitle, postType, postAuthorId, postCoverPhoto, postAuthorName, postAuthorPhoto)
+            addBookmark(user.uid, postId, title, postType, authorId, coverImageURL, authorName, authorAvatar)
 
             setTimeout(() => {
                 setSaved(false)
@@ -89,9 +83,9 @@ const CaseStudyCard = ({ post }) => {
                 <section>
                     <section className={styles.metadata}>
                         <div className={styles.authorandtime}>
-                            <Link href={'/'} title="visit author's profile" className={styles.authorinfo}>
-                                <img src={avatar} alt={'author image'} />
-                                <h6>{post.authorName}</h6>
+                            <Link href={`/profile?id=${authorId}`} title="visit author's profile" className={styles.authorinfo}>
+                                <img src={authorAvatar} alt={'author image'} />
+                                <h6>{authorName}</h6>
                             </Link>
                             <div className={styles.posttime}>
                                 <span className={styles.dot}><FontAwesomeIcon icon={faCircle} shake /></span>
@@ -106,11 +100,11 @@ const CaseStudyCard = ({ post }) => {
                     </section>
 
                     <section className={styles.postinfo}>
-                        <h3 className={styles.title} title={post.title}>{post.title.substring(0, 40)}{post.title.length > 40 && "..."}</h3>
+                        <h3 className={styles.title} title={title}>{title.substring(0, 40)}{title.length > 40 && "..."}</h3>
                         <div className={styles.desc}>
                             <h6><FontAwesomeIcon icon={faUserTie} /> <span>Architect: </span> {post.architect}</h6>
                             <h6><FontAwesomeIcon icon={faCalendarDays} /> <span>Year: </span> {post.year}</h6>
-                            <h6><FontAwesomeIcon icon={faLocationDot} /> <span>Location: </span> {post.location.join(',')}</h6>
+                            <h6><FontAwesomeIcon icon={faLocationDot} /> <span>Location: </span> {location?.join(', ')}</h6>
                         </div>
                     </section>
                 </section>
@@ -118,24 +112,21 @@ const CaseStudyCard = ({ post }) => {
                 <section className={styles.bottomsection}>
                     <div className={styles.postags}>
                         {
-                            tags.map((tag, index) => {
+                            Stags.map((tag, index) => {
                                 return (
                                     <Link title='Explore tag' key={index} href={`/search?q=${tag}`}><em>{tag.toUpperCase()},</em></Link>
                                 )
                             })
                         }
-                        <Link href={`/search?q=${post.typology}`}><em>{post.typology}</em></Link>
+                        <Link href={`/search?q=${typology}`}><em>{typology}</em></Link>
                     </div>
 
                     <div className={styles.buttongroup}>
                         <Button name={saved ? 'Saved' : 'Save'} icon={saved ? <FontAwesomeIcon icon={faCircleCheck} /> : <FontAwesomeIcon icon={faFolder} />} link={bookmarkPost} type={"tertiary"} />
-                        <Button name={"Read"} icon={<FontAwesomeIcon icon={faArrowUpRightFromSquare} />} link={`/post/case-study/${post.postId}`} type={"type4"} />
+                        <Button name={"Read"} icon={<FontAwesomeIcon icon={faArrowUpRightFromSquare} />} link={`/post/case-study/${postId}`} type={"type4"} />
                     </div>
                 </section>
             </div>
-
-
-
         </article>
     )
 }

@@ -1,3 +1,4 @@
+"use client"
 import styles from './button.module.scss'
 import Link from "next/link"
 import { lora } from '@/app/layout'
@@ -29,6 +30,24 @@ const Button = ({ title, name, icon, type, link }) => {
         <Link title={title || ''} className={styles.type4} href={link}>
           {name} {icon}
         </Link>
+      }
+      {
+        typ === 'quinta' &&
+        <Link title={title || ''} className={styles.quinta} href={link}>
+          {name}
+        </Link>
+      }
+      {
+        typ === 'sexta' &&
+        <button title={title || ''} onClick={link} className={`${styles.sexta}`}>
+          {name} {icon}
+        </button>
+      }
+      {
+        typ === 'septima' &&
+        <button title={title || ''} onClick={link} className={styles.septima}>
+          {name} {icon}
+        </button>
       }
     </>
 

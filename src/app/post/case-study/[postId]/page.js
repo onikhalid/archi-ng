@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 
 import { collection, getDocs, getDoc, doc, query, where } from "firebase/firestore";
 import { db } from "@/utils/firebase";
+import Image from "next/image";
 
 
 
@@ -29,12 +30,20 @@ export default function Page({ params }) {
         <>
             {
                 postData ? <div className='content-container'>
-                    My Post: {params.postId}
-                    <h1>{postData.postTitle}</h1>
-                    <div dangerouslySetInnerHTML={{ __html: content }} />
+                    <h1>{postData.title}</h1>
+                    <Image 
+                        src={postData.coverImageURL}
+                        height={350}
+                        width={500}
+                        layout="responsive"
+                    />
+
+                    {/* <div dangerouslySetInnerHTML={{ __html: content }} /> */}
                 </div> :
 
-                    router.push('/404')
+                    <div className='infobox'>
+                        <h2>Post doesn&apos; exist or has been deleted</h2>
+                    </div>
             }
         </>
 

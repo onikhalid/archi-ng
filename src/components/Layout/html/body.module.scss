@@ -1,5 +1,12 @@
-.container {
+.body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
+.container {
+    width: 100%;
+    max-width: 2800px;
     @media (min-width: 720px) {
         position: relative;
         display: flex;
@@ -17,6 +24,7 @@
             flex-grow: 1;
             margin-left: var(--sidebar-width);
             overflow-y: auto;
+            max-width: 2500px;
         }
     }
 
@@ -39,19 +47,25 @@
 .topbtn {
     position: fixed;
     top: 85%;
-    left: 90%;
+    left: 80%;
     z-index: 190;
-    transition: opacity 0.3s;
+    transition: all ease-in-out 0.3s;
+    background-color: var(--accent);
+    padding: 0.5rem;
+    border-radius: 50px;
+    border: solid 2.5px transparent;
+    cursor: pointer;
+    
     
     &:hover {
-        opacity: 0.8;
+        background-color: var(--background);
+        opacity: 0.85;
+        border: solid 2.5px var(--accent);
+        color: var(--main-text-clr);
+        border-radius: 10px;
     }
-    
-    @media (max-width: 719px) {
-        left: 70%;
+    &.hidden{
+        opacity: 0;
     }
-    @media (min-width: 720px) and (max-width: 1019px) {
-        top: 90%;
-        left: 85%;
-    }
+
 }

@@ -98,7 +98,7 @@ export default function Page({ params }) {
 
 
 
-
+    console.log(bookmarks)
 
 
 
@@ -142,17 +142,16 @@ export default function Page({ params }) {
                             </div>
                         }
                         {
-                            bookmarks.map((bookmark, index) => {
+                            bookmarks.length > 0 && bookmarks.map((bookmark, index) => {
                                 return (
                                     <article className={styles.folderBookmarkCard} key={index} >
-                                        {bookmark &&
-                                            <BookmarkCard post={bookmark} />
-                                        }
+
+                                        <BookmarkCard post={bookmark} />
                                         {user && user.uid == folderOwnerId &&
-                                            <button onClick={() => removeBookmark(bookmark)} className={styles.button}>
+                                             <button onClick={() => removeBookmark(bookmark)} className={styles.button}>
                                                 <FontAwesomeIcon icon={faTrash} /> Remove from folder
                                             </button>
-                                        }
+                                        } 
                                     </article>
 
                                 )

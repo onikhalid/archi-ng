@@ -2,7 +2,11 @@ import React from 'react'
 
 const MakePhoto = () => {
   return (
-    <div>MakePhoto</div>
+    <div className='infobox'>
+      <h2>
+        Coming Soon...
+      </h2>
+    </div>
   )
 }
 

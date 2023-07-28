@@ -20,10 +20,10 @@ export const BookmarkCard = ({ post }) => {
     const [loadingPosts, setLoadingPosts] = useState(false);
     const [showmenu, setshowmenu] = useState(null);
     const width = useWindowWidth();
-    
-    const{userId, postId, bookmarkId, postTitle, postType, postAuthorId, postCoverPhoto, postAuthorName, postAuthorPhoto}= post 
+
+    const { userId, postId, bookmarkId, postTitle, postType, postAuthorId, postCoverPhoto, postAuthorName, postAuthorPhoto } = post
     const bookmarkOwnerId = userId
-    
+
 
     useLayoutEffect(() => {
         setLoadingPosts(true)
@@ -125,15 +125,14 @@ export const BookmarkCard = ({ post }) => {
                             }
                         </div>
                         <div className={styles.other}>
-                            <div className={styles.author}>
-                                <img
-                                    src={postAuthorPhoto}
+                            <Link className={styles.author} href={`/profile?id=${postAuthorId}`}>
+                                <img src={postAuthorPhoto}
                                     width={30}
                                     height={30}
                                     alt="post author avatar"
                                 />
-                                <h6>{post.authorName}</h6>
-                            </div>
+                                <h6>{postAuthorName}</h6>
+                            </Link>
                             <Button name={"Read"} icon={<FontAwesomeIcon icon={faArrowUpRightFromSquare} />} link={`/post/${type()}/${postId}`} type={"type4"} />
 
                         </div>
@@ -183,7 +182,7 @@ export const FolderCard = ({ post }) => {
             </Link>
             {post.userId == user?.uid &&
                 <button onClick={() => deleteFolder(post.folderId)} className={styles.deletebutton}>
-                    <FontAwesomeIcon icon={faTrash} /> Delete 
+                    <FontAwesomeIcon icon={faTrash} /> Delete
                 </button>
             }
         </article>

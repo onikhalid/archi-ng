@@ -61,7 +61,6 @@ export default function Home() {
 
 
 
-
   /////////////////////////////////////////////////
   /////////   WHOSE POST VARIATIONS    ////////////
   ////////////////////////////////////////////////
@@ -83,11 +82,13 @@ export default function Home() {
 
 
 
-  //////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////
-  //////////////        FETCH POSTS        /////////////
-  //////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  //////////////////////          FETCH POSTS          /////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
   const [allPosts, setAllPosts] = useState([]);
   const postsPerFetch = 20;
   const [fetchedPosts, setfetchedPosts] = useState(null);
@@ -124,7 +125,7 @@ export default function Home() {
           return query(postsCollectionRef, where('postType', '==', currentPost), orderBy("createdAt", 'desc'), limit(postsPerFetch))
         }
         // when user is signed in but doesn't follow anyone/ their followees😅 haven't posted anything
-        else if (user && followedUserIds.length < 1 && (currentwhosePost === "Following")) {
+        else if (user && followedUserIds?.length < 1 && (currentwhosePost === "Following")) {
           setLoadingPosts(false)
           return null
         }
@@ -173,7 +174,7 @@ export default function Home() {
   useEffect(() => {
 
     const postsCollectionRef = collection(db, "posts");
-  
+
 
     const loadMorePosts = async () => {
       if (typeof window === 'undefined' || typeof document === 'undefined') return;
@@ -272,7 +273,7 @@ export default function Home() {
 
       <section className={styles.allposts}>
         {
-          // no post in the db
+          // user signed in but no post in the db
           user && currentwhosePost === 'Feed' && !loadingPosts && allPosts.length < 1 && <div className='infobox main'>
             <h2>Nothing here, Be the first to make a post  </h2>
             <Button name={'Make Post'} type={'primary'} link={'/'} />
@@ -285,8 +286,14 @@ export default function Home() {
           </div>
         }
         {
+          // user not signed in and no post in the db
+          !user && currentwhosePost === 'Feed' && !loadingPosts && allPosts.length < 1 && <div className='infobox main'>
+            <h2>Nothing here, Sign in and be the first to make a post  </h2>
+          </div>
+        }
+        {
           // user not signed in and current whose post = "following"
-          !user && allPosts.length < 1 && <div className='infobox main'>
+          !user && allPosts.length < 1 && currentwhosePost === 'Following' && <div className='infobox main'>
             <h2>Sign in 😏, you don&apos;t follow anybody  </h2>
             <Button name={'Sign in'} type={'primary'} link={'/auth'} />
           </div>

@@ -5,7 +5,6 @@ config.autoAddCss = false;
 
 import { ThemeProvider } from '@/utils/ContextandProviders/Providers'
 import Body from '@/components/Layout/html/body';
-import { usePathname } from 'next/navigation';
 
 
 import { Poppins, Lora } from 'next/font/google'
@@ -31,20 +30,20 @@ export default function RootLayout({ children }) {
 
   return (
     <ThemeProvider>
-      <html className={poppins.className} lang="en">
-        <head>
-          <link rel='shortcut icon' href='/favicon.ico' />
-          <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css"
-          />
-          <title>Home | archi NG</title>
-          <meta name="description" content="{metadata.description}" />
-        </head>
-        <Body>
-          {children}
-        </Body>
-      </html>
+        <html className={poppins.className} lang="en">
+          <head>
+            <link rel='shortcut icon' href='/favicon.ico' />
+            <link
+              rel="stylesheet"
+              href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css"
+            />
+            <title>Home | archi NG</title>
+            <meta name="description" content="{metadata.description}" />
+          </head>
+          <Body>
+            {children}
+          </Body>
+        </html>
     </ThemeProvider>
 
   )

@@ -1,0 +1,150 @@
+.header {
+    .pagetitle {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        justify-content: center;
+
+        img {
+            border-radius: 50px;
+        }
+    }
+}
+
+
+
+
+
+
+.profile {
+    display: flex;
+    margin-block: 1rem;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 7.5vw;
+    width: 120%;
+
+    @media (max-width: 1019px) {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 15vw;
+        width: 100%;
+    }
+
+
+    .userinfo {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        flex: 1.2;
+        text-align: center;
+
+
+        // @media (min-width: 1020px) {
+        //     margin-top: 1.5rem;
+        // }
+
+        h3 {
+            font-size: clamp(1.5rem, 2.2vw, 2.2rem);
+            margin-bottom: 0;
+        }
+
+        h6 {
+            color: var(--accent);
+            font-size: 0.95rem;
+            margin-top: .5rem;
+            text-transform: capitalize;
+            
+            &.username {
+                color: var(--sec-text-clr);
+                font-style: italic;
+                margin-top: 0;
+            }
+        }
+
+        h5 {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex: 1;
+
+            span {
+                font-size: 0.8rem;
+                color: var(--sec-text-clr);
+            }
+        }
+
+        img {
+            border-radius: 150px;
+            margin-bottom: 1rem;
+            padding: 0.25rem;
+            border: solid 2px var(--accent);
+
+            @media (max-width: 719px) {
+                width: 100px;
+                height: 100px;
+            }
+        }
+
+        .main,
+        .following {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+        }
+
+        .following {
+            flex-direction: row;
+            gap: 1.5rem;
+
+        }
+    }
+
+
+    .pinned {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex: 2.7;
+        gap: 1.2rem;
+
+        .pinnedposts {
+            display: flex;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+    }
+}
+
+
+
+
+
+
+.posts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3.5rem;
+    align-items: center;
+    justify-content: center;
+    margin-top: 3rem;
+}
+
+
+
+.folders {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3.5rem;
+    align-items: center;
+    justify-content: center;
+    margin-top: 3rem;
+}

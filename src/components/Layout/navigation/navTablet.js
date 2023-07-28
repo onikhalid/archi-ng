@@ -85,7 +85,7 @@ const TabletNav = () => {
           }
         </div>
         <div className={styles.settings}>
-          <Button name={'Post'} link={"/post"} type={"primary"} />
+          <Button name={'Make Post'} link={"/post"} type={"primary"} />
           {user && <span className={styles.settingslink}> <FontAwesomeIcon icon={faRightFromBracket} /> Logout</span>}
           <span onClick={logOut} className={styles.settingslink}> <FontAwesomeIcon icon={faGear} /> Settings</span>
         </div>

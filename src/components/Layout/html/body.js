@@ -34,42 +34,39 @@ const Body = ({ children }) => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const shouldShowButton = window.scrollY > 200; 
+      const scrollTop = document.body.scrollTop
+      const shouldShowButton = scrollTop > 600;
       setIsVisible(shouldShowButton);
 
-      if (typeof window !== 'undefined') {
-        if (window.scrollY > lastScrollY) {
-          setIsVisible(true);
-        } else if (window.scrollY < lastScrollY) {
-          setIsVisible(false);
-        } else if (window.scrollY = 0) { setIsVisible(true); }
+      if (scrollTop > lastScrollY) {
+        setIsVisible(true);
+      } else if (scrollTop < lastScrollY) {
+        setIsVisible(false);
+      } else if (scrollTop == 0) { setIsVisible(true); }
 
-        // remember current page location to use in the next move
-        setLastScrollY(window.scrollY);
-      }
+      // remember current page location to use in the next move
+      setLastScrollY(scrollTop);
     };
-    window.addEventListener('scroll', handleScroll);
+    document.body.addEventListener('scroll', handleScroll);
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      document.body.removeEventListener('scroll', handleScroll);
     };
   }, [lastScrollY]);
 
   const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    });
+    document.body.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: "smooth" })
   };
 
 
 
 
   return (
-    <body data-theme={theme}>
+    <body data-theme={theme} className={styles.body}>
       <ToastContainer limit={3} />
       <ProgressBar />
-      {isVisible && <div className={styles.topbtn}><Button name={'top ↑'} type={'tertiary'} link={scrollToTop} /></div>}
+      <button className={isVisible ? `${styles.topbtn}` : `${styles.topbtn} ${styles.hidden}`} onClick={scrollToTop}>top ↑</button>
 
       <div className={styles.container}>
         <div className={styles.sidebarandnav} style={{ '--sidebar-width': `${sidebarWidth}px` }}>

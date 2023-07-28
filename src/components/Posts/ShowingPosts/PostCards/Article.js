@@ -106,7 +106,7 @@ const ArticleCard = ({ post }) => {
                 <section>
                     <section className={styles.metadata}>
                         <div className={styles.authorandtime}>
-                            <Link href={'/'} title="visit author's profile" className={styles.authorinfo}>
+                            <Link href={`/profile?id=${post?.authorId}`} title="visit author's profile" className={styles.authorinfo}>
                                 <img src={avatar} alt={'author image'} />
                                 <h6>{post.authorName}</h6>
                             </Link>

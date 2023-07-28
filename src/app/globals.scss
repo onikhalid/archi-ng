@@ -58,13 +58,37 @@
  }
 
 
+ ::-webkit-scrollbar {
+   width: 12px;
+   transform: all 550ms ease-in;
+ }
+
+ ::-webkit-scrollbar-thumb {
+   background-color: var(--accent);
+   border: solid 1px var(--background);
+   transform: all 550ms ease-in;
+
+   &:hover {
+     background-color: var(--accent-light);
+     border: solid 1.5px var(--background);
+   }
+ }
+
+ ::-webkit-scrollbar-track {
+   background: var(--background);
+ }
+
+
+
+
+
 
 
 
 
  //////////////////////////////////////////////////////////
  //////////////////////////////////////////////////////////
- /////////////      GLOBAL ELEMENTS         ///////////////
+ /////////////      GLOBAL HTML TAGS         ///////////////
  //////////////////////////////////////////////////////////
  //////////////////////////////////////////////////////////
 
@@ -268,6 +292,7 @@
    padding-inline: 1.5vw;
    max-width: 100%;
    width: 100%;
+
    @media (max-width: 719px) {
      margin-block: 6rem;
    }
@@ -635,6 +660,16 @@
    width: 100% !important;
    ;
  }
+
+ .tox-tiered-menu {
+   .tox-menu.tox-collection.tox-collection--list.tox-selected-menu {
+     @media (max-width: 720px) {
+       top: 350px !important;
+     }
+   }
+ }
+
+
 
 
  /////////////////////////////////

@@ -50,23 +50,24 @@ const MobileNav = () => {
   useEffect(() => {
 
     const controlNavbar = () => {
-      if (typeof window !== 'undefined') {
-        if (window.scrollY > lastScrollY) {
-          setHidden(true);
-        } else if (window.scrollY < lastScrollY) {
-          setHidden(false);
-        } else if (window.scrollY = 0) { setHidden(true); }
+      const scrollTop = document.body.scrollTop
+      
+          if (scrollTop > lastScrollY) {
+            setHidden(true);
+          } else if (scrollTop < lastScrollY) {
+            setHidden(false);
+          } else if (scrollTop == 0) { setHidden(true); }
+  
 
         // remember current page location to use in the next move
-        setLastScrollY(window.scrollY);
-      }
+        setLastScrollY(scrollTop);
     };
 
     if (typeof window !== 'undefined') {
-      window.addEventListener('scroll', controlNavbar);
+      document.body.addEventListener('scroll', controlNavbar);
 
       return () => {
-        window.removeEventListener('scroll', controlNavbar);
+        document.body.removeEventListener('scroll', controlNavbar);
       };
     }
   }, [lastScrollY]);
@@ -76,7 +77,9 @@ const MobileNav = () => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
-        setHidden((hidden) => !hidden);
+        if (!hidden) {
+          setHidden(true);
+        }
       }
     };
     document.addEventListener('click', handleClickOutside);
