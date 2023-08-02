@@ -16,7 +16,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbTack } from "@fortawesome/free-solid-svg-icons";
 import { SmallPostCard } from '@/components/Posts/ShowingPosts/PostCards/SmallPostCard';
 import { FolderCard } from '@/components/Posts/ShowingPosts/PostCards/ArchivedPostCards/ArchiveCard';
-import { addFollow, removeFollow } from '@/components/Posts/InteractingWithPosts/Likes and Comments/Following';
+import { addFollow, removeFollow } from '@/functions/Following';
 
 
 

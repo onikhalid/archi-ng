@@ -18,6 +18,7 @@ const Page = () => {
   const [savingProfile, setSavingProfile] = useState(false)
   const [pictureURL, setPictureURL] = useState(null)
   const [selectedImage, setSelectedImage] = useState(null)
+  const newUserPic = "/assets/logo/logo-light.svg"
 
 
 
@@ -121,7 +122,7 @@ const Page = () => {
     /////  POSTS
     const allUsersPostsQuery = query(collection(db, 'posts'), where('authorId', '==', user?.uid));
     const allUsersPostsSnap = await getDocs(allUsersPostsQuery)
-    
+
     allUsersPostsSnap.docs.forEach(async (posts) => {
       const post = posts.data();
       const postDocRef = doc(db, `posts/${post.postId}`)
@@ -226,11 +227,15 @@ const Page = () => {
 
 
 
+  
+
+
 
 
 
   return (
     <>
+    <title>Edit Profile | archi NG</title>
       {
         loading && <div>Loading..</div>
       }
@@ -239,8 +244,8 @@ const Page = () => {
           <h1>Complete your profile</h1>
 
           <article className={styles.imagecontainer}>
-            <input type="file" onChange={handleImageUpload} />
-            {pictureURL && <img className={styles.picture} src={pictureURL} alt="Preview" />}
+            <input type="file" accept="image/jpeg, image/jpg, image/png, image/gif" onChange={handleImageUpload} />
+            {pictureURL && <img className={styles.picture} src={pictureURL || newUserPic} alt="Preview" />}
           </article>
           <form id='userDetails' className={styles.userInfoForm} onSubmit={handleSubmit(createOrUpdateProfile)}>
             <div className={styles.inputdiv}>
@@ -308,7 +313,7 @@ const Page = () => {
           </form>
 
           <div className={styles.buttongroup}>
-            <Button name='Skip ⏭' type='primary' link='/' />
+            {/* <Button name='Skip ⏭' type='primary' link='/' /> */}
             <button className={styles.submitbutton} form='userDetails' type="submit">Save and Continue ▶</button>
 
           </div>

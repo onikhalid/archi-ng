@@ -97,6 +97,11 @@
                         border-radius: 50px;
                         border: solid 1px var(--accent);
                     }
+                    h6{
+                        max-width: 20ch;
+                        word-wrap: break-word;
+                        font-size: .85rem;
+                    }
                 }
 
                 .posttime {

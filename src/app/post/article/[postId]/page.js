@@ -29,7 +29,7 @@ export default function Page({ params }) {
             <h1>{postData.postTitle}</h1>
             <Image
                 src={postData.imageURL}
-                alt="cover img"
+                alt={`article cover image`}
                 width={1000}
                 height={500}
                 layout="responsive"

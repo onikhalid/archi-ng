@@ -1,5 +1,8 @@
 import { getFirestore, collection, addDoc, doc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '@/utils/firebase';
+
+
+
 // Function to add a comment to a post
 const addComment = async (postId, commentData) => {
   const commentsCollectionRef = collection(db, 'comments');
@@ -9,14 +12,16 @@ const addComment = async (postId, commentData) => {
 
   // Update the post document to track the number of comments
   const postRef = doc(db, 'Posts', postId);
-  await updateDoc(postRef, { commentsCount: db.FieldValue.increment(1) });
+  await updateDoc(postRef, { commentsCount: db.FieldValue.increment(1), comments:[...postId] });
 
   // Other logic for adding the comment
 };
 
+
+
+
 // Function to retrieve comments for a post
 const getComments = (postId) => {
-  const firestore = getFirestore();
   const commentsCollectionRef = collection(db, 'comments');
 
   // Query comments for the specified post

@@ -10,8 +10,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFolder, faArrowUpRightFromSquare, faTrash, faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { useAuthState } from "react-firebase-hooks/auth"
 import { useWindowWidth } from "@/utils/Hooks/ResponsiveHook"
-import { addBookmark, deleteBookmark } from "@/components/Posts/InteractingWithPosts/Likes and Comments/Bookmark"
-import { deleteFolder } from "@/components/Posts/InteractingWithPosts/Likes and Comments/Bookmark"
+import { addBookmark, deleteBookmark } from "@/functions/Bookmark"
+import { deleteFolder } from "@/functions/Bookmark"
 
 
 

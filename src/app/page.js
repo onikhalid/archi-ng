@@ -13,6 +13,7 @@ import ArticleCard from '@/components/Posts/ShowingPosts/PostCards/Article';
 import CaseStudyCard from '@/components/Posts/ShowingPosts/PostCards/Case Study';
 import PhotoCard from '@/components/Posts/ShowingPosts/PostCards/Photo';
 import Button from '@/components/Button/button';
+import { toast } from 'react-toastify';
 
 
 
@@ -113,8 +114,6 @@ export default function Home() {
     }
 
 
-
-
     const getPosts = async () => {
       // start fetching
       setLoadingPosts(true)
@@ -162,7 +161,15 @@ export default function Home() {
       }
     };
 
-    getPosts();
+    try {
+      getPosts();
+    } catch (error) {
+      if (error.code === "failed-precondition") {
+        toast.error("Internet ")
+      }
+    }
+
+    
   }, [currentPost, currentwhosePost, user]);
 
 
@@ -276,7 +283,7 @@ export default function Home() {
           // user signed in but no post in the db
           user && currentwhosePost === 'Feed' && !loadingPosts && allPosts.length < 1 && <div className='infobox main'>
             <h2>Nothing here, Be the first to make a post  </h2>
-            <Button name={'Make Post'} type={'primary'} link={'/'} />
+            <Button name={'Make Post'} type={'primary'} link={'/post'} />
           </div>
         }
         {

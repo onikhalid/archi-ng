@@ -6,7 +6,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/utils/firebase';
 import { faCircle, faFolder, faArrowUpRightFromSquare, faCircleCheck, faUserTie, faCalendarDays, faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { addBookmark } from '../../InteractingWithPosts/Likes and Comments/Bookmark';
+import { addBookmark } from '../../../../functions/Bookmark';
 import { toast } from 'react-toastify';
 import Button from "@/components/Button/button"
 import PostMenu from './PostCardMenu/PostMenu';
@@ -83,7 +83,7 @@ const CaseStudyCard = ({ post }) => {
                 <section>
                     <section className={styles.metadata}>
                         <div className={styles.authorandtime}>
-                            <Link href={`/profile?id=${authorId}`} title="visit author's profile" className={styles.authorinfo}>
+                            <Link href={`/profile?id=${authorId}`}  title="visit author's profile" className={styles.authorinfo} >
                                 <img src={authorAvatar} alt={'author image'} />
                                 <h6>{authorName}</h6>
                             </Link>

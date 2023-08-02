@@ -132,7 +132,7 @@ const MakeCaseStudy = ({ postToEditId }) => {
     }
     
     
-    toast.success(`Your article has been ${postToEditId ? 'updated' : 'posted'} 😎`, {
+    toast.success(`Your case study has been ${postToEditId ? 'updated' : 'submitted'} 😎`, {
       position: toast.POSITION.TOP_CENTER,
       autoClose: 3500,
     });

@@ -35,10 +35,10 @@ const Body = ({ children }) => {
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = document.body.scrollTop
-      const shouldShowButton = scrollTop > 600;
+      const shouldShowButton = scrollTop > 1500;
       setIsVisible(shouldShowButton);
 
-      if (scrollTop > lastScrollY) {
+      if ((scrollTop > lastScrollY) && scrollTop > 1500) {
         setIsVisible(true);
       } else if (scrollTop < lastScrollY) {
         setIsVisible(false);

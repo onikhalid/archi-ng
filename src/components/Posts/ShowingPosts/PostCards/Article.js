@@ -6,7 +6,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/utils/firebase';
 import { faCircle, faFolder, faArrowUpRightFromSquare, faCircleCheck, faUserTie, faCalendarDays, faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { addBookmark } from '../../InteractingWithPosts/Likes and Comments/Bookmark';
+import { addBookmark } from '../../../../functions/Bookmark';
 import { toast } from 'react-toastify';
 import Button from "@/components/Button/button"
 import PostMenu from './PostCardMenu/PostMenu';
@@ -148,7 +148,7 @@ const ArticleCard = ({ post }) => {
 
                     <div className={styles.buttongroup}>
                         <Button name={saved ? 'Saved' : 'Save'} icon={saved ? <FontAwesomeIcon icon={faCircleCheck} /> : <FontAwesomeIcon icon={faFolder} />} link={bookmarkPost} type={"tertiary"} />
-                        <Button name={"Read"} icon={<FontAwesomeIcon icon={faArrowUpRightFromSquare} />} link={`/post/case-study/${post.postId}`} type={"type4"} />
+                        <Button name={"Read"} icon={<FontAwesomeIcon icon={faArrowUpRightFromSquare} />} link={`/post/article/${post.postId}`} type={"type4"} />
                     </div>
                 </section>
             </div>

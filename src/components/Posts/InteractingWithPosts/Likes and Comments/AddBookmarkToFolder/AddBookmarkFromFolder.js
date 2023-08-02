@@ -6,7 +6,7 @@ import { collection, query, where, getDocs, onSnapshot } from 'firebase/firestor
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFolderPlus } from "@fortawesome/free-solid-svg-icons";
-import { addBookmarkToFolder } from '../Bookmark';
+import { addBookmarkToFolder } from '@/functions/Bookmark';
 import { useWindowWidth } from '@/utils/Hooks/ResponsiveHook';
 
 ////////////////////////////////////////////////////////////////////////////////

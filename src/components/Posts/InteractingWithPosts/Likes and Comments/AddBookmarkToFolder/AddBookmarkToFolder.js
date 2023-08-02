@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleChevronDown, faCircleChevronUp } from "@fortawesome/free-solid-svg-icons";
 import { faFolder, faArrowUpRightFromSquare, faFolderPlus, faEllipsis } from "@fortawesome/free-solid-svg-icons";
 import Button from '@/components/Button/button';
-import { addBookmarkToFolder } from '../Bookmark';
+import { addBookmarkToFolder } from '../../../../../functions/Bookmark';
 import styles from './AddBookmarkToFolder.module.scss'
 
 

@@ -8,6 +8,9 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfi
 
 export const SignupForm = () => {
     const { register, handleSubmit, formState: { errors } } = useForm()
+    const router = useRouter()
+
+
 
     const onSubmit = async (data) => {
         try {
@@ -27,7 +30,7 @@ export const SignupForm = () => {
                     profilePicture: user.photoURL === null ? unknownUserPhotoURL : user.photoURL
                 }
                 await setDoc(userDocRef, userData)
-                route.push("/auth/complete-details")
+                router.push("/auth/complete-profile")
             }
 
 
@@ -37,9 +40,15 @@ export const SignupForm = () => {
             })
             
         } catch (error) {
+            if (error.code === 'auth/email-already-in-use') {
+                toast.error('Email already registered', {
+                    position: 'top-center',
+                    autoClose: 2500,
+                })
+            }else
             toast.error("Error signing up 😪", {
                 position: 'top-center',
-                autoClose: 3000 
+                autoClose: 2500 
             })
             console.log('Error signing up:', error)
         }
@@ -115,9 +124,9 @@ export const LoginForm = () => {
                 router.push('/auth/complete-profile')
             }
 
-            toast.success(`Welcome back ${user?.displayName} 😎`, {
+            toast.success(`Welcome back ${user.displayName} 😎`, {
                 position: 'top-center',
-                autoClose: 4000 
+                autoClose: 2500 
             })
         }
 

@@ -5,9 +5,9 @@ import { useRouter } from 'next/navigation';
 import { faEllipsis, faUserMinus, faUserPlus, faShare, faPen, faBookmark, faClipboard, faPaste, faMapPin, faThumbTack, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { addFollow, removeFollow } from '@/components/Posts/InteractingWithPosts/Likes and Comments/Following';
-import { addBookmark, pinPost, unpinPost } from '@/components/Posts/InteractingWithPosts/Likes and Comments/Bookmark';
-import { deletePost } from '@/components/Posts/InteractingWithPosts/Delete/Delete';
+import { addFollow, removeFollow } from '@/functions/Following';
+import { addBookmark, pinPost, unpinPost } from '@/functions/Bookmark';
+import { deletePost } from '@/functions/Delete';
 import { auth, db } from '@/utils/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { toast } from 'react-toastify';
@@ -66,14 +66,21 @@ export default function PostMenu({ menuOpen, setOpen, post, smallpost }) {
 
 
         const checkPinned = async () => {
-            const userDocRef = doc(db, `users/${authorId}`)
-            const userDocSnap = await getDoc(userDocRef)
-            const userData = userDocSnap.data()
-            if (userData.pinnedPosts && userData.pinnedPosts.includes(postId)) {
-                setPinned(true);
-            } else {
-                setPinned(false);
+            try {
+                const userDocRef = doc(db, `users/${authorId}`)
+                const userDocSnap = await getDoc(userDocRef)
+                const userData = userDocSnap.data()
+                if (userData.pinnedPosts && userData.pinnedPosts.includes(postId)) {
+                    setPinned(true);
+                } else {
+                    setPinned(false);
+                }
+            } catch (error) {
+                if (error.code === "failed-precondition") {
+                    toast.error("Bad internet connection")
+                  }
             }
+
         }
 
 
@@ -95,7 +102,7 @@ export default function PostMenu({ menuOpen, setOpen, post, smallpost }) {
             setFollowing(true)
         }
     }
-    
+
 
 
     ///////////////////////////////

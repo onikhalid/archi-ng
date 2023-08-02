@@ -94,7 +94,7 @@
 }
 
 .menuOpen {
-    animation: slidein var(--duration) cubic-bezier(.1, .73, 1, .46) forwards;
+    animation: slidein var(--duration) ease-in-out forwards;
 }
 
 .menuClose {

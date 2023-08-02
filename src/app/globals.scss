@@ -59,7 +59,7 @@
 
 
  ::-webkit-scrollbar {
-   width: 12px;
+   width: 10px;
    transform: all 550ms ease-in;
  }
 
@@ -205,8 +205,6 @@
 
    ul {
      position: absolute;
-
-     font-family: "Poppins";
      font-weight: 300;
      font-size: 1.05rem;
      min-width: max-content;

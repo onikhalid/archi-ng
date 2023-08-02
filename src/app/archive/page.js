@@ -9,7 +9,7 @@ import PostSkeleton from "@/components/Posts/ShowingPosts/PostCards/Skeleton/Pos
 import WhoseandWhichpost from "@/components/Posts/ShowingPosts/Whosepost/whosepost";
 import { BookmarkCard, FolderCard } from "@/components/Posts/ShowingPosts/PostCards/ArchivedPostCards/ArchiveCard";
 import { useForm } from "react-hook-form";
-import { createFolder } from "@/components/Posts/InteractingWithPosts/Likes and Comments/Bookmark";
+import { createFolder } from "@/functions/Bookmark";
 
 
 const Archive = () => {

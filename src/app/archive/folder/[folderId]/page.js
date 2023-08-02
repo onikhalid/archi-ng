@@ -11,7 +11,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useState, useEffect } from "react";
 import { BookmarkCard } from "@/components/Posts/ShowingPosts/PostCards/ArchivedPostCards/ArchiveCard";
 import { AddBookmarkFromFolder } from "@/components/Posts/InteractingWithPosts/Likes and Comments/AddBookmarkToFolder/AddBookmarkFromFolder";
-import { removeBookmarkFromFolder } from '@/components/Posts/InteractingWithPosts/Likes and Comments/Bookmark';
+import { removeBookmarkFromFolder } from '@/functions/Bookmark';
 
 
 export default function Page({ params }) {
@@ -98,8 +98,8 @@ export default function Page({ params }) {
 
 
 
-    console.log(bookmarks)
 
+    
 
 
 

@@ -1,40 +1,47 @@
 
 import { db } from '@/utils/firebase';
-import {
-  collection, addDoc, doc, updateDoc, deleteDoc, arrayUnion, arrayRemove,
-  getDoc, setDoc, query, where, getDocs,
-} from 'firebase/firestore';
+import { collection, addDoc, doc, updateDoc, deleteDoc, arrayUnion, arrayRemove, getDoc, setDoc, query, where, getDocs, } from 'firebase/firestore';
 import { toast } from 'react-toastify';
+
+
 
 
 
 //  add a bookmark
 export const addBookmark = async (userId, postId, postTitle, postType, postAuthorId, postCoverPhoto, postAuthorName, postAuthorPhoto) => {
-  const bookmarkId = `${userId}_${postId}`
-  const bookmarkRef = doc(collection(db, 'bookmarks'), bookmarkId);
-  const bookmarkDoc = await getDoc(bookmarkRef);
+  try {
+    const bookmarkId = `${userId}_${postId}`
+    const bookmarkRef = doc(collection(db, 'bookmarks'), bookmarkId);
+    const bookmarkDoc = await getDoc(bookmarkRef);
 
-  if (bookmarkDoc.exists()) {
-    // Bookmark already exists
-    toast.info('You have already saved this post 😁', {
-      autoClose: 4500,
-      position: 'top-center',
-    })
-  } else {
-    // Create a new bookmark document
-    await setDoc(bookmarkRef, {
-      postAuthorId,
-      postAuthorPhoto,
-      postAuthorName,
-      postId,
-      postTitle,
-      postType,
-      postCoverPhoto,
-      bookmarkId,
-      userId: userId,
-    })
+    if (bookmarkDoc.exists()) {
+      // Bookmark already exists
+      toast.info('You have already saved this post 😁', {
+        autoClose: 4500,
+        position: 'top-center',
+      })
+    } else {
+      // Create a new bookmark document
+      await setDoc(bookmarkRef, {
+        postAuthorId,
+        postAuthorPhoto,
+        postAuthorName,
+        postId,
+        postTitle,
+        postType,
+        postCoverPhoto,
+        bookmarkId,
+        userId: userId,
+      })
+    }
+    return bookmarkId
+  } catch (error) {
+    if (error.code === "failed-precondition") {
+      toast.error("Bad internet connection")
+    }
   }
-  return bookmarkId
+
+
 };
 
 
@@ -83,16 +90,24 @@ export const createFolder = async (folderName, userId, userDisplayName) => {
 //  add a bookmark to a folder 
 export const addBookmarkToFolder = async (userId, bookmarkId, folderId, bookmarkPostOwnerId, preventError) => {
   const folderDocRef = doc(db, 'folders', folderId);
+  const bookmarkDocRef = doc(db, 'bookmarks', bookmarkId)
+  const bookmarkSnap = await getDoc(bookmarkDocRef)
 
-  if ((userId == bookmarkPostOwnerId) || preventError) {
-    await updateDoc(folderDocRef, { bookmarks: arrayUnion(bookmarkId) });
-    return
+  if (bookmarkSnap.exists()) {
+    if ((userId == bookmarkPostOwnerId) || preventError) {
+      await updateDoc(folderDocRef, { bookmarks: arrayUnion(bookmarkId) });
+      return
+    } else {
+      const parts = bookmarkId.split("_");
+      const postId = (parts[1])
+      await updateDoc(folderDocRef, { bookmarks: arrayUnion(newBookmark) });
+      const newBookmark = await addBookmark(postId, userId)
+    }
+
   } else {
-    const parts = bookmarkId.split("_");
-    const postId = (parts[1])
-    await updateDoc(folderDocRef, { bookmarks: arrayUnion(newBookmark) });
-    const newBookmark = await addBookmark(postId, userId)
+    toast.error("This bookmark doesn't exist or has been deleted", { position: "top-center" })
   }
+
 };
 
 
@@ -106,6 +121,7 @@ export const removeBookmarkFromFolder = async (bookmarkId, folderId) => {
   await updateDoc(folderDocRef, { bookmarks: arrayRemove(bookmarkId) });
 
 };
+
 
 
 
@@ -132,7 +148,7 @@ export const pinPost = async (userId, postId) => {
     const updatedPinnedPosts = userData.pinnedPosts.slice(1);
     updatedPinnedPosts.unshift(postId);
     await updateDoc(userDocRef, { pinnedPosts: updatedPinnedPosts });
-    toast.info("One of your pinned post has been replaced",{
+    toast.info("One of your pinned post has been replaced", {
       position: "top-center",
       autoClose: 3500
     })

@@ -64,7 +64,7 @@ const AppBar = () => {
 
 
       {/* display menu */}
-      <Menu menuclass={menuClass} />
+      <Menu menuclass={menuClass} menuOpen={menuOpen} setMenuOpen={setMenuOpen} setMenuClass={setMenuClass}/>
 
     </header>
   )

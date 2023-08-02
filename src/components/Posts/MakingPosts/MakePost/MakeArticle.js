@@ -122,7 +122,7 @@ const MakeArticle = ({ postToEditId }) => {
       autoClose: 3500,
     });
     router.push('/')
-    window.scrollTo({top: 0, behavior: "smooth"})
+    document.body.scrollTo({top: 0, behavior: "smooth"})
     setSavingPost(false)
   }
 
@@ -274,7 +274,7 @@ const MakeArticle = ({ postToEditId }) => {
         <Edit editorRef={editorRef} editorContent={editorContent} setContent={setArticleContent} />
 
 
-        <button className={styles.submitbutton} form='Article' type="submit">Submit your Case Study 📒</button>
+        <button className={styles.submitbutton} form='Article' type="submit">Post your Article 📒</button>
       </div>
     </>
 

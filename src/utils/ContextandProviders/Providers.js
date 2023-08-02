@@ -1,7 +1,7 @@
 "use client"
 
 import { ThemeContext } from "./Contexts";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect} from "react";
 
 export const ThemeProvider = ({ children }) => {
 
@@ -12,7 +12,7 @@ export const ThemeProvider = ({ children }) => {
     setTheme((theme) => theme === 'dark' ? 'light' : 'dark');
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (localStorage.getItem("theme") === null) {
       setTheme('light')
     } else {

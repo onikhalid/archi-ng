@@ -50,6 +50,8 @@
         h3 {
             font-size: clamp(1.5rem, 2.2vw, 2.2rem);
             margin-bottom: 0;
+            max-width: 15ch;
+            word-wrap: break-word;
         }
 
         h6 {

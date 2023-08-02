@@ -1,29 +1,46 @@
 
 "use client"
+import { useLayoutEffect, useState} from 'react';
 import { useWindowWidth } from '@/utils/Hooks/ResponsiveHook';
 
 import DesktopNav from './navDesktop';
 import TabletNav from './navTablet';
 import MobileNav from './navMobile';
 
+
+
+
+
 const Navigation = () => {
-  // get window width
   const width = useWindowWidth()
-
-
+  const [nav, setNav] = useState()
   let renderedNav
 
-  if(width  > 720 && width < 1019){
-    renderedNav = <TabletNav/>
-  }else if(width  > 1019){
-    renderedNav = <DesktopNav/>
-  }else{
-    renderedNav = <MobileNav />
-  }
+  useLayoutEffect(() => {
+    const getAppropriateNav = () => {
+
+      if (width > 720 && width < 1020) {
+        setNav(<TabletNav />) 
+
+      } else if (width > 1019) {
+        setNav(<DesktopNav /> )
+
+      } else {
+        setNav(<MobileNav />) 
+
+      }
+    }
+
+    getAppropriateNav ()
+
+  }, [width])
+
+
+
 
   return (
     <>
-      {renderedNav}
+      {nav}
     </>
   )
 }

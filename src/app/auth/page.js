@@ -56,11 +56,7 @@ export default function Login() {
     }
   };
 
-  // useEffect(() => {
-  //   if (user) {
-  //     route.push("/");
-  //   }
-  // }, [user]);
+
 
 
 
