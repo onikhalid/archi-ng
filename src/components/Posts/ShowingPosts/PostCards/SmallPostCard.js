@@ -45,7 +45,7 @@ export const SmallPostCard = ({ post, id }) => {
         setLoadingPosts(false)
 
         checkWhichPost()
-    }, []);
+    }, [id, post]);
 
 
 

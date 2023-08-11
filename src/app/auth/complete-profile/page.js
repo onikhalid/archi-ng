@@ -66,7 +66,7 @@ const Page = () => {
 
     }
     GetUserInfo()
-  }, [user]);
+  }, [user, loading]);
 
 
 

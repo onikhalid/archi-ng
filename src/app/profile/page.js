@@ -46,7 +46,7 @@ export default function Profile() {
 
     getUserUserName()
     return () => { };
-  }, [user])
+  }, [user, loading])
 
 
   return (

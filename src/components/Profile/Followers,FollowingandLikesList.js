@@ -79,7 +79,7 @@ export const FollowersFollowingandLikesList = ({ userId, postId, followers, foll
         }
         getNecessaryInfo()
 
-    }, [user]);
+    }, [user, postId, userId]);
 
 
 

@@ -87,7 +87,7 @@ export default function Home() {
 
     checkPostToEditOwner()
 
-  }, [user]);
+  }, [user, postToEdit, postTypeToEdit]);
 
 
 

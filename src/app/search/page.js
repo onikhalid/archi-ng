@@ -50,80 +50,90 @@ const Search = () => {
   ///////////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////////
   useEffect(() => {
-    async function performSearch(queryText) {
-      if (queryText == '' || queryText.trim() === '') { return}
+    // Add a new search to the list
+    const addSearch = (Query) => {
+      const updatedSearches = [Query, ...recentSearches.slice(0, 12)];
+      setRecentSearches(updatedSearches);
+    };
 
-      else
+
+    async function performSearch(queryText) {
+      if (queryText == '' || queryText.trim() === '') { return }
+
+      else {
+
         setSearching(true)
-      addSearch(queryText);
-      const postsCollection = collection(db, 'posts');
-      const whichPost = () => {
-        if (whichResultType === 'Studies') { return 'Case Studies' }
-        else if (whichResultType === 'Articles') { return 'Articles' }
-        else if (whichResultType === 'Photos') { return 'Photography' }
-        else 'Case Studies'
+        addSearch(queryText);
+        const postsCollection = collection(db, 'posts');
+        const whichPost = () => {
+          if (whichResultType === 'Studies') { return 'Case Studies' }
+          else if (whichResultType === 'Articles') { return 'Articles' }
+          else if (whichResultType === 'Photos') { return 'Photography' }
+          else 'Case Studies'
+        }
+
+        const authorQuery = query(postsCollection, where('postType', '==', whichPost()), where('authorName', '>=', queryText), where('authorName', '<=', queryText + '\uf8ff'), orderBy('authorName'));
+        const authorResults = await getDocs(authorQuery);
+
+        const titleQuery = query(postsCollection, where('postType', '==', whichPost()), where('title', '>=', queryText), where('title', '<=', queryText + '\uf8ff'));
+        const titleResults = await getDocs(titleQuery);
+
+        const tagsQuery = query(postsCollection, where('postType', '==', whichPost()), where('tags', 'array-contains', queryText));
+        const tagsResults = await getDocs(tagsQuery);
+
+        const typologyQuery = query(postsCollection, where('postType', '==', whichPost()), where('typology', '>=', queryText), where('typology', '<=', queryText + '\uf8ff'));
+        const typologyResults = await getDocs(typologyQuery);
+
+        const architectQuery = query(postsCollection, where('postType', '==', whichPost()), where('architect', '>=', queryText), where('architect', '<=', queryText + '\uf8ff'));
+        const architectResults = await getDocs(architectQuery);
+
+        //////////////////////////////////////
+        //////   case-insensitive search
+        const sentenceCaseQueryText = queryText.charAt(0).toUpperCase() + queryText.slice(1).toLowerCase()
+        const lowerCaseQueryText = queryText.toLowerCase()
+        const upperCaseQueryText = queryText.toUpperCase()
+        const caseInsensitiveQueryText = [sentenceCaseQueryText, lowerCaseQueryText, upperCaseQueryText, queryText]
+
+        //CI = caseInsensitive
+        const authorCIQuery = query(postsCollection, where('postType', '==', whichPost()), where('authorName', 'in', caseInsensitiveQueryText), orderBy('authorName'));
+        const authorCIResults = await getDocs(authorCIQuery);
+
+        const titleCIQuery = query(postsCollection, where('postType', '==', whichPost()), where('title', 'in', caseInsensitiveQueryText), orderBy('title'));
+        const titleCIResults = await getDocs(titleCIQuery);
+
+        const tagsCIQuery = query(postsCollection, where('postType', '==', whichPost()), where('tags', 'array-contains', caseInsensitiveQueryText));
+        const tagsCIResults = await getDocs(tagsCIQuery);
+
+        const typologyCIQuery = query(postsCollection, where('postType', '==', whichPost()), where('typology', 'in', caseInsensitiveQueryText), orderBy('typology'));
+        const typologyCIResults = await getDocs(typologyCIQuery);
+
+        const architectCIQuery = query(postsCollection, where('postType', '==', whichPost()), where('architect', 'in', caseInsensitiveQueryText));
+        const architectCIResults = await getDocs(architectCIQuery);
+
+        const locationCIQuery = query(postsCollection, where('postType', '==', whichPost()), where('location', 'array-contains-any', caseInsensitiveQueryText));
+        const locationCIResults = await getDocs(locationCIQuery);
+
+        const results = [];
+        authorResults.forEach((doc) => results.push(doc.data()));
+
+
+        authorCIResults.forEach((doc) => { if (!results.find((result) => result.id === doc.id)) { results.push(doc.data()); } });
+        titleResults.forEach((doc) => { if (!results.find((result) => result.id === doc.id)) { results.push(doc.data()); } });
+        titleCIResults.forEach((doc) => { if (!results.find((result) => result.id === doc.id)) { results.push(doc.data()); } });
+        tagsResults.forEach((doc) => { if (!results.find((result) => result.id === doc.id)) { results.push(doc.data()); } });
+        tagsCIResults.forEach((doc) => { if (!results.find((result) => result.id === doc.id)) { results.push(doc.data()); } });
+        typologyResults.forEach((doc) => { if (!results.find((result) => result.id === doc.id)) { results.push(doc.data()); } });
+        typologyCIResults.forEach((doc) => { if (!results.find((result) => result.id === doc.id)) { results.push(doc.data()); } });
+        architectResults.forEach((doc) => { if (!results.find((result) => result.id === doc.id)) { results.push(doc.data()); } });
+        architectCIResults.forEach((doc) => { if (!results.find((result) => result.id === doc.id)) { results.push(doc.data()); } });
+        locationCIResults.forEach((doc) => { if (!results.find((result) => result.id === doc.id)) { results.push(doc.data()); } });
+
+
+        setSearchResult(results)
+        setSearching(false)
+        return;
       }
 
-      const authorQuery = query(postsCollection, where('postType', '==', whichPost()), where('authorName', '>=', queryText), where('authorName', '<=', queryText + '\uf8ff'), orderBy('authorName'));
-      const authorResults = await getDocs(authorQuery);
-
-      const titleQuery = query(postsCollection, where('postType', '==', whichPost()), where('title', '>=', queryText), where('title', '<=', queryText + '\uf8ff'));
-      const titleResults = await getDocs(titleQuery);
-
-      const tagsQuery = query(postsCollection, where('postType', '==', whichPost()), where('tags', 'array-contains', queryText));
-      const tagsResults = await getDocs(tagsQuery);
-
-      const typologyQuery = query(postsCollection, where('postType', '==', whichPost()), where('typology', '>=', queryText), where('typology', '<=', queryText + '\uf8ff'));
-      const typologyResults = await getDocs(typologyQuery);
-
-      const architectQuery = query(postsCollection, where('postType', '==', whichPost()), where('architect', '>=', queryText), where('architect', '<=', queryText + '\uf8ff'));
-      const architectResults = await getDocs(architectQuery);
-
-      //////////////////////////////////////
-      //////   case-insensitive search
-      const sentenceCaseQueryText = queryText.charAt(0).toUpperCase() + queryText.slice(1).toLowerCase()
-      const lowerCaseQueryText = queryText.toLowerCase()
-      const upperCaseQueryText = queryText.toUpperCase()
-      const caseInsensitiveQueryText = [sentenceCaseQueryText, lowerCaseQueryText, upperCaseQueryText, queryText]
-      
-      //CI = caseInsensitive
-      const authorCIQuery = query(postsCollection , where('postType', '==', whichPost()), where('authorName', 'in', caseInsensitiveQueryText), orderBy('authorName'));
-      const authorCIResults = await getDocs(authorCIQuery);
-      
-      const titleCIQuery = query(postsCollection , where('postType', '==', whichPost()), where('title', 'in', caseInsensitiveQueryText), orderBy('title'));
-      const titleCIResults = await getDocs(titleCIQuery);
-      
-      const tagsCIQuery = query(postsCollection , where('postType', '==', whichPost()), where('tags', 'array-contains', caseInsensitiveQueryText));
-      const tagsCIResults = await getDocs(tagsCIQuery);
-      
-      const typologyCIQuery = query(postsCollection , where('postType', '==', whichPost()), where('typology', 'in', caseInsensitiveQueryText), orderBy('typology'));
-      const typologyCIResults = await getDocs(typologyCIQuery);
-      
-      const architectCIQuery = query(postsCollection , where('postType', '==', whichPost()), where('architect', 'in', caseInsensitiveQueryText));
-      const architectCIResults = await getDocs(architectCIQuery);
-
-      const locationCIQuery = query(postsCollection , where('postType', '==', whichPost()), where('location', 'array-contains-any', caseInsensitiveQueryText));
-      const locationCIResults = await getDocs(locationCIQuery);
-
-      const results = [];
-      authorResults.forEach((doc) => results.push(doc.data()));
-
-
-      authorCIResults.forEach((doc) => {if (!results.find((result) => result.id === doc.id)) {results.push(doc.data());}});
-      titleResults.forEach((doc) => {if (!results.find((result) => result.id === doc.id)) {results.push(doc.data());}});
-      titleCIResults.forEach((doc) => {if (!results.find((result) => result.id === doc.id)) {results.push(doc.data());}});
-      tagsResults.forEach((doc) => {if (!results.find((result) => result.id === doc.id)) {results.push(doc.data());}});
-      tagsCIResults.forEach((doc) => {if (!results.find((result) => result.id === doc.id)) {results.push(doc.data());}});
-      typologyResults.forEach((doc) => {if (!results.find((result) => result.id === doc.id)) {results.push(doc.data());}});
-      typologyCIResults.forEach((doc) => {if (!results.find((result) => result.id === doc.id)) {results.push(doc.data());}});
-      architectResults.forEach((doc) => {if (!results.find((result) => result.id === doc.id)) {results.push(doc.data());}});
-      architectCIResults.forEach((doc) => {if (!results.find((result) => result.id === doc.id)) {results.push(doc.data());}});
-      locationCIResults.forEach((doc) => {if (!results.find((result) => result.id === doc.id)) {results.push(doc.data());}});
-
-
-      setSearchResult(results)
-      setSearching(false)
-      return;
     }
 
 
@@ -184,11 +194,7 @@ const Search = () => {
     return () => { }
   }, [recentSearches]);
 
-  // Add a new search to the list
-  const addSearch = (Query) => {
-    const updatedSearches = [Query, ...recentSearches.slice(0, 12)];
-    setRecentSearches(updatedSearches);
-  };
+
 
   // Remove a search from the list
   const removeSearch = (index) => {

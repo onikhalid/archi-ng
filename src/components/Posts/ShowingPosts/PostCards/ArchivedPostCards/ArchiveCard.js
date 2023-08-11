@@ -42,7 +42,7 @@ export const BookmarkCard = ({ post }) => {
         }
 
         checkArchivedPostExists()
-    }, []);
+    }, [post]);
 
 
 

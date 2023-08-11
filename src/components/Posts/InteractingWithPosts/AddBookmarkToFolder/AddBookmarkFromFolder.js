@@ -42,7 +42,7 @@ export const AddBookmarkFromFolder = ({ userId, folderId }) => {
         }
         getUserBookmarks()
 
-    }, [userBookmarksList]);
+    }, [userBookmarksList, userId]);
 
 
 

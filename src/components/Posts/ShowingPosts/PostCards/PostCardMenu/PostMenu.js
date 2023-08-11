@@ -89,7 +89,7 @@ export default function PostMenu({ menuOpen, setOpen, post, smallpost }) {
 
         checkPinned()
         checkFollow()
-    }, [user, authorId]);
+    }, [user, authorId, postId]);
 
 
     ///////////////////////////////
@@ -173,7 +173,7 @@ export default function PostMenu({ menuOpen, setOpen, post, smallpost }) {
         return () => {
             document.removeEventListener('click', handleClickOutside);
         };
-    }, [menuOpen]);
+    }, [menuOpen, setOpen]);
 
 
 
