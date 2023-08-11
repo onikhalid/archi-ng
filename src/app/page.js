@@ -252,7 +252,7 @@ export default function Home() {
     return () => {
       window.removeEventListener('scroll', loadMorePosts)
     };
-  }, [loadingPosts, fetchedPosts, user]);
+  }, [loadingPosts, fetchedPosts, user, currentPost, currentwhosePost, allPosts]);
 
 
 

@@ -141,7 +141,7 @@ const Search = () => {
       performSearch(searchParameter)
     }
 
-  }, [searchParameter, whichResultType]);
+  }, [searchParameter, whichResultType, recentSearches]);
 
 
 

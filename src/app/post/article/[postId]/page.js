@@ -302,7 +302,7 @@ export default function Page({ params }) {
                                             id="Comment" name="Comment" type="text"
                                             placeholder="Write a Remark" rows={5}
                                             {...register("Comment", { required: true })} />
-                                        {errors.Comment && <span>You can't submit an empty remark</span>}
+                                        {errors.Comment && <span>You can&apos;t submit an empty remark</span>}
                                     </div>
 
                                     <div className={styles.writer}>
