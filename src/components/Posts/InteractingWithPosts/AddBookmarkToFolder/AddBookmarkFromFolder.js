@@ -9,10 +9,10 @@ import { faFolderPlus } from "@fortawesome/free-solid-svg-icons";
 import { addBookmarkToFolder } from '@/functions/Bookmark';
 import { useWindowWidth } from '@/utils/Hooks/ResponsiveHook';
 
-////////////////////////////////////////////////////////////////////////////////
-///        little menu to show all the folders a user has created so       /////
-///        they can add bookmarks to them                                  /////
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
+///        little menu to show all the bookmarks a user has created so        /////
+///        they can add them to folders                                      /////
+//////////////////////////////////////////////////////////////////////////////////
 export const AddBookmarkFromFolder = ({ userId, folderId }) => {
     const [user, loading] = useAuthState(auth);
     const [userBookmarksList, setUserBookmarksList] = useState([]);

@@ -8,6 +8,7 @@
     transition: all 250ms ease-out;
     font-family: var(--text-lora) !important;
     border: solid 3px transparent;
+    min-width: max-content;
 
     &:hover {
         --border-radius: 5px;

@@ -43,50 +43,60 @@ const Archive = () => {
 
 
   useLayoutEffect(() => {
-    const getArchivedPosts = async () => {
-      setLoadingPosts(true)
+    try {
 
-      const bookmarksCollectionRef = collection(db, "bookmarks");
-      const foldersCollectionRef = collection(db, 'folders');
-      const currentUser = user?.uid
+      const getArchivedPosts = async () => {
+        setLoadingPosts(true)
+
+        const bookmarksCollectionRef = collection(db, "bookmarks");
+        const foldersCollectionRef = collection(db, 'folders');
+        const currentUser = user?.uid
 
 
-      const getQuery = () => {
+        const getQuery = () => {
 
-        // bookmarks
-        if (user && archiveType === "Bookmarks") {
-          return query(bookmarksCollectionRef, where('userId', '==', currentUser))
+          // bookmarks
+          if (user && archiveType === "Bookmarks") {
+            return query(bookmarksCollectionRef, where('userId', '==', currentUser))
+          }
+
+          else if (user && archiveType === "Folders") {
+            return query(foldersCollectionRef, where('userId', '==', currentUser))
+          }
+
+          else if (!user) {
+            return null
+          }
         }
 
-        else if (user && archiveType === "Folders") {
-          return query(foldersCollectionRef, where('userId', '==', currentUser))
+        const q = getQuery();
+        if (q == null) {
+          setAllPosts([])
+          return
         }
-
-        else if (!user) {
-          return null
-        }
-      }
-
-      const q = getQuery();
-      if (q == null) {
-        setAllPosts([])
-        return
-      }
-      else {
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-          const newDataArray = [];
-          snapshot.forEach((doc) => {
-            const data = doc.data();
-            newDataArray.push(data);
+        else {
+          const unsubscribe = onSnapshot(q, (snapshot) => {
+            const newDataArray = [];
+            snapshot.forEach((doc) => {
+              const data = doc.data();
+              newDataArray.push(data);
+            });
+            setAllPosts(newDataArray)
+            setLoadingPosts(false)
           });
-          setAllPosts(newDataArray)
-          setLoadingPosts(false)
-        });
-        return unsubscribe;
-      }
-    };
+          return unsubscribe;
+        }
+      };
 
-    getArchivedPosts();
+      getArchivedPosts();
+
+    } catch (error) {
+      if (error.code === "unavailable") {
+        
+      } else {
+        console.log(error)
+      }
+    }
     return () => { }
   }, [archiveType, user]);
 
@@ -98,7 +108,7 @@ const Archive = () => {
     createFolder(data.Name, user.uid, user.displayName)
   }
 
-const pageTitle =`Archives - ${archiveType} |  Archi NG`
+  const pageTitle = `Archives - ${archiveType} |  Archi NG`
 
 
   return (

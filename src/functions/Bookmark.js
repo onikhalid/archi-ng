@@ -13,6 +13,8 @@ export const addBookmark = async (userId, postId, postTitle, postType, postAutho
     const bookmarkId = `${userId}_${postId}`
     const bookmarkRef = doc(collection(db, 'bookmarks'), bookmarkId);
     const bookmarkDoc = await getDoc(bookmarkRef);
+    const postDocRef = doc(db, `posts/${postId}`);
+
 
     if (bookmarkDoc.exists()) {
       // Bookmark already exists
@@ -22,6 +24,7 @@ export const addBookmark = async (userId, postId, postTitle, postType, postAutho
       })
     } else {
       // Create a new bookmark document
+      await updateDoc(postDocRef, { bookmarks: arrayUnion(userId) })
       await setDoc(bookmarkRef, {
         postAuthorId,
         postAuthorPhoto,
@@ -35,13 +38,12 @@ export const addBookmark = async (userId, postId, postTitle, postType, postAutho
       })
     }
     return bookmarkId
-  } catch (error) {
+  }
+  catch (error) {
     if (error.code === "failed-precondition") {
       toast.error("Bad internet connection")
     }
   }
-
-
 };
 
 
@@ -49,10 +51,16 @@ export const addBookmark = async (userId, postId, postTitle, postType, postAutho
 
 
 //delete bookmark
-export const deleteBookmark = async (bookmarkId) => {
+export const deleteBookmark = async (bookmarkId, userId, postId, deleted) => {
   const foldersCollectionRef = collection(db, 'folders');
-  const bookmarkRef = doc(db, `bookmarks/${bookmarkId}`);
+  const postDocRef = doc(db, `posts/${postId}`);
+  const bookmarkRef = bookmarkId ? doc(db, `bookmarks/${bookmarkId}`) : doc(db, `bookmarks/${userId}_${postId}`)
   await deleteDoc(bookmarkRef)
+  if (!deleted) {
+    await updateDoc(postDocRef, { bookmarks: arrayRemove(userId) })
+  }
+
+
 
   const q = query(foldersCollectionRef, where('bookmarks', 'array-contains', bookmarkId))
   const foldersSnap = await getDocs(q);
@@ -114,7 +122,6 @@ export const addBookmarkToFolder = async (userId, bookmarkId, folderId, bookmark
 
 
 
-
 //  remove a bookmark from a folder
 export const removeBookmarkFromFolder = async (bookmarkId, folderId) => {
   const folderDocRef = doc(db, 'folders', folderId);
@@ -126,11 +133,16 @@ export const removeBookmarkFromFolder = async (bookmarkId, folderId) => {
 
 
 
+
+
+
 //  delete a folder
 export const deleteFolder = async (folderId) => {
   const folderDocRef = doc(db, 'folders', folderId);
   await deleteDoc(folderDocRef);
 };
+
+
 
 
 

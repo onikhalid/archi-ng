@@ -10,7 +10,7 @@ import { db, auth } from "@/utils/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useState, useEffect } from "react";
 import { BookmarkCard } from "@/components/Posts/ShowingPosts/PostCards/ArchivedPostCards/ArchiveCard";
-import { AddBookmarkFromFolder } from "@/components/Posts/InteractingWithPosts/Likes and Comments/AddBookmarkToFolder/AddBookmarkFromFolder";
+import { AddBookmarkFromFolder } from "@/components/Posts/InteractingWithPosts/AddBookmarkToFolder/AddBookmarkFromFolder";
 import { removeBookmarkFromFolder } from '@/functions/Bookmark';
 
 

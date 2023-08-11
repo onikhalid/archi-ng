@@ -55,9 +55,11 @@ export default function PostMenu({ menuOpen, setOpen, post, smallpost }) {
     useEffect(() => {
 
         const checkFollow = async () => {
-            const followingDocRef = doc(db, 'follows', `${user?.uid}_follows_${authorId}`)
-            const docSnap = await getDoc(followingDocRef)
-            if (docSnap.exists()) {
+            const authorDocRef = doc(db, `users/${authorId}`);
+            const authorDocSnap = await getDoc(authorDocRef)
+            const authorData = authorDocSnap.data()
+
+            if (authorData.followers && authorData.followers.includes(user?.uid)) {
                 setFollowing(true)
             } else {
                 setFollowing(false)
@@ -78,7 +80,7 @@ export default function PostMenu({ menuOpen, setOpen, post, smallpost }) {
             } catch (error) {
                 if (error.code === "failed-precondition") {
                     toast.error("Bad internet connection")
-                  }
+                }
             }
 
         }

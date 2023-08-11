@@ -26,7 +26,7 @@ export const SignupForm = () => {
                 await updateProfile(user, {photoURL: unknownUserPhotoURL})
                 const userData = {
                     id: user.uid,
-                    name: user.displayName === null ? `Architect_${user.uid}` : user.displayName,
+                    name: user.displayName === null ? `Architect_${user.uid.substring(0, 7)}` : user.displayName,
                     profilePicture: user.photoURL === null ? unknownUserPhotoURL : user.photoURL
                 }
                 await setDoc(userDocRef, userData)

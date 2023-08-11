@@ -1,14 +1,10 @@
 import { db } from '@/utils/firebase';
 import { useState, useEffect, useRef } from 'react';
-import {
-    collection, query, where, getDocs,
-} from 'firebase/firestore';
-
+import {collection, query, where, getDocs} from 'firebase/firestore';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleChevronDown, faCircleChevronUp } from "@fortawesome/free-solid-svg-icons";
-import { faFolder, faArrowUpRightFromSquare, faFolderPlus, faEllipsis } from "@fortawesome/free-solid-svg-icons";
-import Button from '@/components/Button/button';
-import { addBookmarkToFolder } from '../../../../../functions/Bookmark';
+import { faFolderPlus } from "@fortawesome/free-solid-svg-icons";
+import { addBookmarkToFolder } from '@/functions/Bookmark';
 import styles from './AddBookmarkToFolder.module.scss'
 
 
@@ -17,10 +13,11 @@ import styles from './AddBookmarkToFolder.module.scss'
 ///        little menu to show all the folders a user has created so       /////
 ///        they can add bookmarks to them                                  /////
 ////////////////////////////////////////////////////////////////////////////////
-export const AddToFolderMenu = ({ userId, bookmarkId, bookmarkOwnerId }) => {
+export const AddBookmarkToFolderMenu = ({ userId, bookmarkId, bookmarkOwnerId }) => {
     const [userfolderList, setUserFoldersList] = useState([]);
     const [menuOpen, setMenuOpen] = useState(null);
     const wrapperRef = useRef(null)
+
 
 
     useEffect(() => {
@@ -36,6 +33,8 @@ export const AddToFolderMenu = ({ userId, bookmarkId, bookmarkOwnerId }) => {
         getUserFolders()
 
     }, [userId]);
+
+
 
 
     const toggleMenu = () => {
@@ -54,6 +53,9 @@ export const AddToFolderMenu = ({ userId, bookmarkId, bookmarkOwnerId }) => {
         } else return 'menu wide close'
     }
 
+
+
+    
     //////////////////////////////////////////
     // Close menu when user clicks outside it
     useEffect(() => {

@@ -11,7 +11,7 @@ import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import Button from "@/components/Button/button";
 import { LoginForm, SignupForm } from "@/components/AuthForms/Login/SignUp";
 import WhoseandWhichpost from "@/components/Posts/ShowingPosts/Whosepost/whosepost";
-import { faG } from "@fortawesome/free-solid-svg-icons";
+import { faG, faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 
@@ -46,7 +46,8 @@ export default function Login() {
       else if (userDocSnap.exists()) {
         const data = userDocSnap.data()
         if (data.hasOwnProperty('username')) {
-          route.push('/')
+          // route.push('/')
+          route.back()
         } else {
           route.push('/auth/complete-profile')
         }
@@ -77,12 +78,13 @@ export default function Login() {
 
   return (
     <div className={`content-container ${styles.authpage}`}>
-      <section>
+      <section className={styles.closebutton} onClick={() => route.back()}>
+        <FontAwesomeIcon icon={faX} bounce />
       </section>
 
       <section className={styles.auth}>
         <header>
-          <h1>{currentType=== 'Sign up'? "Join" : "Login"} <em>Archi NG</em></h1>
+          <h1>{currentType === 'Sign up' ? "Join" : "Login"} <em>Archi NG</em></h1>
           <h5></h5>
           <WhoseandWhichpost variations={whichAuthType} currentwhosePost={currentType} setCurrentWhosePost={setCurrentType} />
         </header>
@@ -90,14 +92,14 @@ export default function Login() {
 
         <div className={styles.form}>
           <section>
-    
+
             {currentType === 'Login' && <LoginForm />}
             {currentType === 'Sign up' && <SignupForm />}
           </section>
 
           <section className={styles.google}>
             <h4>Continue with Google</h4>
-            <span className={styles.googlebutton}><Button name='Sign in' type='tertiary' icon={ <FontAwesomeIcon icon={faG} />} link={GoogleLogin} /></span>
+            <span className={styles.googlebutton}><Button name='Sign in' type='tertiary' icon={<FontAwesomeIcon icon={faG} />} link={GoogleLogin} /></span>
           </section>
         </div>
 

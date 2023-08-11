@@ -27,14 +27,14 @@
     gap: 2rem;
     width: 90%;
     max-width: 550px;
-  
+
 
     header {
         display: flex;
         flex-direction: column;
         align-items: center;
 
-        h1{
+        h1 {
             @media (max-width:720px) {
                 max-width: 7ch;
             }
@@ -50,7 +50,6 @@
         gap: 5rem;
 
         .google {
-
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -61,10 +60,25 @@
                 max-width: 150px;
             }
         }
+    }
+}
 
 
+.closebutton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    margin-bottom: 1rem;
 
-
+    svg {
+        background-color: var(--sec-text-clr);
+        width: 18px;
+        height: 18px;
+        padding: 0.35rem;
+        border-radius: 60px;
+        color: var(--background);
     }
 
 }

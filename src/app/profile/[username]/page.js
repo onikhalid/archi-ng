@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { collection, getDocs, getDoc, doc, query, where, onSnapshot } from "firebase/firestore";
 import { db, auth } from "@/utils/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect } from "react";
 
 import Image from 'next/image';
 import Button from '@/components/Button/button';
@@ -17,6 +17,9 @@ import { faThumbTack } from "@fortawesome/free-solid-svg-icons";
 import { SmallPostCard } from '@/components/Posts/ShowingPosts/PostCards/SmallPostCard';
 import { FolderCard } from '@/components/Posts/ShowingPosts/PostCards/ArchivedPostCards/ArchiveCard';
 import { addFollow, removeFollow } from '@/functions/Following';
+
+import { FollowersFollowingandLikesList } from '@/components/Profile/Followers,FollowingandLikesList';
+
 
 
 
@@ -57,7 +60,7 @@ export default function Page({ params }) {
     ///////////////////     GET USERS INORMATION        /////////////////////
     /////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////
-    useEffect(() => {
+    useLayoutEffect(() => {
         setloadingProfile(true)
 
 
@@ -78,6 +81,9 @@ export default function Page({ params }) {
         }
 
 
+
+
+
         const getOtherInfo = async () => {
             const userdata = await getBasicInfo()
             if (!userdata) {
@@ -86,13 +92,16 @@ export default function Page({ params }) {
             }
 
             // check if signed-in user follows proile user on component mountt 
-            const userProfileId = userdata.id
+            const profileUserId = userdata.id
             if (user?.uid == userdata.id) {
                 setfollowing(null)
             } else {
-                const followingDocRef = doc(db, 'follows', `${user?.uid}_follows_${userProfileId}`)
-                const docSnap = await getDoc(followingDocRef)
-                if (docSnap.exists()) {
+
+                const profileUserDocRef = doc(db, `users/${profileUserId}`);
+                const profileUserDocSnap = await getDoc(profileUserDocRef)
+                const profileUserData = profileUserDocSnap.data()
+
+                if (profileUserData.followers && profileUserData.followers.includes(user?.uid)) {
                     setfollowing(true)
                 } else {
                     setfollowing(false)
@@ -132,6 +141,8 @@ export default function Page({ params }) {
             }
 
             await getUserFolders()
+
+
         }
 
 
@@ -140,6 +151,10 @@ export default function Page({ params }) {
 
         return () => { }
     }, [username, user, following, currentSection]);
+
+
+
+
 
 
 
@@ -156,7 +171,6 @@ export default function Page({ params }) {
             setfollowing(true)
         }
     }
-
 
 
 
@@ -230,7 +244,7 @@ export default function Page({ params }) {
                                         }
 
                                         {(!loading && (user.uid !== userInfo.id)) &&
-                                            <Button name={following ? "Unfollow" : "Follow"} type={following ? "septima" : "sexta"} link={followUnfollow} />
+                                            <Button name={following === true ? "Unfollow" : "Follow"} type={following === true ? "septima" : "sexta"} link={followUnfollow} />
                                         }
                                     </>
                                 }
@@ -239,9 +253,17 @@ export default function Page({ params }) {
                             </div>
 
                             <div className={styles.following}>
-                                <h5>{userPosts?.length ? userPosts?.length : 0} <span> Posts </span></h5>
-                                <h5>{userInfo.followersCount ? userInfo.followersCount : 0} <span>Followers</span></h5>
-                                <h5>{userInfo.followingCount ? userInfo.followingCount : 0} <span>Following</span></h5>
+                                <h5>{userPosts?.length ? userPosts?.length : 0} <span>ArcPosts</span></h5>
+                                <span>
+                                    <h5>{userInfo.followers ? userInfo.followers.length : 0} <span>Followers</span></h5>
+                                    <FollowersFollowingandLikesList userId={userInfo.id} followers />
+                                </span>
+                                <span>
+                                     <h5>{userInfo.following ? userInfo.following.length : 0} <span>Following</span></h5>
+                                <FollowersFollowingandLikesList userId={userInfo.id} following />
+                                </span>
+
+                               
                             </div>
 
                             <div>
@@ -255,22 +277,22 @@ export default function Page({ params }) {
 
                         <section className={styles.pinned}>
                             <h5>PINNED POSTS <FontAwesomeIcon icon={faThumbTack} /> </h5>
-                                {
-                                    userInfo.pinnedPosts &&
-                                    <section className={styles.pinnedposts}>
-                                        {
-                                            userInfo.pinnedPosts.map((pin, index) => {
-                                                return <SmallPostCard id={pin} key={index} />
-                                            })
-                                        }
-                                    </section>
-                                }
-                                {
-                                    !userInfo.pinnedPosts &&
-                                    <div className='infobox'>
-                                        <h3>User hasn&apos;t pinned any post</h3>
-                                    </div>
-                                }
+                            {
+                                userInfo.pinnedPosts &&
+                                <section className={styles.pinnedposts}>
+                                    {
+                                        userInfo.pinnedPosts.map((pin, index) => {
+                                            return <SmallPostCard id={pin} key={index} />
+                                        })
+                                    }
+                                </section>
+                            }
+                            {
+                                !userInfo.pinnedPosts &&
+                                <div className='infobox'>
+                                    <h3>User hasn&apos;t pinned any post</h3>
+                                </div>
+                            }
 
 
                         </section>

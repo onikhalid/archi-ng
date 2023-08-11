@@ -61,7 +61,7 @@ const AppBar = () => {
         {!loading&&!user && <Button name='Sign in' type='primary' link='/auth' />}
       </div>
 
-
+{/* //post page, typography error, pin post, delete post */}
 
       {/* display menu */}
       <Menu menuclass={menuClass} menuOpen={menuOpen} setMenuOpen={setMenuOpen} setMenuClass={setMenuClass}/>

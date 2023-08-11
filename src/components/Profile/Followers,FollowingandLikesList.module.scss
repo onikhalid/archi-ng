@@ -1,5 +1,9 @@
 .menuwrapper {
-    position: relative;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -7,6 +11,7 @@
 
     .toggle {
         cursor: pointer;
+        opacity: 0;
     }
 
     &.noboxshadow {
@@ -17,7 +22,7 @@
             border: solid 2px;
             border-radius: 50px;
             padding: 0.125rem 0.75rem;
-            transition: all ease-in-out 250ms   ;
+            transition: all ease-in-out 250ms;
 
             &:hover {
                 color: var(--text-on-accent);
@@ -27,26 +32,5 @@
             }
         }
 
-    }
-}
-.button {
-    appearance: none;
-    font-family: var(--text-poppins);
-    background-color: transparent;
-    color: var(--main-text-clr);
-    padding: .25rem .7rem;
-    border: solid 2px var(--main-text-clr);
-    border-radius: 50px;
-    cursor: pointer;
-    transition: all ease-in-out 250ms;
-
-    &:hover {
-        border-radius: 5px;
-        color: var(--text-on-accent);
-        background-color: var(--accent);
-        border: solid 2px transparent;
-        svg{
-            color: red;
-        }
     }
 }

@@ -7,7 +7,7 @@ import Link from "next/link"
 import Button from "@/components/Button/button"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFolder, faArrowUpRightFromSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { AddToFolderMenu } from "@/components/Posts/InteractingWithPosts/Likes and Comments/AddBookmarkToFolder/AddBookmarkToFolder"
+import { AddBookmarkToFolderMenu } from "@/components/Posts/InteractingWithPosts/AddBookmarkToFolder/AddBookmarkToFolder"
 import { useAuthState } from "react-firebase-hooks/auth"
 import { useWindowWidth } from "@/utils/Hooks/ResponsiveHook"
 import { deleteBookmark, deleteFolder } from "@/functions/Bookmark"
@@ -18,7 +18,7 @@ export const BookmarkCard = ({ post }) => {
 
     const [archivedPostExists, setArchivedPostExists] = useState(null);
     const [user, loading] = useAuthState(auth);
-    const [loadingPosts, setLoadingPosts] = useState(false);
+    const [loadingPosts, setLoadingPosts] = useState(true);
     const [showmenu, setshowmenu] = useState(null);
     const width = useWindowWidth();
 
@@ -86,19 +86,21 @@ export const BookmarkCard = ({ post }) => {
                 <div className={styles.deletedbookmark}>
                     Bookmarked post doesn&apos;t exist or it has been deleted by author
                     {post.userId == user?.uid &&
-                        <span title="delete bookmark" onClick={() => deleteBookmark(bookmarkId)} className={styles.deleteicon}>
+                        <span title="delete bookmark" onClick={() => deleteBookmark(bookmarkId, user.uid, postId, "deleted")} className={styles.deleteicon}>
                             <FontAwesomeIcon icon={faTrash} />
                             Delete Bookmark
                         </span>
                     }
                 </div>
             }
-            {!loadingPosts && archivedPostExists &&
+
+
+            {(!loadingPosts && archivedPostExists && postTitle )&&
                 <article className={styles.bookmarkcard} title={postTitle}
                     onMouseOver={() => setshowmenu(true)} onMouseLeave={() => setshowmenu(false)}
                 >
                     {user && (showmenu || width < 1020) &&
-                        <AddToFolderMenu
+                        <AddBookmarkToFolderMenu
                             userId={user.uid}
                             bookmarkId={bookmarkId}
                             bookmarkOwnerId={bookmarkOwnerId}
@@ -116,10 +118,10 @@ export const BookmarkCard = ({ post }) => {
 
                     <section className={width < 1020 ? `${styles.bottom} ${styles.menuisopen}` : bottomclass}>
                         <div className={styles.bottomtop}>
-                            <h3 title={postTitle}>{postTitle.substring(0, 34)}{(loadingPosts == false && postTitle.length > 35) && '...'}</h3>
+                            <h3 title={postTitle ? postTitle : ""}>{postTitle?.substring(0, 34)}{(loadingPosts == false && postTitle?.length > 35) && '...'}</h3>
                             {
                                 bookmarkOwnerId == user?.uid &&
-                                <span title="delete bookmark" onClick={() => deleteBookmark(bookmarkId)} className={styles.deleteicon}>
+                                <span title="delete bookmark" onClick={() => deleteBookmark(bookmarkId, user.uid, postId)} className={styles.deleteicon}>
                                     <FontAwesomeIcon icon={faTrash} />
                                     Delete Bookmark
                                 </span>
@@ -132,7 +134,7 @@ export const BookmarkCard = ({ post }) => {
                                     height={30}
                                     alt="post author avatar"
                                 />
-                                <h6>{postAuthorName}</h6>
+                                <h6 title={postAuthorName}>{postAuthorName.substring(0, 20)}</h6>
                             </Link>
                             <Button name={"Read"} icon={<FontAwesomeIcon icon={faArrowUpRightFromSquare} />} link={`/post/${type()}/${postId}`} type={"type4"} />
 

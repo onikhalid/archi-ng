@@ -1,85 +1,168 @@
 "use client"
 import styles from "./casestudypage.module.scss"
-import { useEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
-
-import { collection, getDocs, getDoc, doc, query, where } from "firebase/firestore";
-import { db } from "@/utils/firebase";
+import { useWindowWidth } from "@/utils/Hooks/ResponsiveHook";
+import { useForm } from "react-hook-form";
 import Image from "next/image";
 import Link from "next/link";
+
+import { auth, db } from "@/utils/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { collection, getDocs, doc, query, where, onSnapshot, updateDoc, arrayUnion } from "firebase/firestore";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendarDays, faCircle, faLocationDot, faUserTie } from "@fortawesome/free-solid-svg-icons";
-import { useWindowWidth } from "@/utils/Hooks/ResponsiveHook";
+import { faBookmark, faComment, faEye, faHeart, faPenToSquare, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
+import { CommentCard } from "@/components/Posts/InteractingWithPosts/Likes and Comments/CommentCard";
+import { FollowersFollowingandLikesList } from "@/components/Profile/Followers,FollowingandLikesList";
+import { addLike, removeLike } from "@/functions/Likes";
+import { addBookmark, deleteBookmark } from "@/functions/Bookmark";
+import { formatDate } from "@/functions/Formatting";
+import { deletePost } from "@/functions/Delete";
+
+
 
 export default function Page({ params }) {
+    const { postId } = params
     const router = useRouter()
+    const width = useWindowWidth()
+    const [user, loading] = useAuthState(auth);
     const [postData, setPostData] = useState(null)
     const [loadingpost, setloadingpost] = useState(true);
-    const { postId } = params
-    const width = useWindowWidth()
+    const { register, handleSubmit, formState: { errors }, setValue } = useForm();
 
-    useEffect(() => {
+
+
+
+
+
+    //////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////
+    ///////////////      GET POST DATA      //////////////////////
+    //////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////
+
+    useLayoutEffect(() => {
 
         const getPost = async () => {
             try {
-                const postsCollectionRef = doc(db, `posts/${postId}`);
-                const postDocs = await getDoc(postsCollectionRef);
-                setPostData(postDocs.data())
-                setloadingpost(false)
-            } catch (error) {
+                const postDocRef = doc(db, `posts/${postId}`);
+
+                onSnapshot(postDocRef, async (snapshot) => {
+                    const data = snapshot.data()
+                    setPostData(data)
+                    if (user) {
+                        await updateDoc(postDocRef, { reads: arrayUnion(user.uid) })
+                    }
+                })
+
+            }
+
+            catch (error) {
                 if (error.code === "unavailable") {
                     toast.error("Refresh the page, an errror occured while fetching data", {
-                        position: "top-center"
+                        position: "top-center",
+                        autoClose: 5000
                     })
                 }
-                if (error.code === "kErrorClientOffline") {
+                if (error.code === "client-offline") {
                     toast.error("Seems like you are offline, connect to the internet and try again")
                 }
             }
-
-
         }
+
         getPost()
-    }, [postId])
+        setloadingpost(false)
+
+    }, [postId, user])
+
+
+
+
+
+
+
+    //////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////
+    ///////////////      LIKE/BOOKMARK      //////////////////////
+    //////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////
+    const likeUnlike = () => {
+        if (!user) {
+            toast.error("Login to like posts", {
+                position: "top-center",
+                autoClose: 4000
+            })
+            return
+        } else {
+            if (postData.likes?.includes(user.uid)) {
+                removeLike(postId, user.uid)
+            } else {
+                addLike(postId, user.uid)
+            }
+        }
+    }
+
+    const saveUnsave = () => {
+        if (!user) {
+            toast.error("Login to save posts", {
+                position: "top-center",
+                autoClose: 4000
+            })
+        } else {
+            if (postData.bookmarks?.includes(user.uid)) {
+                deleteBookmark(null, user.uid, postId)
+            } else {
+                const { title, postType, authorId, coverImageURL, authorName, authorAvatar } = postData
+                addBookmark(user.uid, postId, title, postType, authorId, coverImageURL, authorName, authorAvatar)
+            }
+        }
+    }
+
+
+
+
+
+
+
+
 
 
     const content = postData?.postContent
-    const pageTitle = postData && `${postData.title} - case study by ${postData.authorName} | archi NG`
-
-    const formatDate = (serverTimestamp) => {
-        const months = [
-            'January', 'February', 'March', 'April', 'May', 'June', 'July',
-            'August', 'September', 'October', 'November', 'December'
-        ];
-
-        const getOrdinalSuffix = (day) => {
-            if (day >= 11 && day <= 13) return 'th';
-            if (day % 10 === 1) return 'st';
-            if (day % 10 === 2) return 'nd';
-            if (day % 10 === 3) return 'rd';
-            return 'th';
-        };
-
-        const formatTime = (hours, minutes) => {
-            const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
-            const formattedMinutes = minutes.toString().padStart(2, '0');
-            return `${formattedHours}:${formattedMinutes}`;
-        };
-
-        const date = serverTimestamp.toDate();
-        const day = date.getDate();
-        const month = months[date.getMonth()];
-        const year = date.getFullYear();
-        const hours = date.getHours();
-        const minutes = date.getMinutes();
-        const ampm = hours >= 12 ? 'pm' : 'am';
-
-        return `${day}${getOrdinalSuffix(day)} ${month} ${year}: ${formatTime(hours, minutes)}${ampm}`;
-    };
+    const pageTitle = postData && `${postData.title} - Case Study by ${postData.authorName} | archi NG`
 
 
 
+
+
+    //////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////
+    /////////////////       COMMENTS      ////////////////////////
+    //////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////
+    const makeNewComment = async (data) => {
+        if (!user) {
+            toast.error("Login to make remark", {
+                position: "top-center",
+                autoClose: 4000
+            })
+            return
+        }
+        else {
+            const newComment = {
+                authorName: user.displayName,
+                authorPhoto: user.photoURL,
+                authorId: user.uid,
+                createdAt: new Date(),
+                text: data.Comment
+            }
+            const postDocRef = doc(db, `posts/${postId}`)
+
+            await updateDoc(postDocRef, { comments: arrayUnion(newComment) });
+            setValue("Comment", "")
+        }
+    }
 
 
 
@@ -95,15 +178,36 @@ export default function Page({ params }) {
             <title>{pageTitle}</title>
 
             <div className={styles.casestudy}>
+
+                {(!loadingpost && !postData) &&
+                    <div className='infobox'>
+                        <h2>Bad internet connection or Post doesn&apos;t exist</h2>
+                    </div>
+                }
+                {loadingpost &&
+                    <div className='infobox'>
+                        <h2>Loading...</h2>
+                    </div>
+                }
+
+
+
                 {
                     !loadingpost && postData &&
                     <div className={`content-container ${styles.container}`}>
-                        <header className={styles.title}>
-                            <h1>{postData.title}</h1>
-                            {width > 719 && <span> Case Study by {postData.authorName}, {formatDate(postData.createdAt)}</span>}
-
+                        <header >
+                            <div className={styles.title}>
+                                <h1>{postData.title}</h1>
+                                {width > 719 && <span> Article by {postData.authorName}, <em>{formatDate(postData.createdAt)}</em></span>}
+                            </div>
+                            {
+                                user?.uid === postData.authorId &&
+                                <div className={styles.settings}>
+                                    <Link title="Edit Post" href={`/post?edit=${postData.postId}&type=${postData.postType}`}><FontAwesomeIcon icon={faPenToSquare} /></Link>
+                                    <span title="Delete Post" onClick={() => deletePost(postData.postId, postData.postContent, postData.coverImageURL, "/")}> <FontAwesomeIcon icon={faTrashAlt}/> </span>
+                                </div>
+                            }
                         </header>
-
 
 
                         <section className={styles.postinfosection}>
@@ -115,57 +219,119 @@ export default function Page({ params }) {
                                     width={1600}
                                     layout="responsive"
                                     placeholder="empty"
-
                                 />
                             </div>
 
-                            <div className={styles.caseinfo}>
-                                <section className={styles.desc}>
-                                    {/* <h6><FontAwesomeIcon icon={faUserTie} /> <span>Architect: </span> {postData.architect}</h6>
-                                    <h6><FontAwesomeIcon icon={faCalendarDays} /> <span>Year: </span> {postData.year}</h6>
-                                    <h6><FontAwesomeIcon icon={faLocationDot} /> <span>Location: </span> {postData.location?.join(', ')}</h6> */}
-                                    <h6><span>architect:</span><br />  {postData.architect}</h6>
-                                    <h6><span>year:</span> <br />  {postData.year}</h6>
-                                    <h6><span>location:</span> <br />  {postData.location?.join(', ')}</h6>
-                                    <h6><span>typology:</span> <br />  {postData.typology}</h6>
-                                </section>
+                            <div className={styles.postinfo}>
+                                <div className={styles.basicinfo}>
+                                    <section className={styles.desc}>
+                                        <h6><span>architect:</span><br />  {postData.architect}</h6>
+                                        <h6><span>year:</span> <br />  {postData.year}</h6>
+                                        <h6><span>location:</span> <br />  {postData.location?.join(', ')}</h6>
+                                        <h6><span>typology:</span> <br />  {postData.typology}</h6>
+                                    </section>
 
 
-                                <section className={styles.otherinfo}>
-                                    <div className={styles.postags}>
-                                        {width > 1279 && <h6>Tags:</h6>}
+                                    <section className={styles.otherinfo}>
+                                        <div className={styles.postags}>
+                                            {width > 1279 && <h6>Tags:</h6>}
 
-                                        {
-                                            postData.tags.map((tag, index) => {
-                                                return (
-                                                    <Link title='Explore tag' key={index} href={`/search?q=${tag}`}><em>{tag.toUpperCase()},</em></Link>
-                                                )
-                                            })
-                                        }
-                                    </div>
-                                    <div className={styles.authorandtime}>
-                                        <Link href={`/profile?id=${postData.authorId}`} title="visit author's profile" className={styles.authorinfo}>
-                                            <img src={postData.authorAvatar} alt={'author image'} />
-                                            <h6 title={postData.authorName}>{postData.authorName}</h6>
-                                        </Link>
-                                    </div>
-                                </section>
+                                            {
+                                                postData.tags.map((tag, index) => {
+                                                    return (
+                                                        <Link title='Explore tag' key={index} href={`/search?q=${tag}`}><em>{tag.toUpperCase()},</em></Link>
+                                                    )
+                                                })
+                                            }
+                                        </div>
+                                        <div className={styles.authorandtime}>
+                                            <Link href={`/profile?id=${postData.authorId}`} title="visit author's profile" className={styles.authorinfo}>
+                                                <img src={postData.authorAvatar} alt={'author image'} />
+                                                <h6 title={postData.authorName}>{postData.authorName}</h6>
+                                            </Link>
+                                        </div>
+                                    </section>
+                                </div>
+
+
+                                <div className={styles.poststats}>
+                                    <article className={postData.likes?.includes(user?.uid) ? ` ${styles.likedstat}` : `${styles.stat}`}>
+                                        <span>
+                                            <h5>{postData.likes ? postData.likes.length : 0} <span>Likes</span></h5>
+                                            <FollowersFollowingandLikesList postId={postId} />
+                                        </span>
+
+                                        <span onClick={likeUnlike}>
+                                            <FontAwesomeIcon icon={faHeart} />
+                                        </span>
+                                    </article>
+
+                                    <article className={postData.bookmarks?.includes(user?.uid) ? `${styles.bookmarkedstat}` : `${styles.stat}`}>
+                                        <h5>{postData.bookmarks ? postData.bookmarks.length : 0} <span>Saves</span></h5>
+                                        <span onClick={saveUnsave}>
+                                            <FontAwesomeIcon icon={faBookmark} />
+                                        </span>
+
+                                    </article>
+
+                                    <article className={styles.comment}>
+                                        <h5>{postData.comments ? postData.comments.length : 0} <span>Remarks</span></h5>
+                                        <Link href={'#remarks'}><FontAwesomeIcon icon={faComment} /></Link>
+                                    </article>
+
+                                    {
+                                        width > 1279 &&
+                                        <article className={styles.reads}>
+                                            <h5>{postData.reads ? postData.reads.length : 0} <span>Reads</span></h5>
+                                            <FontAwesomeIcon icon={faEye} />
+                                        </article>
+                                    }
+                                </div>
                             </div>
+
                         </section>
 
+
                         <main dangerouslySetInnerHTML={{ __html: content }} />
-                    </div>
-                }
 
-                {!loadingpost && !postData &&
 
-                    <div className='infobox'>
-                        <h2>Post doesn&apos; exist or has been deleted</h2>
+                        <section id="remarks" className={styles.commentsection}>
+                            <h2>Remarks</h2>
+
+                            {user &&
+                                <form id='writecomment' className={styles.writecomment} onSubmit={handleSubmit(makeNewComment)}>
+
+                                    <div className={`inputdiv ${styles.inputdiv}`}>
+                                        <textarea
+                                            id="Comment" name="Comment" type="text"
+                                            placeholder="Write a Remark"
+                                            {...register("Comment", { required: true })} />
+                                        {errors.Comment && <span>You can't submit an empty remark</span>}
+                                    </div>
+
+                                    <div className={styles.writer}>
+                                        <button form="writecomment" type="submit" className={styles.writecommentButton}>Post Remark</button>
+                                        <span><Image src={user.photoURL} alt="user photo" height={28} width={28} /> {user?.displayName}</span>
+                                    </div>
+
+
+                                </form>
+                            }
+
+                            <div className={styles.comments}>
+                                {postData.comments && postData.comments > 0 &&
+                                    [...postData.comments]?.reverse().map((comment, index) => {
+                                        return <CommentCard key={index} comment={comment} postId={postData.postId} />
+                                    })
+                                }
+
+                                {(!postData.comments || postData.comments < 1) && <h6>No comments yet, Be the first to comment</h6>
+                                }
+                            </div>
+                        </section>
                     </div>
                 }
             </div>
-
-
         </>
     )
 }
@@ -179,10 +345,10 @@ export default function Page({ params }) {
 export const dynamicParams = false;
 export async function generateStaticParams() {
     const postsCollection = collection(db, 'posts');
-    const articlesQuery = query(postsCollection, where('postType', '==', 'Case Studies'));
-    const articlesDocs = await getDocs(articlesQuery);
+    const StudiesQuery = query(postsCollection, where('postType', '==', 'Case Studies'));
+    const StudiesDocs = await getDocs(StudiesQuery);
 
-    return articlesDocs.docs.map((doc) => ({
+    return StudiesDocs.docs.map((doc) => ({
         postId: doc.data().postId,
     }));
 }

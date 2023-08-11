@@ -39,7 +39,7 @@ const TabletNav = () => {
     },
     {
       path: "/archive",
-      name: "Archived",
+      name: "Archive",
       icon: <FontAwesomeIcon icon={faFolder} />
     },
     {

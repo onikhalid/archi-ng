@@ -68,6 +68,8 @@ const MakeCaseStudy = ({ postToEditId }) => {
   //////////////////////////////////////////////////////////////
 
   const submitForm = async (data) => {
+    document.body.scrollTo({ top: 0, behavior: "smooth" });
+
 
     if (selectedImage === null && !postToEditId) {
       toast.error("Select a cover image", {

@@ -505,6 +505,64 @@
 
    }
 
+   &.following {
+     position: fixed;
+     top: 0;
+     left: 0;
+     right: 0;
+     bottom: 0;
+     backdrop-filter: blur(10px);
+     overflow-y: hidden;
+
+     @media (min-width: 1019px) {
+       display: block;
+       columns: 2 auto;
+     }
+
+     li {
+       display: block;
+       text-align: left;
+       break-inside: avoid;
+       padding-top: .25rem;
+
+       .name {
+         font-weight: 500;
+         font-size: 1rem;
+       }
+
+       .username {
+         font-size: 0.8rem;
+         font-weight: 400;
+         display: flex;
+         gap: 0.35rem ;
+
+         img {
+           border-radius: 50px;
+           border: solid 1px var(--accent);
+           padding: 0 !important;
+         }
+       }
+
+
+       &:not(:nth-child(1))::after {
+         content: "";
+         position: absolute;
+         top: 0;
+         right: 0;
+         height: 1px;
+         width: 100%;
+         background-color: var(--main-text-clr);
+       }
+     }
+
+     @media (max-width: 720px) {
+       &.open {
+         left: 27% !important;
+       }
+     }
+
+   }
+
    &.open {
      animation: intro 350ms ease-in-out forwards;
    }

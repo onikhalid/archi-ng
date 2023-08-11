@@ -55,6 +55,7 @@ const MakeArticle = ({ postToEditId }) => {
   ///////////////////////////////////////////////////////////
 
   const submitForm = async (data) => {
+    document.body.scrollTo({ top: 0, behavior: "smooth" });
 
     if (selectedImage === null && !postToEditId) {
       toast.error("Select a cover image", {
@@ -116,13 +117,13 @@ const MakeArticle = ({ postToEditId }) => {
         postId: postId
       });
     }
-    
+
     toast.success(`Your article has been ${postToEditId ? 'updated' : 'posted'} 😎`, {
       position: toast.POSITION.TOP_CENTER,
       autoClose: 3500,
     });
     router.push('/')
-    document.body.scrollTo({top: 0, behavior: "smooth"})
+    document.body.scrollTo({ top: 0, behavior: "smooth" })
     setSavingPost(false)
   }
 
@@ -205,10 +206,19 @@ const MakeArticle = ({ postToEditId }) => {
 
 
 
+  const checkIfNumberInRange = async (num) => {
+    if (num > 15) {
+      return false
+    } else {
+      return true
+    }
+  };
 
 
 
 
+
+  
 
 
   return (
@@ -255,8 +265,24 @@ const MakeArticle = ({ postToEditId }) => {
             <input id="TimeToRead" name='TimeToRead' type="text"
               placeholder="2" defaultValue={timeToRead}
               onChange={handleInputChange}
-              {...register("TimeToRead", { required: true })} />
-            {errors.TimeToRead && <span>This field is required</span>}
+              {...register("TimeToRead", {
+                required: true,
+                pattern: {
+                  value: /^[0-9]+$/,
+                  message: 'Field can only contain numbers',
+                },
+                validate: checkIfNumberInRange
+
+              })} />
+            {errors.TimeToRead && errors.TimeToRead.type === 'required' && (
+              <span>Time To Read field is required</span>
+            )}
+            {errors.TimeToRead && errors.TimeToRead.type === 'pattern' && (
+              <span>Time To Read can only be a number</span>
+            )}
+            {errors.TimeToRead && errors.TimeToRead.type === 'validate' && (
+              <span>Time To Read can only be a number between 0 - 15</span>
+            )}
           </div>
 
           <div className='inputdiv'>

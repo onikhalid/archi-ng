@@ -2,6 +2,7 @@ import { db, storage } from '@/utils/firebase';
 import { doc, deleteDoc } from 'firebase/firestore';
 import { deleteObject, ref } from 'firebase/storage';
 import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
 
 
 
@@ -61,6 +62,7 @@ export const deletePost = async (postId, content, coverImage) => {
             position: "top-center",
             autoClose: 2500
         })
+    
     } catch (error) {
         if (error.code == "storage/object-not-found") {
             toast.error("The post you are trying to delete no longer exist", {

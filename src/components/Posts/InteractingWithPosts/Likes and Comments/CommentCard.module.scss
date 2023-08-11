@@ -1,0 +1,36 @@
+.commentcard {
+    display: flex;
+    gap: 0.75rem;
+    padding-block: 1.25rem;
+    border-bottom: solid 1px;
+
+    h6 {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+
+        span {
+            font-weight: 400;
+            font-size: 0.85rem;
+        }
+    }
+
+    .authorphoto {
+        min-width: max-content;
+        
+        img {
+            border-radius: 50px;
+        }
+    }
+
+    .comment {
+        border-radius: 12px;
+    }
+
+
+    .settings{
+        margin-left: auto;
+        svg{
+            cursor: pointer;
+        }
+    }
+}
