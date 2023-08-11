@@ -135,7 +135,6 @@ export default function Page({ params }) {
 
 
 
-
     //////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////
     /////////////////       COMMENTS      ////////////////////////
@@ -163,6 +162,7 @@ export default function Page({ params }) {
             setValue("Comment", "")
         }
     }
+
 
 
 
@@ -204,7 +204,7 @@ export default function Page({ params }) {
                                 user?.uid === postData.authorId &&
                                 <div className={styles.settings}>
                                     <Link title="Edit Post" href={`/post?edit=${postData.postId}&type=${postData.postType}`}><FontAwesomeIcon icon={faPenToSquare} /></Link>
-                                    <span title="Delete Post" onClick={() => deletePost(postData.postId, postData.postContent, postData.coverImageURL, "/")}> <FontAwesomeIcon icon={faTrashAlt}/> </span>
+                                    <span title="Delete Post" onClick={() => deletePost(postData.postId, postData.postContent, postData.coverImageURL, "/")}> <FontAwesomeIcon icon={faTrashAlt} /> </span>
                                 </div>
                             }
                         </header>
@@ -304,7 +304,7 @@ export default function Page({ params }) {
                                     <div className={`inputdiv ${styles.inputdiv}`}>
                                         <textarea
                                             id="Comment" name="Comment" type="text"
-                                            placeholder="Write a Remark"
+                                            placeholder="Write a Remark" rows={5}
                                             {...register("Comment", { required: true })} />
                                         {errors.Comment && <span>You can&apos;t submit an empty remark</span>}
                                     </div>
@@ -319,13 +319,13 @@ export default function Page({ params }) {
                             }
 
                             <div className={styles.comments}>
-                                {postData.comments && postData.comments > 0 &&
+                                {(postData.comments && postData.comments.length > 0) &&
                                     [...postData.comments]?.reverse().map((comment, index) => {
                                         return <CommentCard key={index} comment={comment} postId={postData.postId} />
                                     })
                                 }
 
-                                {(!postData.comments || postData.comments < 1) && <h6>No comments yet, Be the first to comment</h6>
+                                {(!postData.comments || postData.comments.length < 1) && <h6>No comments yet, Be the first to comment</h6>
                                 }
                             </div>
                         </section>
