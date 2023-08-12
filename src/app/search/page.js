@@ -23,6 +23,7 @@ const Search = () => {
   const [searchResult, setSearchResult] = useState([]);
   const searchParameter = searchParams.get('q')
   const [whichResultType, setwhichResultType] = useState("Studies");
+  const [recentSearches, setRecentSearches] = useState([]);
 
 
 
@@ -177,7 +178,6 @@ const Search = () => {
   ///////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////
   // Load searches from local storage on component mount
-  const [recentSearches, setRecentSearches] = useState([]);
   useEffect(() => {
     const savedSearches = localStorage.getItem('searches');
     if (savedSearches !== null) {

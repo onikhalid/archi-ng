@@ -53,7 +53,9 @@ export default function Page({ params }) {
                     const data = snapshot.data()
                     setPostData(data)
                     if (user) {
-                        await updateDoc(postDocRef, { reads: arrayUnion(user.uid) })
+                        if (data) {
+                            await updateDoc(postDocRef, { reads: arrayUnion(user.uid) })
+                        }
                     }
                 })
 
@@ -254,6 +256,9 @@ export default function Page({ params }) {
                                 </div>
 
 
+                                {/* //////////////////////////////////////// */}
+                                {/* ///////////       STATS         //////// */}
+                                {/* //////////////////////////////////////// */}
                                 <div className={styles.poststats}>
                                     <article className={postData.likes?.includes(user?.uid) ? ` ${styles.likedstat}` : `${styles.stat}`}>
                                         <span>

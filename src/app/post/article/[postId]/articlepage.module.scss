@@ -226,6 +226,7 @@
                 padding: 0.5rem 1.35rem;
                 border: solid 2.5px var(--main-text-clr);
                 border-radius: 12px;
+                gap: 0.5rem;
 
                 @media (min-width: 1280px) {
                     flex-direction: column;

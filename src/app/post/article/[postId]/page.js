@@ -14,7 +14,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { collection, getDocs, doc, query, where, onSnapshot, updateDoc, arrayUnion } from "firebase/firestore";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBookmark,faComment, faEye, faHeart, faPenToSquare, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { faBookmark, faComment, faEye, faHeart, faPenToSquare, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
 import { CommentCard } from "@/components/Posts/InteractingWithPosts/Likes and Comments/CommentCard";
 import { FollowersFollowingandLikesList } from "@/components/Profile/Followers,FollowingandLikesList";
@@ -201,7 +201,7 @@ export default function Page({ params }) {
                                 user?.uid === postData.authorId &&
                                 <div className={styles.settings}>
                                     <Link title="Edit Post" href={`/post?edit=${postData.postId}&type=${postData.postType}`}><FontAwesomeIcon icon={faPenToSquare} /></Link>
-                                    <span title="Delete Post" onClick={() => deletePost(postData.postId, postData.postContent, postData.coverImageURL)}> <FontAwesomeIcon icon={faTrashAlt}/> </span>
+                                    <span title="Delete Post" onClick={() => deletePost(postData.postId, postData.postContent, postData.coverImageURL)}> <FontAwesomeIcon icon={faTrashAlt} /> </span>
                                 </div>
                             }
                         </header>
@@ -250,6 +250,10 @@ export default function Page({ params }) {
                                 </div>
 
 
+
+                                {/* //////////////////////////////////////// */}
+                                {/* ///////////       STATS         //////// */}
+                                {/* //////////////////////////////////////// */}
                                 <div className={styles.poststats}>
                                     <article className={postData.likes?.includes(user?.uid) ? ` ${styles.likedstat}` : `${styles.stat}`}>
                                         <span>
@@ -317,7 +321,7 @@ export default function Page({ params }) {
                             <div className={styles.comments}>
                                 {(postData.comments && postData.comments.length > 0) &&
                                     [...postData.comments]?.reverse().map((comment, index) => {
-                                        return <CommentCard key={index} comment={comment} postId={postData.postId}/>
+                                        return <CommentCard key={index} comment={comment} postId={postData.postId} />
                                     })
                                 }
 

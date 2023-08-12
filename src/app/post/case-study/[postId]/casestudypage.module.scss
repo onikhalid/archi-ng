@@ -260,6 +260,10 @@
 
                     svg {
                         font-size: 2rem;
+                        stroke: var(--main-text-clr);
+                        stroke-width: 30px;
+                        fill: transparent;
+                        color: transparent;
 
                         @media (max-width: 1279px) {
                             font-size: 1.75rem;
@@ -270,10 +274,6 @@
 
                 .stat {
                     svg {
-                        stroke: var(--main-text-clr);
-                        stroke-width: 30px;
-                        fill: transparent;
-                        color: transparent;
                         cursor: pointer;
                     }
                 }
