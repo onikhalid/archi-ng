@@ -3,11 +3,10 @@
     flex-direction: column;
     align-items: center;
     gap: 10vh;
-    // font-family: Poppins, Helvetica, sans-serif;
-    font-size: clamp(0.85rem, 1.25vw, 1.5rem);
+    font-size: clamp(0.85rem, 1.3vw, 1.38rem);
     font-weight: 600;
     width: 100%;
-    max-width: 230px;
+    max-width: 220px;
     height: 100vh;
     padding: 2rem 1.5rem;
     border-right: 0.2vw solid var(--main-text-clr);
@@ -29,6 +28,7 @@
     flex-direction: column;
     justify-content: space-between;
     gap: 2rem;
+    align-items: center;
 }
 
 .navlink,
@@ -59,14 +59,6 @@
 
 }
 
-.settingslink {
-    &:hover {
-        &::after {
-            left: -1.2vw;
-            padding: 0.5rem 0rem;
-        }
-    }
-}
 
 .navlink.active {
     color: var(--accent);
@@ -81,9 +73,12 @@
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    align-items: center;
+
 
     a {
-        left: -1vw;
+        // left: -1vw;
         min-width: max-content;
+
     }
 }

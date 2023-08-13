@@ -102,8 +102,6 @@
                 border-radius: 12px;
 
                 .desc {
-                    display: grid;
-                    grid-template-columns: 1fr 1fr;
 
                     @media (min-width: 1280px) {
                         display: flex;

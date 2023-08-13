@@ -22,6 +22,7 @@ export default function Home() {
   const postToEdit = searchParams.get('edit')
   const postTypeToEdit = searchParams.get('type')
   const [userHasPermToEditPost, setUserHasPermToEditPost] = useState(null);
+  const [isWrongFormat, setIsWrongFormat] = useState(false);
 
 
 
@@ -66,11 +67,16 @@ export default function Home() {
 
 
   useEffect(() => {
+
     const checkPostToEditOwner = async () => {
       if (!user) {
         return
       }
       else if (!postToEdit || !postTypeToEdit) {
+        return
+      }
+      else if ((postTypeToEdit !== "Case Studies") && (postTypeToEdit !== "Articles")) {
+        setIsWrongFormat(true)
         return
       }
       else {
@@ -88,7 +94,6 @@ export default function Home() {
     checkPostToEditOwner()
 
   }, [user, postToEdit, postTypeToEdit]);
-
 
 
 
@@ -143,7 +148,7 @@ export default function Home() {
 
 
       {
-        !loading &&
+        !loading && !isWrongFormat &&
         user &&
         <main className={`content-container`}>
 
@@ -191,8 +196,8 @@ export default function Home() {
           {/* //////////////////////////////////// */}
           {/* ///////////   EDIT POST   ////////// */}
           {/* //////////////////////////////////// */}
-          {userHasPermToEditPost=='yes' && postTypeToEdit === "Articles" && <MakeArticle postToEditId={postToEdit} />}
-          {userHasPermToEditPost=='yes' && postTypeToEdit === "Case Studies" && <MakeCaseStudy postToEditId={postToEdit} />}
+          {userHasPermToEditPost == 'yes' && postTypeToEdit === "Articles" && <MakeArticle postToEditId={postToEdit} />}
+          {userHasPermToEditPost == 'yes' && postTypeToEdit === "Case Studies" && <MakeCaseStudy postToEditId={postToEdit} />}
 
 
 
@@ -200,7 +205,7 @@ export default function Home() {
           {/* //////////////////////////////////////////// */}
           {/* /////   NO PERMISSION TO EDIT POST   /////// */}
           {/* //////////////////////////////////////////// */}
-          {userHasPermToEditPost=='no' &&
+          {userHasPermToEditPost == 'no' &&
             <div className='infobox'>
               <h2>
                 How did you get here? 😯, this is not your post you can&apos;t edit it
@@ -211,6 +216,12 @@ export default function Home() {
         </main>
       }
 
+      {
+        isWrongFormat &&
+        <div className='infobox'>
+          <h2>Wrong post id or post type, double check the url and reload the page</h2>
+        </div>
+      }
     </>
 
   )

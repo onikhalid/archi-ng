@@ -134,12 +134,12 @@ const MakeCaseStudy = ({ postToEditId }) => {
     }
     
     
+    router.push('/')
     toast.success(`Your case study has been ${postToEditId ? 'updated' : 'submitted'} 😎`, {
       position: toast.POSITION.TOP_CENTER,
       autoClose: 3500,
     });
     
-    router.push('/')
     window.scrollTo({top: 0, behavior: "smooth"})
     setSavingPost(false)
   }

@@ -6,7 +6,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { useForm } from "react-hook-form";
 
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
-import { doc, collection, addDoc, updateDoc, setDoc, getDoc, writeBatch, getDocs } from 'firebase/firestore';
+import { doc, collection, addDoc, updateDoc, setDoc, getDoc, writeBatch, getDocs, query, where } from 'firebase/firestore';
 import { db, auth, storage } from '@/utils/firebase';
 
 import { toast } from 'react-toastify';
@@ -118,12 +118,12 @@ const MakeArticle = ({ postToEditId }) => {
       });
     }
 
+    router.push('/')
     toast.success(`Your article has been ${postToEditId ? 'updated' : 'posted'} 😎`, {
       position: toast.POSITION.TOP_CENTER,
       autoClose: 3500,
     });
-    router.push('/')
-    document.body.scrollTo({ top: 0, behavior: "smooth" })
+    
     setSavingPost(false)
   }
 

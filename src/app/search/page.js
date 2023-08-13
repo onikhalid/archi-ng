@@ -142,7 +142,7 @@ const Search = () => {
       performSearch(searchParameter)
     }
 
-  }, [searchParameter, whichResultType, recentSearches]);
+  }, [searchParameter, whichResultType]);
 
 
 
