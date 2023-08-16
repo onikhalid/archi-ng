@@ -1,6 +1,7 @@
 "use client"
-import styles from "./complete-profile.module.scss"
-import { useRouter } from "next/navigation";
+import styles from "./settings.module.scss"
+import { useRouter, useSearchParams } from "next/navigation"
+import WhoseandWhichpost from "@/components/Posts/ShowingPosts/Whosepost/whosepost"
 import { useState, useEffect, useLayoutEffect } from "react";
 import { useForm } from "react-hook-form";
 import { db, auth, storage } from '@/utils/firebase';
@@ -8,12 +9,30 @@ import { updateProfile } from "firebase/auth";
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { getMetadata, getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { doc, collection, updateDoc, getDoc, setDoc, getDocs, query, where, writeBatch } from 'firebase/firestore';
+import Button from "@/components/Button/button";
 import { toast } from "react-toastify";
 
-const Page = () => {
+
+const Settings = () => {
+  const router = useRouter()
+  const [currentSettings, setcurrentSettings] = useState("Edit Profile");
+
+  const sections = [
+    {
+      number: 1,
+      name: "Edit Profile",
+    },
+    {
+      number: 2,
+      name: "App Settings",
+    }
+  ];
+
+
+
+
   const { register, handleSubmit, watch, formState: { errors }, setValue } = useForm();
   const [user, loading] = useAuthState(auth)
-  const router = useRouter()
   const [savingProfile, setSavingProfile] = useState(false)
   const [pictureURL, setPictureURL] = useState(null)
   const [selectedImage, setSelectedImage] = useState(null)
@@ -49,17 +68,28 @@ const Page = () => {
   useLayoutEffect(() => {
     const GetUserInfo = async () => {
       if (!loading) {
-        const userProfileRef = doc(db, `users/${user?.uid}`)
-        const userProfileSnap = await getDoc(userProfileRef)
-        const userData = userProfileSnap.data()
+        if (!user) {
+          toast.error("Sign in to see setttings", {
+            position: "top-center",
+            autoClose: 2500
+          })
+          router.push('/auth')
+        }
+        else {
 
-        const { name, username, bio, profilePicture, occupation } = userData
+          const userProfileRef = doc(db, `users/${user?.uid}`)
+          const userProfileSnap = await getDoc(userProfileRef)
+          const userData = userProfileSnap.data()
 
-        setPictureURL(profilePicture)
-        setName(name)
-        setuserName(username)
-        setBio(bio)
-        setOccupation(occupation)
+          const { name, username, bio, profilePicture, occupation } = userData
+
+          setPictureURL(profilePicture)
+          setName(name)
+          setuserName(username)
+          setBio(bio)
+          setOccupation(occupation)
+        }
+
       }
 
 
@@ -168,7 +198,7 @@ const Page = () => {
       autoClose: 2000,
     })
 
-    router.push('/')
+    // router.push('/settings')
   }
 
 
@@ -226,7 +256,23 @@ const Page = () => {
 
 
 
-  
+
+
+
+
+
+
+
+
+  const pageTitle = `Settings |  Archi NG`
+
+
+
+
+
+
+
+
 
 
 
@@ -234,91 +280,109 @@ const Page = () => {
 
   return (
     <>
-    <title>Edit Profile | archi NG</title>
-      {
-        loading && <div>Loading..</div>
-      }
-      {
-        user && <div className={styles.userDetails}>
-          <h1>Complete your profile</h1>
+      <title>{`${pageTitle} - ${currentSettings}`}</title>
+      <main className="content-container">
 
-          <article className={styles.imagecontainer}>
-            <input type="file" accept="image/jpeg, image/jpg, image/png, image/gif" onChange={handleImageUpload} />
-            {pictureURL && <img className={styles.picture} src={pictureURL || newUserPic} alt="Preview" />}
-          </article>
-          <form id='userDetails' className={styles.userInfoForm} onSubmit={handleSubmit(createOrUpdateProfile)}>
-            <div className={styles.inputdiv}>
-              <label htmlFor="Name">Full name<span>*</span></label>
-              <input id="Name" type="text" name="Name"
-                placeholder="Adanna Nwoku Elizabeth" onChange={handleInputChange}
-                {...register("Name", { required: true })} />
-              {errors.Name && <span>Full Name field is required</span>}
-            </div>
-            <div className={styles.inputdiv}>
-              <label htmlFor="Bio">About me<span>*</span></label>
-              <textarea name="Bio" rows="3" maxLength="150" onChange={handleInputChange}
-                placeholder="Write a little about yourself" {...register("Bio", { required: true })}></textarea>
-              {errors.Bio && <span>About me field is required</span>}
-            </div>
-
-            <div className={styles.inputdiv}>
-              <label htmlFor="Username">Username<span>*</span></label>
-              <input id="Username" type="text" name="Username"
-                placeholder="Choose a unique username" onChange={handleInputChange}
-                {...register("Username", {
-                  required: true,
-                  pattern: {
-                    value: /^[a-zA-Z0-9_]+$/,
-                    message: 'Field can only contain letters, numbers and underscores',
-                  },
-                  validate: checkIfUsernameTaken
-                })}
-              />
-              {errors.Username && errors.Username.type === 'required' && (
-                <span>Username is required</span>
-              )}
-              {errors.Username && errors.Username.type === 'pattern' && (
-                <span>Username must only contain letters</span>
-              )}
-              {errors.Username && errors.Username.type === 'validate' && (
-                <span>Username taken, please choose something else</span>
-              )}
-            </div>
-
-            <div>
-              <label htmlFor="occupation">Occupation</label>
-              <select id="occupation" name="Occupation"
-                onChange={handleInputChange}
-                {...register("Occupation")}>
-                <option value="Architecture: Firm">Architecture: Firm</option>
-                <option value="Architecture: Freelancer">Architecture: Freelancer / Freelancer</option>
-                <option value="Architecture: Construction / Real Estate">Architecture: Construction / Real Estate</option>
-                <option value="Architecture: Academic Organization">Architecture: Academic Organization</option>
-                <option value="Architecture: Student">Architecture: Student</option>
-                <option value="Landscape">Landscape</option>
-                <option value="Urban Designer">Urban Designer</option>
-                <option value="Interior Designer">Interior Designer</option>
-                <option value="Graphic Designer">Graphic Designer</option>
-                <option value="Photographer">Photographer</option>
-                <option value="Real Estate">Real Estate</option>
-                <option value="Engineering">Engineering</option>
-                <option value="Media / PR Agency">Media / PR Agency</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
+        {/* ///////////////////////////////////////////////////////////// */}
+        {/* ///////////////////////////////////////////////////////////// */}
+        {/* //////////////       SEARCH BAR      //////////////////////// */}
+        {/* ///////////////////////////////////////////////////////////// */}
+        {/* ///////////////////////////////////////////////////////////// */}
 
 
+        <header className={styles.header}>
+          <h1>Settings</h1>
+          <WhoseandWhichpost variations={sections} currentwhosePost={currentSettings} setCurrentWhosePost={setcurrentSettings} />
 
-          </form>
+        </header>
 
-          <div className={styles.buttongroup}>
-            <button className={styles.submitbutton} form='userDetails' type="submit">Save and Continue ▶</button>
 
-          </div>
-        </div>
-      }
+        <section className={styles.userDetails}>
+          {
+            loading && <div>Loading..</div>
+          }
+
+          {
+            user &&
+            <>
+              <article className={styles.imagecontainer}>
+                <input type="file" accept="image/jpeg, image/jpg, image/png, image/gif" onChange={handleImageUpload} />
+                {pictureURL && <img className={styles.picture} src={pictureURL || newUserPic} alt="Preview" />}
+              </article>
+
+              <form id='userDetails' className={styles.userInfoForm} onSubmit={handleSubmit(createOrUpdateProfile)}>
+                <div className={styles.inputdiv}>
+                  <label htmlFor="Name">Full name<span>*</span></label>
+                  <input id="Name" type="text" name="Name"
+                    placeholder="Adanna Nwoku Elizabeth" onChange={handleInputChange}
+                    {...register("Name", { required: true })} />
+                  {errors.Name && <span>Full Name field is required</span>}
+                </div>
+                <div className={styles.inputdiv}>
+                  <label htmlFor="Bio">About me<span>*</span></label>
+                  <textarea name="Bio" rows="5" maxLength="250" onChange={handleInputChange}
+                    placeholder="Write a little about yourself" {...register("Bio", { required: true })}></textarea>
+                  {errors.Bio && <span>About me field is required</span>}
+                </div>
+
+                <div className={styles.inputdiv}>
+                  <label htmlFor="Username">Username<span>*</span></label>
+                  <input id="Username" type="text" name="Username"
+                    placeholder="Choose a unique username" onChange={handleInputChange}
+                    {...register("Username", {
+                      required: true,
+                      pattern: {
+                        value: /^[a-zA-Z0-9_]+$/,
+                        message: 'Field can only contain letters, numbers and underscores',
+                      },
+                      validate: checkIfUsernameTaken
+                    })}
+                  />
+                  {errors.Username && errors.Username.type === 'required' && (
+                    <span>Username is required</span>
+                  )}
+                  {errors.Username && errors.Username.type === 'pattern' && (
+                    <span>Username must only contain letters</span>
+                  )}
+                  {errors.Username && errors.Username.type === 'validate' && (
+                    <span>Username taken, please choose something else</span>
+                  )}
+                </div>
+
+                <div>
+                  <label htmlFor="occupation">Occupation</label>
+                  <select id="occupation" name="Occupation"
+                    onChange={handleInputChange}
+                    {...register("Occupation")}>
+                    <option value="Architecture: Firm">Architecture: Firm</option>
+                    <option value="Architecture: Freelancer">Architecture: Freelancer / Freelancer</option>
+                    <option value="Architecture: Construction / Real Estate">Architecture: Construction / Real Estate</option>
+                    <option value="Architecture: Academic Organization">Architecture: Academic Organization</option>
+                    <option value="Architecture: Student">Architecture: Student</option>
+                    <option value="Landscape">Landscape</option>
+                    <option value="Urban Designer">Urban Designer</option>
+                    <option value="Interior Designer">Interior Designer</option>
+                    <option value="Graphic Designer">Graphic Designer</option>
+                    <option value="Photographer">Photographer</option>
+                    <option value="Real Estate">Real Estate</option>
+                    <option value="Engineering">Engineering</option>
+                    <option value="Media / PR Agency">Media / PR Agency</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </form>
+
+              <div className={styles.buttongroup}>
+                <button className={styles.submitbutton} form='userDetails' type="submit">Save</button>
+
+              </div>
+            </>
+          }
+        </section>
+
+      </main>
     </>
   )
 }
 
-export default Page
+export default Settings 

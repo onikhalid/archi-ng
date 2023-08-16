@@ -6,7 +6,7 @@
     font-family: var(--text-poppins);
     transition: all 250ms ease-in-out;
     max-width: 450px;
-    overflow: hidden;
+    // overflow: hidden;
 
     @media (min-width: 1150px) {
         flex-direction: row;
@@ -31,6 +31,7 @@
         overflow: hidden;
         border-bottom: solid 1.5px var(--main-text-clr);
         width: 100%;
+        border-radius: 12px;
 
         @media (min-width: 1150px) {
             border-radius: 10px 0 0 10px;

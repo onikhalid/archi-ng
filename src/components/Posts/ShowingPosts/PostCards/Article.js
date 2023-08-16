@@ -4,12 +4,13 @@ import { useState } from 'react';
 import { useWindowWidth } from '@/utils/Hooks/ResponsiveHook';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/utils/firebase';
+
 import { faCircle, faFolder, faArrowUpRightFromSquare, faCircleCheck, faUserTie, faCalendarDays, faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { addBookmark } from '../../../../functions/Bookmark';
 import { toast } from 'react-toastify';
-import Button from "@/components/Button/button"
 import PostMenu from './PostCardMenu/PostMenu';
+import Button from "@/components/Button/button"
+import { addBookmark } from '@/functions/Bookmark';
 
 
 
@@ -17,6 +18,7 @@ const ArticleCard = ({ post }) => {
     const width = useWindowWidth()
     const [saved, setSaved] = useState(false)
     const [menuOpen, setMenuOpen] = useState(null)
+    const [authorUsername, setAuthorUsername] = useState("null")
     const [user, loading] = useAuthState(auth)
 
     const postId = post.postId
@@ -106,7 +108,7 @@ const ArticleCard = ({ post }) => {
                 <section>
                     <section className={styles.metadata}>
                         <div className={styles.authorandtime}>
-                            <Link as="profile" href={`/profile?id=${post?.authorId}`} title="visit author's profile" className={styles.authorinfo}>
+                            <Link href={`/profile?id=${post.authorId}`} title="visit author's profile" className={styles.authorinfo}>
                                 <img src={avatar} alt={'author image'} />
                                 <h6>{post.authorName}</h6>
                             </Link>

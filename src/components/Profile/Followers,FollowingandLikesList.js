@@ -2,10 +2,10 @@ import styles from './Followers,FollowingandLikesList.module.scss'
 import Image from 'next/image';
 import { db, auth } from '@/utils/firebase';
 import { useState, useEffect, useRef } from 'react';
-import { collection, query, where, getDocs, onSnapshot, getDoc, doc } from 'firebase/firestore';
+import { getDoc, doc } from 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFolderPlus, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { addBookmarkToFolder } from '@/functions/Bookmark';
 import { useWindowWidth } from '@/utils/Hooks/ResponsiveHook';
 import { useRouter } from 'next/navigation';
@@ -15,9 +15,8 @@ import { useRouter } from 'next/navigation';
 ///        little menu to show all the followers and followings of a user     /////
 ///         and also all the likes on a post                                 /////
 //////////////////////////////////////////////////////////////////////////////////
-export const FollowersFollowingandLikesList = ({ userId, postId, followers, following }) => {
+export const FollowersFollowingandLikesList = ({ userId, username, postId, followers, following }) => {
     const [user, loading] = useAuthState(auth);
-    const [userName, setUserName] = useState("")
     const [userFollowers, setUserFollowers] = useState([]);
     const [userFollowing, setUserFollowing] = useState([]);
     const [postLikes, setPostLikes] = useState([]);
@@ -33,29 +32,30 @@ export const FollowersFollowingandLikesList = ({ userId, postId, followers, foll
             try {
 
                 if (userId) {
-                    const userDocRef = doc(db, `users/${userId}`);
-                    const userDocSnap = await getDoc(userDocRef)
-                    const userData = userDocSnap.data()
-                    setUserFollowing(userData.following)
-                    setUserName(userData.username)
 
                     const xfollowers = []
                     const xfollowing = []
 
-                    userData.followers?.forEach(async (follower) => {
-                        const followerDocRef = doc(db, `users/${follower}`)
-                        const followerDocSnap = await getDoc(followerDocRef)
-                        xfollowers.push(followerDocSnap.data())
-                    })
-                    userData.following.forEach(async (following) => {
-                        const followingDocRef = doc(db, `users/${following}`)
-                        const followingDocSnap = await getDoc(followingDocRef)
-                        xfollowing.push(followingDocSnap.data())
-                    })
+                    if (followers) {
+
+                        followers.forEach(async (follower) => {
+                            const followerDocRef = doc(db, `users/${follower}`)
+                            const followerDocSnap = await getDoc(followerDocRef)
+                            xfollowers.push(followerDocSnap.data())
+                        })
+                    } 
+                    else if (following) {
+
+                        following.forEach(async (following) => {
+                            const followingDocRef = doc(db, `users/${following}`)
+                            const followingDocSnap = await getDoc(followingDocRef)
+                            xfollowing.push(followingDocSnap.data())
+                        })
+                    }
+
 
                     setUserFollowers(xfollowers)
                     setUserFollowing(xfollowing)
-
 
 
                 } else if (postId) {
@@ -79,7 +79,7 @@ export const FollowersFollowingandLikesList = ({ userId, postId, followers, foll
         }
         getNecessaryInfo()
 
-    }, [user, postId, userId]);
+    }, [user, postId, userId, followers, following]);
 
 
 
@@ -140,13 +140,13 @@ export const FollowersFollowingandLikesList = ({ userId, postId, followers, foll
                 {
                     followers && (userFollowers?.length < 1 || !userFollowers) &&
                     <li>
-                        No one follows {user?.uid === userId ? "you" : userName}
+                        No one follows {user?.uid === userId ? "you" : username}
                     </li>
                 }
                 {
                     following && (userFollowing?.length < 1 || !userFollowing) &&
                     <li>
-                        {user?.uid === userId ? "You don't" : `${userName} doesn't`} follow anyone
+                        {user?.uid === userId ? "You don't" : `${username} doesn't`} follow anyone
                     </li>
                 }
                 {

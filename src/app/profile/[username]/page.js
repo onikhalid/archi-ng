@@ -30,7 +30,6 @@ export default function Page({ params }) {
     const [loadingProfile, setloadingProfile] = useState(false);
     const [currentSection, setCurrentSection] = useState("Profile");
     const [following, setfollowing] = useState(null);
-    const [userExists, setUserExists] = useState(true);
     const [userPosts, setUserPosts] = useState(null);
     const [userFolders, setUserFolders] = useState(null);
     const [userInfo, setUserInfo] = useState(null);
@@ -68,16 +67,17 @@ export default function Page({ params }) {
             const usersCollection = collection(db, "users")
             const userQuery = query(usersCollection, where('username', '==', username));
             const userDocSnap = await getDocs(userQuery)
-
             const results = [];
-            userDocSnap.forEach((user) => {
-                if (user.data()) {
-                    results.push(user.data())
-                }
-                else return
+            let res = [];
+
+            onSnapshot(userQuery, async (snapshot) => {
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    res = [data]
+                    setUserInfo(data)
+
+                });
             })
-            setUserInfo(results[0])
-            return results[0]
         }
 
 
@@ -85,62 +85,63 @@ export default function Page({ params }) {
 
 
         const getOtherInfo = async () => {
-            const userdata = await getBasicInfo()
-            if (!userdata) {
-                setUserExists(false)
-                return
-            }
+            await getBasicInfo()
+
 
             // check if signed-in user follows proile user on component mountt 
-            const profileUserId = userdata.id
-            if (user?.uid == userdata.id) {
-                setfollowing(null)
-            } else {
 
-                const profileUserDocRef = doc(db, `users/${profileUserId}`);
-                const profileUserDocSnap = await getDoc(profileUserDocRef)
-                const profileUserData = profileUserDocSnap.data()
-
-                if (profileUserData.followers && profileUserData.followers.includes(user?.uid)) {
-                    setfollowing(true)
+            const profileUserId = userInfo && userInfo.id
+            if (userInfo) {
+                if (user?.uid == userInfo.id) {
+                    setfollowing(null)
                 } else {
-                    setfollowing(false)
+
+                    const profileUserDocRef = doc(db, `users/${profileUserId}`);
+                    const profileUserDocSnap = await getDoc(profileUserDocRef)
+                    const profileUserData = profileUserDocSnap.data()
+
+                    if (profileUserData.followers && profileUserData.followers.includes(user?.uid)) {
+                        setfollowing(true)
+                    } else {
+                        setfollowing(false)
+                    }
                 }
+
+
+                const getUserPosts = async () => {
+                    const userProfileId = userInfo.id
+                    const userPostsQuery = query(collection(db, "posts"), where('authorId', '==', userProfileId))
+                    const unsubscribe = onSnapshot(userPostsQuery, (snapshot) => {
+                        const newDataArray = [];
+                        snapshot.forEach((doc) => {
+                            const data = doc.data();
+                            newDataArray.push(data);
+                        });
+                        setUserPosts(newDataArray)
+                    })
+                    return unsubscribe
+                }
+                await getUserPosts()
+
+
+                const getUserFolders = async () => {
+                    const userProfileId = userInfo.id
+                    const userFoldersQuery = query(collection(db, "folders"), where('userId', '==', userProfileId))
+
+                    const unsub = onSnapshot(userFoldersQuery, (snapshot) => {
+                        const newDataArray = [];
+                        snapshot.forEach((doc) => {
+                            const data = doc.data();
+                            newDataArray.push(data);
+                        });
+                        setUserFolders(newDataArray)
+                    })
+                    return unsub
+                }
+
+                await getUserFolders()
             }
 
-
-            const getUserPosts = async () => {
-                const userProfileId = userdata.id
-                const userPostsQuery = query(collection(db, "posts"), where('authorId', '==', userProfileId))
-                const unsubscribe = onSnapshot(userPostsQuery, (snapshot) => {
-                    const newDataArray = [];
-                    snapshot.forEach((doc) => {
-                        const data = doc.data();
-                        newDataArray.push(data);
-                    });
-                    setUserPosts(newDataArray)
-                })
-                return unsubscribe
-            }
-            await getUserPosts()
-
-
-            const getUserFolders = async () => {
-                const userProfileId = userdata.id
-                const userFoldersQuery = query(collection(db, "folders"), where('userId', '==', userProfileId))
-
-                const unsub = onSnapshot(userFoldersQuery, (snapshot) => {
-                    const newDataArray = [];
-                    snapshot.forEach((doc) => {
-                        const data = doc.data();
-                        newDataArray.push(data);
-                    });
-                    setUserFolders(newDataArray)
-                })
-                return unsub
-            }
-
-            await getUserFolders()
 
 
         }
@@ -212,7 +213,7 @@ export default function Page({ params }) {
 
 
                 {
-                    !loadingProfile && !userExists &&
+                    !loadingProfile && !userInfo &&
                     <div className="infobox">
                         <h2>User does&apos;t exists 🥱</h2>
                     </div>
@@ -256,14 +257,14 @@ export default function Page({ params }) {
                                 <h5>{userPosts?.length ? userPosts?.length : 0} <span>ArcPosts</span></h5>
                                 <span>
                                     <h5>{userInfo.followers ? userInfo.followers.length : 0} <span>Followers</span></h5>
-                                    <FollowersFollowingandLikesList userId={userInfo.id} followers />
+                                    <FollowersFollowingandLikesList userId={userInfo.id} username={userInfo.username} followers={userInfo.followers} />
                                 </span>
                                 <span>
-                                     <h5>{userInfo.following ? userInfo.following.length : 0} <span>Following</span></h5>
-                                <FollowersFollowingandLikesList userId={userInfo.id} following />
+                                    <h5>{userInfo.following ? userInfo.following.length : 0} <span>Following</span></h5>
+                                    <FollowersFollowingandLikesList userId={userInfo.id} username={userInfo.username} following={userInfo.following} />
                                 </span>
 
-                               
+
                             </div>
 
                             <div>

@@ -52,7 +52,7 @@ export default function Profile() {
   return (
     <main className="content-container">
       {
-        !loading && !user && router.push('/auth')
+        (!loading && !user && !profileUserId )&& router.push('/auth')
       }
     </main>
   );

@@ -83,7 +83,7 @@ const CaseStudyCard = ({ post }) => {
                 <section>
                     <section className={styles.metadata}>
                         <div className={styles.authorandtime}>
-                            <Link as={'/post'} href={`/profile?id=${authorId}`}  title="visit author's profile" className={styles.authorinfo} >
+                            <Link href={`/profile?id=${authorId}`}  title="visit author's profile" className={styles.authorinfo} >
                                 <img src={authorAvatar} alt={'author image'} />
                                 <h6>{authorName}</h6>
                             </Link>
