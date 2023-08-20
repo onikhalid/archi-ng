@@ -208,7 +208,7 @@ const Search = () => {
   let pageTitle
   if (searchParameter == null || '') {
     pageTitle = `Search |  Archi NG`
-  } else pageTitle = `Search - ${searchParameter} |  Archi NG`
+  } else pageTitle = `Search results for "${searchParameter}" |  Archi NG`
 
 
 

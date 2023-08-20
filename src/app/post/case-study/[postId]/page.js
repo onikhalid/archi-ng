@@ -132,7 +132,7 @@ export default function Page({ params }) {
 
 
     const content = postData?.postContent
-    const pageTitle = postData && `${postData.title} - Case Study by ${postData.authorName} | archi NG`
+    const pageTitle = postData && `${postData.title} - Case Study by ${postData.authorName} | Archi NG`
 
 
 

@@ -106,19 +106,19 @@ export default function Home() {
   let pageTitle
   if (currentPostToMake == "case study") {
     if ((postToEdit || postTypeToEdit) === null) {
-      pageTitle = `Make Post: Case Study | archi NG`
-    } else pageTitle = `Edit Post: ${postTypeToEdit} | archi NG`
+      pageTitle = `Make Post: Case Study | Archi NG`
+    } else pageTitle = `Edit Post: ${postTypeToEdit} | Archi NG`
 
   }
   else if (currentPostToMake == "an article") {
     if ((postToEdit || postTypeToEdit) === null) {
-      pageTitle = `Make Post: Article | archi NG`
-    } else pageTitle = `Edit Post: ${postTypeToEdit} | archi NG`
+      pageTitle = `Make Post: Article | Archi NG`
+    } else pageTitle = `Edit Post: ${postTypeToEdit} | Archi NG`
 
   } else if (currentPostToMake == "a photo") {
     if ((postToEdit || postTypeToEdit) === null) {
-      pageTitle = `Make Post: Photo | archi NG`
-    } else pageTitle = `Edit Post: ${postTypeToEdit} | archi NG`
+      pageTitle = `Make Post: Photo | Archi NG`
+    } else pageTitle = `Edit Post: ${postTypeToEdit} | Archi NG`
 
   } else pageTitle = "Loading Make Post.."
 

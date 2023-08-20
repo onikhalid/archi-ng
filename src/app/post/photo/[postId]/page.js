@@ -13,11 +13,7 @@ export default function Page({ params }) {
         const postsCollectionRef = doc(db, `posts/${postId}`);
         const postDocs = await getDoc(postsCollectionRef);
         setPostData(postDocs.data())
-        // postDocs.docs.map((doc) => {
-        //     console.log(doc.data())
-        // })
     }
-    // ol()
     const content = postData.postContent
     return (
         <div className='content-container'>

@@ -37,7 +37,7 @@ export default function RootLayout({ children }) {
               rel="stylesheet"
               href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css"
             />
-            <title>Home | archi NG</title>
+            <title>Home | Archi NG</title>
             <meta name="description" content="{metadata.description}" />
           </head>
           <Body>

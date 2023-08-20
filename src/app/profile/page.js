@@ -25,9 +25,11 @@ export default function Profile() {
           router.replace(`/profile/${userData.username}`)
         }
       }
-
+      else if (!loading && !user && !profileUserId) {
+        router.push(`/auth`)
+      }
       else if (profileUserId) {
-        console.log(profileUserId)
+
         const profileUserRef = doc(db, `users/${profileUserId}`)
         const profileUserSnap = await getDoc(profileUserRef)
         if (profileUserSnap.data()) {
@@ -50,10 +52,16 @@ export default function Profile() {
 
 
   return (
-    <main className="content-container">
-      {
-        (!loading && !user && !profileUserId )&& router.push('/auth')
-      }
-    </main>
+    <>
+      <title>Profile | Archi NG</title>
+      <main className="content-container">
+        <div className="infobox">
+          <h2>
+            Loading Profile...
+          </h2>
+        </div>
+
+      </main>
+    </>
   );
 }

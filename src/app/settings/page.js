@@ -204,8 +204,6 @@ const Settings = () => {
 
 
 
-
-
   /////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////
   ///////////////////     IMAGE UPLOAD     ////////////////////
@@ -253,17 +251,6 @@ const Settings = () => {
   };
 
 
-
-
-
-
-
-
-
-
-
-
-
   const pageTitle = `Settings |  Archi NG`
 
 
@@ -303,7 +290,7 @@ const Settings = () => {
           }
 
           {
-            user &&
+            user && currentSettings == "Edit Profile" &&
             <>
               <article className={styles.imagecontainer}>
                 <input type="file" accept="image/jpeg, image/jpg, image/png, image/gif" onChange={handleImageUpload} />

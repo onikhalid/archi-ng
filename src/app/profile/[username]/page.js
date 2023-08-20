@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { collection, getDocs, getDoc, doc, query, where, onSnapshot } from "firebase/firestore";
 import { db, auth } from "@/utils/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { useState, useEffect, useLayoutEffect } from "react";
+import { useState, useEffect } from "react";
 
 import Image from 'next/image';
 import Button from '@/components/Button/button';
@@ -59,7 +59,7 @@ export default function Page({ params }) {
     ///////////////////     GET USERS INORMATION        /////////////////////
     /////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////
-    useLayoutEffect(() => {
+    useEffect(() => {
         setloadingProfile(true)
 
 
@@ -148,7 +148,9 @@ export default function Page({ params }) {
 
 
         getOtherInfo()
-        setloadingProfile(false)
+        setTimeout(() => {
+            setloadingProfile(false)
+        }, 1000);
 
         return () => { }
     }, [username, user, following, currentSection]);
@@ -188,7 +190,7 @@ export default function Page({ params }) {
 
     ////////////////////////////////////////////////////////////
     ////////////             PAGE TITLE            /////////////
-    const pageTitle = `Profile - ${userInfo?.name} | archi NG`
+    const pageTitle = `Profile - ${userInfo?.name} | Archi NG`
 
     return (
         <>
