@@ -43,7 +43,7 @@ export const FollowersFollowingandLikesList = ({ userId, username, postId, follo
                             const followerDocSnap = await getDoc(followerDocRef)
                             xfollowers.push(followerDocSnap.data())
                         })
-                    } 
+                    }
                     else if (following) {
 
                         following.forEach(async (following) => {
@@ -119,11 +119,6 @@ export const FollowersFollowingandLikesList = ({ userId, username, postId, follo
 
 
 
-    const addTo = (bookmark) => {
-        addBookmarkToFolder(user.uid, bookmark.bookmarkId, folderId, bookmark.authorId, "prevent error")
-        setMenuOpen(false)
-    }
-
 
 
 
@@ -137,57 +132,69 @@ export const FollowersFollowingandLikesList = ({ userId, username, postId, follo
             </div>
 
             <ul role="contextmenu" className={menuclasses()}>
-                {
-                    followers && (userFollowers?.length < 1 || !userFollowers) &&
-                    <li>
-                        No one follows {user?.uid === userId ? "you" : username}
-                    </li>
-                }
-                {
-                    following && (userFollowing?.length < 1 || !userFollowing) &&
-                    <li>
-                        {user?.uid === userId ? "You don't" : `${username} doesn't`} follow anyone
-                    </li>
-                }
-                {
-                    followers && userFollowers && userFollowers.map((follower, index) => {
-                        return (
-                            <li
-                                className='option' key={index}
-                                onClick={() => router.push(`${follower.username}`)}
-                            >
-                                <span className='name'>
-                                    {follower.name}
-                                </span>
-                                <br />
-                                <span className='username'>
-                                    <Image src={follower.profilePicture} height={30} width={30} alt={`${follower.name} photo` || 'user photo'} />
-                                    {follower.username}
-                                </span>
 
-                            </li>
-                        )
-                    })
-                }
                 {
-                    following && userFollowing && userFollowing.map((following, index) => {
-                        return (
-                            <li
-                                className='option' key={index}
-                                onClick={() => router.push(`${following.username}`)}
-                            >
-                                <span className='name' title={following.name}>
-                                    {following.name.substring(0, 30)}
-                                </span>
-                                <br />
-                                <span className='username'>
-                                    <Image src={following.profilePicture} height={30} width={30} alt={`${following.name} photo` || 'user photo'} />
-                                    {following.username}
-                                </span>
+                    followers &&
 
+                    <>
+                        {
+                            userFollowers.length < 1 &&
+                            <li>
+                                No one follows {user?.uid === userId ? "you" : username}
                             </li>
-                        )
-                    })
+                        }
+                        {userFollowers && userFollowers.map((follower, index) => {
+                            return (
+                                <li
+                                    className='option' key={index}
+                                    onClick={() => router.push(`${follower.username}`)}
+                                >
+                                    <span className='name'>
+                                        {follower.name}
+                                    </span>
+                                    <br />
+                                    <span className='username'>
+                                        <Image src={follower.profilePicture} height={30} width={30} alt={`${follower.name} photo` || 'user photo'} />
+                                        {follower.username}
+                                    </span>
+
+                                </li>
+                            )
+                        })}
+                    </>
+                }
+
+
+                {
+                    following &&
+
+                    <>
+                        {
+                            userFollowing.length < 1 &&
+                            <li>
+                                {user?.uid === userId ? "You" : username} don&apos;t follow anyone
+                            </li>
+                        }
+                        {userFollowing.map((following, index) => {
+                            return(
+                                <li
+                                    className='option' key={index}
+                                    onClick={() => router.push(`${following.username}`)}
+                                >
+                                    <span className='name' title={following.name}>
+                                        {following.name.substring(0, 30)}
+                                    </span>
+                                    <br />
+                                    <span className='username'>
+                                        <Image src={following.profilePicture} height={30} width={30} alt={`${following.name} photo` || 'user photo'} />
+                                        {following.username}
+                                    </span>
+
+                                </li>
+                            )
+                        })}
+                    </>
+
                 }
             </ul>
 

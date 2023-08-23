@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { collection, getDocs, getDoc, doc, query, where, onSnapshot } from "firebase/firestore";
 import { db, auth } from "@/utils/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect } from "react";
 
 import Image from 'next/image';
 import Button from '@/components/Button/button';
@@ -59,15 +59,14 @@ export default function Page({ params }) {
     ///////////////////     GET USERS INORMATION        /////////////////////
     /////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////
-    useEffect(() => {
+    useLayoutEffect(() => {
         setloadingProfile(true)
 
 
         const getBasicInfo = async () => {
             const usersCollection = collection(db, "users")
             const userQuery = query(usersCollection, where('username', '==', username));
-            const userDocSnap = await getDocs(userQuery)
-            const results = [];
+            
             let res = [];
 
             onSnapshot(userQuery, async (snapshot) => {
@@ -153,7 +152,7 @@ export default function Page({ params }) {
         }, 1000);
 
         return () => { }
-    }, [username, user, following, currentSection]);
+    }, [username, user, currentSection]);
 
 
 

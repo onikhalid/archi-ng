@@ -108,12 +108,12 @@ export const addBookmarkToFolder = async (userId, bookmarkId, folderId, bookmark
     } else {
       const parts = bookmarkId.split("_");
       const postId = (parts[1])
-      await updateDoc(folderDocRef, { bookmarks: arrayUnion(newBookmark) });
       const newBookmark = await addBookmark(postId, userId)
+      await updateDoc(folderDocRef, { bookmarks: arrayUnion(newBookmark) });
     }
 
   } else {
-    toast.error("This bookmark doesn't exist or has been deleted", { position: "top-center" })
+    toast.error("Either this bookmark doesn't exist or it has been deleted", { position: "top-center" })
   }
 
 };

@@ -2,7 +2,7 @@
 
 import styles from './folderPage.module.scss'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFolder, faFolderMinus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faFolder, faGear, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 
 import { collection, getDocs, getDoc, doc, query, where, onSnapshot } from "firebase/firestore";
@@ -14,6 +14,9 @@ import { AddBookmarkFromFolder } from "@/components/Posts/InteractingWithPosts/A
 import { removeBookmarkFromFolder } from '@/functions/Bookmark';
 
 
+
+
+
 export default function Page({ params }) {
     const { folderId } = params
     const [user, loading] = useAuthState(auth)
@@ -21,8 +24,6 @@ export default function Page({ params }) {
     const [folderOwnerId, setFolderOwnerId] = useState('')
     const [folderOwnerName, setFolderOwnerName] = useState('')
     const [bookmarks, setBookmarks] = useState([]);
-
-
 
 
 
@@ -92,14 +93,14 @@ export default function Page({ params }) {
     ////////////             PAGE TITLE            /////////////
     let pageTitle
     if (folderName !== undefined) {
-        pageTitle = `Folder: ${folderName} - by ${folderOwnerName} | archi NG`
+        pageTitle = `Folder: ${folderName} - by ${folderOwnerName} | Archi NG`
 
-    } else pageTitle = "Unknown Folder | archi NG"
-
-
+    } else pageTitle = "Unknown Folder | Archi NG"
 
 
-    
+
+
+
 
 
 
@@ -111,7 +112,10 @@ export default function Page({ params }) {
                 <header className={styles.pageHeader}>
                     <div className={styles.folderNameandOwner}>
                         <h1>{folderName} <FontAwesomeIcon icon={faFolder} /></h1>
-                        <h6> by {folderOwnerName !== '' ? folderOwnerName : "Uknown"}</h6>
+                        <span>
+                            <h6> by {folderOwnerName !== '' ? folderOwnerName : "Uknown"}
+                            </h6>
+                        </span>
                     </div>
                     {
                         /* // allow folder owner to add bookmark to folder from this page*/
@@ -124,7 +128,7 @@ export default function Page({ params }) {
 
 
                 {bookmarks == null && <div className="infobox">
-                    {/* //non existent older */}
+                    {/* //non existent folder */}
                     <h2>Folder doesn&apos;t exist</h2>
                 </div>}
 
@@ -148,10 +152,10 @@ export default function Page({ params }) {
 
                                         <BookmarkCard post={bookmark} />
                                         {user && user.uid == folderOwnerId &&
-                                             <button onClick={() => removeBookmark(bookmark)} className={styles.button}>
+                                            <button onClick={() => removeBookmark(bookmark)} className={styles.button}>
                                                 <FontAwesomeIcon icon={faTrash} /> Remove from folder
                                             </button>
-                                        } 
+                                        }
                                     </article>
 
                                 )

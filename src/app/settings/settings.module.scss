@@ -7,15 +7,17 @@
   text-align: center;
 }
 
-.userDetails {
+.pagecontainer {
+  width: 100%;
+  margin-top: 5rem;
+}
 
+.userDetails {
   display: flex;
   flex-direction: column;
   align-items: center;
   row-gap: 1.2rem;
   width: 100%;
-  margin-top: 5rem;
-
 
   .imagecontainer {
     display: flex;
@@ -71,6 +73,115 @@
     }
 
   }
+
+
+
+
+  .buttongroup {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 650px;
+
+
+    .submitbutton {
+      align-self: center;
+      color: var(--text-on-accent);
+      background-color: var(--accent);
+      border: solid 3px transparent;
+      padding: 0.5rem 1.2rem;
+      border-radius: var(--border-radius);
+      transition: all 250ms ease-out;
+      font-family: var(--text-lora) !important;
+      font-size: 1rem;
+      text-align: center;
+      cursor: pointer;
+
+      &:hover {
+        --border-radius: 5px;
+        background-color: var(--background);
+        border: solid 3px var(--accent);
+        color: var(--main-text-clr);
+      }
+
+      &:visited {
+        --border-radius: 50px;
+      }
+    }
+  }
+
+}
+
+.appSettings {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: left;
+  row-gap: 1.2rem;
+  width: 100%;
+
+  // theme switcher svg
+  .themeswitch {
+    display: flex;
+    // flex-direction: column;
+    align-items: center;
+    font-weight: 600;
+
+    .switchsvg {
+
+      display: contents;
+      transform: scale(1.5);
+
+      input[type=checkbox] {
+        height: 0;
+        width: 0;
+        visibility: hidden;
+      }
+
+      label {
+        position: relative;
+        display: block;
+        background: var(--glass);
+        width: 50px;
+        height: 25px;
+        border: solid 2px var(--main-text-clr);
+        border-radius: 50px;
+        text-indent: -9999px;
+        cursor: pointer;
+      }
+
+      label:after {
+        content: '';
+        position: absolute;
+        top: 1px;
+        left: 1.25px;
+        width: 17px;
+        height: 17px;
+        background: var(--accent);
+        border: solid 1px;
+        border-radius: 17px;
+        transition: 0.3s;
+      }
+
+      input:checked+label {
+        background: var(--glass);
+        border: solid 2px var(--main-text-clr);
+      }
+
+      input:checked+label:after {
+        left: calc(100% - 1.25px);
+        transform: translateX(100%);
+        transform: translateX(120%) !important;
+      }
+
+      label:active:after {
+        width: 27.5px;
+      }
+    }
+  }
+
+
+
 
 
 

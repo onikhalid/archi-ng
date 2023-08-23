@@ -121,7 +121,7 @@ export const AddBookmarkFromFolder = ({ userId, folderId }) => {
                                 <br />
                                 <span className='author'>
                                     <Image src={bookmark.postAuthorPhoto} height={20} width={20} alt='author photo' />
-                                    {bookmark.authorName}
+                                    {bookmark.postAuthorName}
                                 </span>
 
                             </li>

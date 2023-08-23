@@ -1,21 +1,27 @@
 "use client"
 import styles from "./settings.module.scss"
 import { useRouter, useSearchParams } from "next/navigation"
-import WhoseandWhichpost from "@/components/Posts/ShowingPosts/Whosepost/whosepost"
+import { useContext } from 'react';
 import { useState, useEffect, useLayoutEffect } from "react";
-import { useForm } from "react-hook-form";
+import { ThemeContext } from '@/utils/ContextandProviders/Contexts';
+
+import { useAuthState } from 'react-firebase-hooks/auth';
 import { db, auth, storage } from '@/utils/firebase';
 import { updateProfile } from "firebase/auth";
-import { useAuthState } from 'react-firebase-hooks/auth';
 import { getMetadata, getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { doc, collection, updateDoc, getDoc, setDoc, getDocs, query, where, writeBatch } from 'firebase/firestore';
-import Button from "@/components/Button/button";
+
+import WhoseandWhichpost from "@/components/Posts/ShowingPosts/Whosepost/whosepost"
+import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+
 
 
 const Settings = () => {
   const router = useRouter()
   const [currentSettings, setcurrentSettings] = useState("Edit Profile");
+  const { theme, toggleTheme } = useContext(ThemeContext);
+
 
   const sections = [
     {
@@ -284,14 +290,14 @@ const Settings = () => {
         </header>
 
 
-        <section className={styles.userDetails}>
+        <section className={styles.pagecontainer}>
           {
             loading && <div>Loading..</div>
           }
 
           {
             user && currentSettings == "Edit Profile" &&
-            <>
+            <section className={styles.userDetails}>
               <article className={styles.imagecontainer}>
                 <input type="file" accept="image/jpeg, image/jpg, image/png, image/gif" onChange={handleImageUpload} />
                 {pictureURL && <img className={styles.picture} src={pictureURL || newUserPic} alt="Preview" />}
@@ -363,7 +369,27 @@ const Settings = () => {
                 <button className={styles.submitbutton} form='userDetails' type="submit">Save</button>
 
               </div>
-            </>
+            </section>
+          }
+
+
+
+          {
+            user && currentSettings == "App Settings" &&
+            <section className={styles.appSettings}>
+              <article className={styles.themeswitch}>
+                Theme
+                <div className={styles.switchsvg}>
+                  <input onClick={toggleTheme} type="checkbox" id="switch" />
+                  <label htmlFor="switch">th</label>
+                  </div>
+              </article>
+
+              {/* <div className={styles.buttongroup}>
+                <button className={styles.submitbutton} form='userDetails' type="submit">Save</button>
+
+              </div> */}
+            </section>
           }
         </section>
 

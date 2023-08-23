@@ -9,10 +9,9 @@ import Button from "@/components/Button/button"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFolder, faArrowUpRightFromSquare, faTrash, faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { useAuthState } from "react-firebase-hooks/auth"
-import { useWindowWidth } from "@/utils/Hooks/ResponsiveHook"
-import { addBookmark, deleteBookmark } from "@/functions/Bookmark"
+import { addBookmark } from "@/functions/Bookmark"
 import { deleteFolder } from "@/functions/Bookmark"
-
+import { toast } from "react-toastify"
 
 
 
