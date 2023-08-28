@@ -8,7 +8,7 @@ import Navigation from '@/components/Layout/navigation/nav'
 import Button from "@/components/Button/button";
 import { ToastContainer } from 'react-toastify';
 import { ProgressBar } from "@/components/Layout/navigation/progressbar"
-
+import { useWindowWidth } from "@/utils/Hooks/ResponsiveHook";
 
 
 const Body = ({ children }) => {
@@ -16,6 +16,7 @@ const Body = ({ children }) => {
   const [sidebarWidth, setSidebarWidth] = useState(200);
   const [isVisible, setIsVisible] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const width = useWindowWidth()
 
 
   const handleResize = () => {
@@ -33,26 +34,37 @@ const Body = ({ children }) => {
 
 
   useEffect(() => {
+    
     const handleScroll = () => {
       const scrollTop = document.body.scrollTop
-      const shouldShowButton = scrollTop > 1500;
+      const shouldShowButton = width > 719  ?  window.scrollY > 1500  :  scrollTop > 2500
       setIsVisible(shouldShowButton);
+      // if ((scrollTop > lastScrollY) && scrollTop > 2500) {
+      //   setIsVisible(true);
+      // } else if (scrollTop < lastScrollY) {
+      //   setIsVisible(false);
+      // } else if (scrollTop == 0) { setIsVisible(true); }
 
-      if ((scrollTop > lastScrollY) && scrollTop > 1500) {
+      if ((window.scrollY > lastScrollY) && window.scrollY > 1500) {
         setIsVisible(true);
-      } else if (scrollTop < lastScrollY) {
+      } else if (window.scrollY < lastScrollY) {
         setIsVisible(false);
-      } else if (scrollTop == 0) { setIsVisible(true); }
+      } else if (window.scrollY == 0) { setIsVisible(false); }
+
+
+
 
       // remember current page location to use in the next move
       setLastScrollY(scrollTop);
     };
     document.body.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll);
 
     return () => {
       document.body.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('scroll', handleScroll);
     };
-  }, [lastScrollY]);
+  }, [lastScrollY, width]);
 
   const scrollToTop = () => {
     document.body.scrollTo({ top: 0, behavior: "smooth" });
@@ -66,7 +78,7 @@ const Body = ({ children }) => {
     <body data-theme={theme} className={styles.body}>
       <ToastContainer limit={3} />
       <ProgressBar />
-      <button className={isVisible ? `${styles.topbtn}` : `${styles.topbtn} ${styles.hidden}`} onClick={scrollToTop}>top ↑</button>
+      <button className={isVisible ? `${styles.topbtn}` : `${styles.topbtn} ${styles.hidden}`} onClick={scrollToTop}>back to top</button>
 
       <div className={styles.container}>
         <div className={styles.sidebarandnav} style={{ '--sidebar-width': `${sidebarWidth}px` }}>

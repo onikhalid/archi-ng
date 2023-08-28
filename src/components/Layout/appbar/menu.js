@@ -40,6 +40,10 @@ const Menu = ({ menuOpen, setMenuOpen, menuclass, setMenuClass }) => {
         });
         auth.signOut()
     }
+    const closemenu = async () => {
+        await setMenuOpen(false)
+        await setMenuClass(`appbar_menu__RWEMy appbar_menuClose__BM0_l`)
+    }
 
 
 
@@ -50,7 +54,7 @@ const Menu = ({ menuOpen, setMenuOpen, menuclass, setMenuClass }) => {
 
     return (
         <>
-           {menuOpen &&  <title>Menu | archi NG</title>}
+           {menuOpen &&  <title>Menu | Archi NG</title>}
 
             <div className={menuclass}>
                 <div className={styles.container}>
@@ -134,8 +138,8 @@ const Menu = ({ menuOpen, setMenuOpen, menuclass, setMenuClass }) => {
                             />
                         </Link>
                         <div className={styles.permalinks}>
-                            <Link href={'/about'}>About</Link>
-                            <Link href={'/contact'}>Contact</Link>
+                            <Link href={'/about'} onClick={closemenu}>About</Link>
+                            <Link href={'/contact'} onClick={closemenu}>Contact</Link>
                         </div>
                         <small>
                             All rights reserved.  <FontAwesomeIcon icon={faCopyright} /> 2023, archi NG

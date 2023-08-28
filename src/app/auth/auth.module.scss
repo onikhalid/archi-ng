@@ -36,7 +36,7 @@
 
         h1 {
             @media (max-width:720px) {
-                max-width: 7ch;
+                max-width: 7.5ch;
             }
         }
     }
@@ -47,7 +47,7 @@
     .form {
         display: flex;
         flex-direction: column;
-        gap: 5rem;
+        gap: 3.5rem;
 
         .google {
             display: flex;

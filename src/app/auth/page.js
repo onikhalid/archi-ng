@@ -1,7 +1,7 @@
 "use client"
 import styles from "./auth.module.scss"
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { auth, db } from "@/utils/firebase";
 import { getDoc, doc, setDoc } from "firebase/firestore";
@@ -18,7 +18,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 export default function Login() {
   const route = useRouter();
   const [user, loading] = useAuthState(auth);
+  const param = useSearchParams();
+  const query = param.get('redirect')
   const [currentType, setCurrentType] = useState('Login');
+
 
 
 
@@ -72,13 +75,21 @@ export default function Login() {
     }
   ];
 
-
+  const goBack = () => {
+    if (query) {
+      if (query == "settings" || "post") {
+        route.push('/')
+      }
+    } else {
+      route.back()
+    }
+  }
 
 
 
   return (
     <div className={`content-container ${styles.authpage}`}>
-      <section className={styles.closebutton} onClick={() => route.back()}>
+      <section className={styles.closebutton} onClick={goBack}>
         <FontAwesomeIcon icon={faX} bounce />
       </section>
 

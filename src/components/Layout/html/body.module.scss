@@ -7,6 +7,7 @@
 .container {
     width: 100%;
     max-width: 2800px;
+
     @media (min-width: 720px) {
         position: relative;
         display: flex;
@@ -34,7 +35,11 @@
         align-items: center;
         min-height: 100vh;
         padding: 1rem;
-        max-height: 100vh;
+
+        &.restricted {
+            max-height: 100vh;
+
+        }
 
         @media (min-width: 1020px) {
             padding: 1.5rem 10vw;
@@ -46,8 +51,8 @@
 
 .topbtn {
     position: fixed;
-    top: 92%;
-    left: 80%;
+    top: 85%;
+    left: 70%;
     z-index: 190;
     transition: all ease-in-out 0.3s;
     background-color: var(--accent);
@@ -55,16 +60,21 @@
     border-radius: 50px;
     border: solid 2.5px transparent;
     cursor: pointer;
-    
-    
+
+
+    @media (min-width: 1020px) {
+        left: 88%;
+    }
+
     &:hover {
         background-color: var(--background);
         opacity: 0.85;
         border: solid 2.5px var(--accent);
         color: var(--main-text-clr);
-        border-radius: 10px;
+        border-radius: 7px;
     }
-    &.hidden{
+
+    &.hidden {
         opacity: 0;
     }
 

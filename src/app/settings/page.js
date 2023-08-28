@@ -79,7 +79,7 @@ const Settings = () => {
             position: "top-center",
             autoClose: 2500
           })
-          router.push('/auth')
+          router.push('/auth?redirect=settings')
         }
         else {
 
@@ -204,7 +204,6 @@ const Settings = () => {
       autoClose: 2000,
     })
 
-    // router.push('/settings')
   }
 
 
@@ -377,6 +376,10 @@ const Settings = () => {
           {
             user && currentSettings == "App Settings" &&
             <section className={styles.appSettings}>
+              <ol>
+                <li>lo</li>
+                <li>lo</li>
+              </ol>
               <article className={styles.themeswitch}>
                 Theme
                 <div className={styles.switchsvg}>
