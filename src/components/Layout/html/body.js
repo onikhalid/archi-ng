@@ -39,11 +39,11 @@ const Body = ({ children }) => {
       const scrollTop = document.body.scrollTop
       const shouldShowButton = width > 719  ?  window.scrollY > 1500  :  scrollTop > 2500
       setIsVisible(shouldShowButton);
-      // if ((scrollTop > lastScrollY) && scrollTop > 2500) {
-      //   setIsVisible(true);
-      // } else if (scrollTop < lastScrollY) {
-      //   setIsVisible(false);
-      // } else if (scrollTop == 0) { setIsVisible(true); }
+      if ((scrollTop > lastScrollY) && scrollTop > 2500) {
+        setIsVisible(true);
+      } else if (scrollTop < lastScrollY) {
+        setIsVisible(false);
+      } else if (scrollTop == 0) { setIsVisible(true); }
 
       if ((window.scrollY > lastScrollY) && window.scrollY > 1500) {
         setIsVisible(true);
