@@ -4,7 +4,9 @@ import styles from './navMobile.module.scss'
 
 import Link from "next/link"
 import { usePathname } from 'next/navigation'
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useContext } from 'react';
+
+import { MobileNavContext } from '@/utils/ContextandProviders/Contexts';
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass, faHouse, faUser, faFolder, faRightFromBracket, faGear, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
@@ -41,44 +43,18 @@ const MobileNav = () => {
 
 
   // show and hide navbar based on scroll
-  const [hidden, setHidden] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const classes = hidden === true ? `${styles.hidden} ${styles.mobileNav}` : `${styles.mobileNav}`
+  const { hidden, toggleHidden } = useContext(MobileNavContext);
+  const classes = hidden == true ? `${styles.hidden} ${styles.mobileNav}` : `${styles.mobileNav}`
 
-
-
-  useEffect(() => {
-
-    const controlNavbar = () => {
-      const scrollTop = document.body.scrollTop
-      
-          if (scrollTop > lastScrollY) {
-            setHidden(true);
-          } else if (scrollTop < lastScrollY) {
-            setHidden(false);
-          } else if (scrollTop == 0) { setHidden(true); }
   
-
-        // remember current page location to use in the next move
-        setLastScrollY(scrollTop);
-    };
-
-    if (typeof window !== 'undefined') {
-      document.body.addEventListener('scroll', controlNavbar);
-
-      return () => {
-        document.body.removeEventListener('scroll', controlNavbar);
-      };
-    }
-  }, [lastScrollY]);
-
-
-
+  
+  
+  
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
         if (!hidden) {
-          setHidden(true);
+          toggleHidden(true);
         }
       }
     };
@@ -92,19 +68,25 @@ const MobileNav = () => {
 
 
 
-  return (
-    <nav className={classes} ref={wrapperRef}>
-      {
-        pages.map((link, index) => (
-          <Link
-            href={link.path} key={index}
-            className={currentPath === link.path ? `${styles.navlink} ${styles.active}` : styles.navlink} >
-            {link.icon}
-          </Link>
-        ))
-      }
 
-    </nav>
+
+
+
+
+  return (
+      <nav className={classes} ref={wrapperRef}>
+        {
+          pages.map((link, index) => (
+            <Link
+              href={link.path} key={index}
+              className={currentPath === link.path ? `${styles.navlink} ${styles.active}` : styles.navlink} >
+              {link.icon}
+            </Link>
+          ))
+        }
+
+      </nav>
+
   )
 }
 

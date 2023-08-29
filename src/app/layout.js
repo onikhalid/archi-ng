@@ -4,6 +4,8 @@ import { config } from "@fortawesome/fontawesome-svg-core";
 config.autoAddCss = false;
 
 import { ThemeProvider } from '@/utils/ContextandProviders/Providers'
+import { MobileNavProvider } from '@/utils/ContextandProviders/Providers';
+
 import Body from '@/components/Layout/html/body';
 
 
@@ -30,6 +32,7 @@ export default function RootLayout({ children }) {
 
   return (
     <ThemeProvider>
+      <MobileNavProvider>
         <html className={poppins.className} lang="en">
           <head>
             <link rel='shortcut icon' href='/favicon.ico' />
@@ -44,6 +47,7 @@ export default function RootLayout({ children }) {
             {children}
           </Body>
         </html>
+      </MobileNavProvider>
     </ThemeProvider>
 
   )

@@ -2,7 +2,7 @@
 import styles from "./body.module.scss"
 import "react-toastify/dist/ReactToastify.css";
 import { useContext, useState, useEffect, Suspense } from 'react';
-import { ThemeContext } from '@/utils/ContextandProviders/Contexts';
+import { MobileNavContext, ThemeContext } from '@/utils/ContextandProviders/Contexts';
 import AppBar from '@/components/Layout/appbar/appbar'
 import Navigation from '@/components/Layout/navigation/nav'
 import Button from "@/components/Button/button";
@@ -13,6 +13,7 @@ import { useWindowWidth } from "@/utils/Hooks/ResponsiveHook";
 
 const Body = ({ children }) => {
   const { theme, toggleTheme } = useContext(ThemeContext);
+  const { hidden, toggleHidden } = useContext(MobileNavContext);
   const [sidebarWidth, setSidebarWidth] = useState(200);
   const [isVisible, setIsVisible] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -34,37 +35,40 @@ const Body = ({ children }) => {
 
 
   useEffect(() => {
-    
-    const handleScroll = () => {
-      const scrollTop = document.body.scrollTop
-      const shouldShowButton = width > 719  ?  window.scrollY > 1500  :  scrollTop > 2500
-      setIsVisible(shouldShowButton);
-      if ((scrollTop > lastScrollY) && scrollTop > 2500) {
-        setIsVisible(true);
-      } else if (scrollTop < lastScrollY) {
-        setIsVisible(false);
-      } else if (scrollTop == 0) { setIsVisible(true); }
 
-      if ((window.scrollY > lastScrollY) && window.scrollY > 1500) {
+    const handleScroll = () => {
+      const shouldShowButton = window.scrollY > 600
+      setIsVisible(shouldShowButton);
+
+
+      if ((window.scrollY > lastScrollY) && window.scrollY > 1600) {
         setIsVisible(true);
       } else if (window.scrollY < lastScrollY) {
         setIsVisible(false);
-      } else if (window.scrollY == 0) { setIsVisible(false); }
+      } else if (window.scrollY == 0) {
+        setIsVisible(false);
+      }
+
+      if (window.scrollY == 0) {
+        toggleHidden(false)
+      } 
+      else if (window.scrollY < lastScrollY) {
+        toggleHidden(false)
+      } else {
+        toggleHidden(true)
+      }
 
 
 
+      setLastScrollY(window.scrollY);
 
-      // remember current page location to use in the next move
-      setLastScrollY(scrollTop);
     };
-    document.body.addEventListener('scroll', handleScroll);
     window.addEventListener('scroll', handleScroll);
 
     return () => {
-      document.body.removeEventListener('scroll', handleScroll);
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [lastScrollY, width]);
+  }, [lastScrollY, width, hidden]);
 
   const scrollToTop = () => {
     document.body.scrollTo({ top: 0, behavior: "smooth" });

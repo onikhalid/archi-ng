@@ -8,3 +8,8 @@ export const ThemeContext = createContext({
   toggleTheme: () => { },
 });
 
+export const MobileNavContext = createContext({
+  hidden: true,
+  toggleTheme: () => { },
+});
+

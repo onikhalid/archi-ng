@@ -1,7 +1,10 @@
 "use client"
 
-import { ThemeContext } from "./Contexts";
+import { ThemeContext, MobileNavContext } from "./Contexts";
 import { useState, useEffect, useLayoutEffect} from "react";
+
+
+
 
 export const ThemeProvider = ({ children }) => {
 
@@ -32,6 +35,29 @@ export const ThemeProvider = ({ children }) => {
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
+  );
+};
+
+
+
+
+
+export const MobileNavProvider = ({ children }) => {
+
+  const [hidden, setHidden] = useState(true);
+  
+
+  const toggleHidden = (x) => {
+    setHidden(x);
+  };
+
+
+
+
+  return (
+    <MobileNavContext.Provider value={{ hidden, toggleHidden }}>
+      {children}
+    </MobileNavContext.Provider>
   );
 };
 
