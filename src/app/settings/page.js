@@ -14,6 +14,9 @@ import { doc, collection, updateDoc, getDoc, setDoc, getDocs, query, where, writ
 import WhoseandWhichpost from "@/components/Posts/ShowingPosts/Whosepost/whosepost"
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import Button from "@/components/Button/button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 
 
 
@@ -255,6 +258,14 @@ const Settings = () => {
     return downloadURL;
   };
 
+  const logOut = () => {
+    toast.success("Succesfully signed out", {
+      position: toast.POSITION.TOP_CENTER,
+      autoClose: 3500,
+    });
+    auth.signOut()
+  }
+
 
   const pageTitle = `Settings |  Archi NG`
 
@@ -373,25 +384,38 @@ const Settings = () => {
 
 
 
+
+
+
+
+
+
+
+
+
           {
             user && currentSettings == "App Settings" &&
             <section className={styles.appSettings}>
-              <ol>
-                <li>lo</li>
-                <li>lo</li>
-              </ol>
-              <article className={styles.themeswitch}>
-                Theme
-                <div className={styles.switchsvg}>
-                  <input onClick={toggleTheme} type="checkbox" id="switch" />
-                  <label htmlFor="switch">th</label>
-                  </div>
-              </article>
+              <ul>
+                <li>
+                  <article className={styles.themeswitch}>
+                    Theme
+                    <div className={styles.switchsvg}>
+                      <input onClick={toggleTheme} type="checkbox" id="switch" />
+                      <label htmlFor="switch">th</label>
+                    </div>
+                  </article>
+                </li>
 
-              {/* <div className={styles.buttongroup}>
-                <button className={styles.submitbutton} form='userDetails' type="submit">Save</button>
+                <li>
+                  {user &&
+                    <span onClick={logOut} className={styles.settingslink}> <FontAwesomeIcon icon={faRightFromBracket} />
+                      Logout
+                    </span>}
 
-              </div> */}
+                </li>
+              </ul>
+
             </section>
           }
         </section>

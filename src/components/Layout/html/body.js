@@ -37,7 +37,7 @@ const Body = ({ children }) => {
   useEffect(() => {
 
     const handleScroll = () => {
-      const shouldShowButton = window.scrollY > 600
+      const shouldShowButton = window.scrollY >  600
       setIsVisible(shouldShowButton);
 
 
