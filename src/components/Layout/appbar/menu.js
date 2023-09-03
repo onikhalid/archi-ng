@@ -140,6 +140,7 @@ const Menu = ({ menuOpen, setMenuOpen, menuclass, setMenuClass }) => {
                         <div className={styles.permalinks}>
                             <Link href={'/about'} onClick={closemenu}>About</Link>
                             <Link href={'/contact'} onClick={closemenu}>Contact</Link>
+                            <Link href={'/terms'} onClick={closemenu}>Terms and Conditions</Link>
                         </div>
                         <small>
                             All rights reserved.  <FontAwesomeIcon icon={faCopyright} /> 2023, archi NG

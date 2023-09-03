@@ -1,22 +1,21 @@
 "use client"
 import styles from "./settings.module.scss"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useContext } from 'react';
+import { useContext, useRef } from 'react';
 import { useState, useEffect, useLayoutEffect } from "react";
 import { ThemeContext } from '@/utils/ContextandProviders/Contexts';
 
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { db, auth, storage } from '@/utils/firebase';
-import { updateProfile } from "firebase/auth";
+import { EmailAuthProvider, reauthenticateWithCredential, sendSignInLinkToEmail, updateEmail, updatePassword, updateProfile } from "firebase/auth";
 import { getMetadata, getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { doc, collection, updateDoc, getDoc, setDoc, getDocs, query, where, writeBatch } from 'firebase/firestore';
+import { doc, collection, getDoc, setDoc, getDocs, query, where, writeBatch } from 'firebase/firestore';
 
 import WhoseandWhichpost from "@/components/Posts/ShowingPosts/Whosepost/whosepost"
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import Button from "@/components/Button/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
+import { faAddressBook, faCircleQuestion, faCircleUser, faEnvelopeCircleCheck, faFileContract, faLock, faPen, faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 
 
 
@@ -40,20 +39,31 @@ const Settings = () => {
 
 
 
-  const { register, handleSubmit, watch, formState: { errors }, setValue } = useForm();
+
+
+
+
+
+
+  //////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////            PROFILE FORM           /////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////
+
+  const { register, handleSubmit, watch, formState: { errors }, setValue, setError } = useForm();
   const [user, loading] = useAuthState(auth)
   const [savingProfile, setSavingProfile] = useState(false)
   const [pictureURL, setPictureURL] = useState(null)
   const [selectedImage, setSelectedImage] = useState(null)
   const newUserPic = "/assets/logo/logo-light.svg"
 
-
-
-
-  /////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////
   ///////////////       PREPOPULATE FORM     //////////////////
-  /////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////
   // form fields
   const [name, setName] = useState('');
@@ -109,14 +119,9 @@ const Settings = () => {
 
 
 
-
-
-
-  //////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////
-  //////////////////      FORM SUBMISSION        ///////////////////////
-  //////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////
+  //////////////////      PROFILE UPDATE FORM SUBMISSION        ///////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////
 
   // check If Username Is Taken
   const checkIfUsernameTaken = async (username) => {
@@ -136,6 +141,7 @@ const Settings = () => {
 
   //////////////////////////////////////////////////////////////////////
   //////////////////      UPDATE PROFILE        ///////////////////////
+  //////////////////////////////////////////////////////////////////////
   const createOrUpdateProfile = async (data) => {
     const newImageURL = selectedImage && await uploadImage(selectedImage)
 
@@ -158,6 +164,7 @@ const Settings = () => {
     //////////////////////////////////////////////////////////////////////////////////
     /////   UPDATE NAME AND AVATAR IN POSTS USER HAS PREVIOUSLY CREATED/FEATURED IN
     /////  POSTS
+    //////////////////////////////////////////////////////////////////////////////////
     const allUsersPostsQuery = query(collection(db, 'posts'), where('authorId', '==', user?.uid));
     const allUsersPostsSnap = await getDocs(allUsersPostsQuery)
 
@@ -211,11 +218,8 @@ const Settings = () => {
 
 
 
-
-  /////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////
   ///////////////////     IMAGE UPLOAD     ////////////////////
-  /////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////
   // Check if profile picture exists
   async function checkFileExists(picRef) {
@@ -230,7 +234,6 @@ const Settings = () => {
     }
   }
 
-
   // select local file image upload
   const handleImageUpload = async (event) => {
     const file = event.target.files[0];
@@ -239,7 +242,6 @@ const Settings = () => {
     const newImgPreviewURL = URL.createObjectURL(file)
     setPictureURL(newImgPreviewURL)
   };
-
 
   //upload selected image to firebase
   const uploadImage = async (imageFile) => {
@@ -258,6 +260,37 @@ const Settings = () => {
     return downloadURL;
   };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////              APP SETTINGS              /////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+
+  const [toBeEdited, setToBeEdited] = useState("");
+
+
+
   const logOut = () => {
     toast.success("Succesfully signed out", {
       position: toast.POSITION.TOP_CENTER,
@@ -267,8 +300,143 @@ const Settings = () => {
   }
 
 
-  const pageTitle = `Settings |  Archi NG`
 
+  const sendEmailVerification = async () => {
+    if (user) {
+      try {
+        const userEmail = user?.email
+        const actionCodeSettings = {
+          url: 'https://archi-ng.vercel.app',
+          handleCodeInApp: false
+        };
+
+        await sendSignInLinkToEmail(auth, userEmail, actionCodeSettings);
+        toast.success("Verification email sent", {
+          position: toast.POSITION.TOP_CENTER,
+          autoClose: 6000,
+        });
+      }
+      catch (error) {
+        toast.error("Error sending verification email, you're probably using an invalid email. Change your email and try again", {
+          position: toast.POSITION.TOP_CENTER,
+          autoClose: 2500,
+        });
+      }
+    }
+    else {
+      toast.error("You are not signed in", {
+        position: toast.POSITION.TOP_CENTER,
+        autoClose: 2500,
+      });
+    }
+
+  }
+
+
+
+  // //////////////////////////////////////////////////// //
+  // //////////    CHANGE PASSWORD      ///////////////// //
+  // //////////////////////////////////////////////////// //
+  const changePassword = async (data) => {
+    const { currentPassword, newPassword, newPassword2 } = data
+
+    if (newPassword == newPassword2) {
+      if (user.providerData[0].providerId === "google.com") {
+        toast.error("You previously signed up with google, . Change your email and try again", {
+          position: toast.POSITION.TOP_CENTER,
+          autoClose: 4500,
+        });
+      }
+      else if (user.providerData[0].providerId === "password") {
+        const credential = EmailAuthProvider.credential(user.email, currentPassword);
+        try {
+          await reauthenticateWithCredential(user, credential);
+          await updatePassword(user, newPassword);
+          toast.success("Password updated successfully", {
+            position: toast.POSITION.TOP_CENTER,
+            autoClose: 4500,
+          });
+        }
+        catch (error) {
+          if (error.code == "auth/wrong-password") {
+            setError('currentPassword', {
+              type: 'validate',
+              message: 'Invalid Password, Check and try again.',
+            });
+          } else {
+            toast.error("Error updating password", {
+              position: toast.POSITION.TOP_CENTER,
+              autoClose: 4500,
+            });
+          }
+
+        }
+
+      }
+    }
+    else {
+      setError('newPassword2', {
+        type: 'validate',
+        message: 'Passwords do not match',
+      });
+    }
+
+  }
+
+  const changeEmail = async (data) => {
+    const { newEmail, Password } = data
+    try {
+      const credential = EmailAuthProvider.credential(user.email, Password);
+      await reauthenticateWithCredential(user, credential);
+      await updateEmail(user, newEmail);
+      toast.success("Email updated successfully", {
+        position: toast.POSITION.TOP_CENTER,
+        autoClose: 4500,
+      });
+    }
+    catch (error) {
+      if (error.code == "auth/wrong-password") {
+        setError('Password', {
+          type: 'validate',
+          message: 'Invalid Password, Check and try again.',
+        });
+      }
+      else if (error.code == "auth/too-many-requests") {
+        toast.error("Too many attempts, account temporarily restricted", {
+          position: toast.POSITION.TOP_CENTER,
+          autoClose: 7500,
+        });
+      }
+      else {
+        toast.error("Error updating password", {
+          position: toast.POSITION.TOP_CENTER,
+          autoClose: 4500,
+        });
+        console.log(error)
+      }
+    }
+
+  }
+
+
+  const wrapperRef = useRef()
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+        setToBeEdited("");
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [toBeEdited]);
+
+
+
+
+  const pageTitle = `Settings |  Archi NG`
 
 
 
@@ -287,9 +455,7 @@ const Settings = () => {
       <main className="content-container">
 
         {/* ///////////////////////////////////////////////////////////// */}
-        {/* ///////////////////////////////////////////////////////////// */}
-        {/* //////////////       SEARCH BAR      //////////////////////// */}
-        {/* ///////////////////////////////////////////////////////////// */}
+        {/* //////////////       HEADER      //////////////////////// */}
         {/* ///////////////////////////////////////////////////////////// */}
 
 
@@ -304,6 +470,12 @@ const Settings = () => {
           {
             loading && <div>Loading..</div>
           }
+
+
+
+          {/* ////////////////////////////////////////////////////////////////////////// */}
+          {/* ///////////////////        EDIT PROFILE     ////////////////////////////// */}
+          {/* ////////////////////////////////////////////////////////////////////////// */}
 
           {
             user && currentSettings == "Edit Profile" &&
@@ -392,28 +564,157 @@ const Settings = () => {
 
 
 
-
+          {/* /////////////////////////////////////////////////////////////////////////// */}
+          {/* ///////////////////////////    APP SETTINGS      ////////////////////////// */}
+          {/* /////////////////////////////////////////////////////////////////////////// */}
           {
             user && currentSettings == "App Settings" &&
             <section className={styles.appSettings}>
               <ul>
-                <li>
-                  <article className={styles.themeswitch}>
-                    Theme
-                    <div className={styles.switchsvg}>
-                      <input onClick={toggleTheme} type="checkbox" id="switch" />
-                      <label htmlFor="switch">th</label>
-                    </div>
-                  </article>
-                </li>
+
 
                 <li>
-                  {user &&
+                  <h5>Appearance</h5>
+
+                  <div>
+                    <article className={styles.themeswitch}>
+                      Theme
+                      <div className={styles.switchsvg}>
+                        <input onClick={toggleTheme} type="checkbox" id="switch" />
+                        <label htmlFor="switch">th</label>
+                      </div>
+                    </article>
+                  </div>
+
+                </li>
+
+
+
+                {/* ACCOUNT SETTINGS */}
+                <li ref={wrapperRef}>
+                  <h5>Account</h5>
+
+                  <div className={styles.accountsettings} >
+
+                    <span onClick={() => router.push(`/profile/${username}`)} className={styles.settingslink}> <FontAwesomeIcon icon={faCircleUser} />
+                      View Profile
+                    </span>
+
+                    {
+                      !user.emailVerified &&
+                      <span onClick={sendEmailVerification} className={styles.settingslink}> <FontAwesomeIcon icon={faEnvelopeCircleCheck} />
+                        Verify Email
+                      </span>
+                    }
+
+                    <span onClick={() => setToBeEdited("Email")} className={styles.settingslink}> <FontAwesomeIcon icon={faPen} />
+                      Change Email
+                    </span>
+
+                    <span onClick={() => setToBeEdited("Password")} className={styles.settingslink}> <FontAwesomeIcon icon={faLock} />
+                      Change Password
+                    </span>
+
                     <span onClick={logOut} className={styles.settingslink}> <FontAwesomeIcon icon={faRightFromBracket} />
                       Logout
-                    </span>}
+                    </span>
+
+
+
+                  </div>
+                  {
+                    toBeEdited == "Email" &&
+                    <form id='changeEmail' className={styles.changeform} onSubmit={handleSubmit(changeEmail)}>
+                      
+                      <div className={`inputdiv ${styles.inputdiv}`}>
+                        <label>Password<span>*</span></label>
+                        <input type="password" {...register('Password', {
+                          required: 'Password is required'
+                        })} />
+                        {errors.Password && <span>{errors.Password.message}</span>}
+                      </div>
+
+                      <div className={`inputdiv ${styles.inputdiv}`}>
+                        <label htmlFor="newEmail">New Email<span>*</span></label>
+                        <input
+                          id="newEmail" name="Email" type="email"
+                          placeholder="arching@app.com"
+                          {...register("newEmail", { required: true })} />
+                        {errors.newEmail && <span>Email field is required</span>}
+                      </div>
+                      <button form="changeEmail" type="submit" className={styles.submitbutton}>Change Email</button>
+                    </form>
+                  }
+
+                  {
+                    toBeEdited == "Password" &&
+                    <form id='changePassword' className={styles.changeform} onSubmit={handleSubmit(changePassword)}>
+
+                      <div className={`inputdiv ${styles.inputdiv}`}>
+                        <label>Current Password<span>*</span></label>
+                        <input type="password" {...register('currentPassword', {
+                          required: 'Current Password is required'
+                        })} />
+                        {errors.currentPassword && <span>{errors.currentPassword.message}</span>}
+                      </div>
+
+
+                      <div className={`inputdiv ${styles.inputdiv}`}>
+                        <label>New Password<span>*</span></label>
+                        <input type="password" {...register('newPassword', {
+                          required: 'Password is required',
+                          minLength: {
+                            value: 8,
+                            message: 'Password must be at least 8 characters long',
+                          },
+                          pattern: {
+                            value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
+                            message: 'Passwords can only contain numbers and letters and must contain at least one letter and one number',
+                          },
+                        })} />
+                        {errors.newPassword && <span>{errors.newPassword.message}</span>}
+                      </div>
+
+
+                      <div className={`inputdiv ${styles.inputdiv}`}>
+                        <label>Repeat Password<span>*</span></label>
+                        <input type="password" {...register('newPassword2')} />
+                        {errors.newPassword2 && <span>{errors.newPassword2.message}</span>}
+                      </div>
+
+
+
+                      <button form="changePassword" type="submit" className={styles.submitbutton}>Change Password</button>
+                    </form>
+                  }
+
 
                 </li>
+
+
+
+                {/* HELP AND SUPPORT */}
+                <li>
+                  <h5>Help and Support</h5>
+
+                  <div className={styles.helpsettings}>
+                    <span onClick={() => router.push("/terms")} className={styles.settingslink}> <FontAwesomeIcon icon={faFileContract} />
+                      Terms and Conditions
+                    </span>
+
+                    <span onClick={() => router.push("Email")} className={styles.settingslink}> <FontAwesomeIcon icon={faCircleQuestion} />
+                      FAQs
+                    </span>
+
+                    <span onClick={() => router.push("/contact")} className={styles.settingslink}> <FontAwesomeIcon icon={faAddressBook} />
+                      Contact Us
+                    </span>
+                  </div>
+                </li>
+
+
+
+
               </ul>
 
             </section>

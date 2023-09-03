@@ -117,6 +117,8 @@ export const LoginForm = () => {
 
             const userData = userDocSnap.data()
 
+
+            
             if (userData.hasOwnProperty('username')) {
                 router.push('/')
             }
@@ -124,7 +126,7 @@ export const LoginForm = () => {
                 router.push('/auth/complete-profile')
             }
 
-            toast.success(`Welcome back ${user.displayName} 😎`, {
+            toast.success(`Welcome back 😎`, {
                 position: 'top-center',
                 autoClose: 2500 
             })

@@ -96,8 +96,10 @@
                     img {
                         width: 9vw;
                         max-width: 30px;
+                        max-height: 30px;
                         border-radius: 50px;
                         border: solid 1px var(--accent);
+                        // aspect-ratio: 1/1 !important;
                     }
 
                     h6 {
