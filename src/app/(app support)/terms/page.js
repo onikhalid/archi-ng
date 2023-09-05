@@ -15,14 +15,14 @@ const Terms = () => {
 
                 <main>
                     <section>
-                        Welcome to Archi NG&apos;s "Terms and Conditions" page. Before using our platform, please carefully read and understand the following terms and conditions
+                        Welcome to Archi NG&apos;s &quot;Terms and Conditions&quot; page. Before using our platform, please carefully read and understand the following terms and conditions
                         as they govern your use of the Archi NG website and services.
                     </section>
 
                     <section>
                         <section>
                             <h5>1. Acceptance of Terms</h5>
-                            <p>By accessing or using the Archi NG website (referred to as "the Platform" hereafter), you agree to comply with and be bound by these terms and conditions. If you do not agree with any of these terms, please refrain from using the Platform.</p>
+                            <p>By accessing or using the Archi NG website (referred to as &quot;the Platform&quot; hereafter), you agree to comply with and be bound by these terms and conditions. If you do not agree with any of these terms, please refrain from using the Platform.</p>
                         </section>
 
 
@@ -94,7 +94,7 @@ const Terms = () => {
 
                             <div>
                                 <h6>6.1. Use of the Platform is at Your Own Risk</h6>
-                                <p>Archi NG is provided "as is" and "as available." We make no warranties, either express or implied, regarding the accuracy, reliability, or availability of the Platform. We shall not be liable for any direct or indirect damages arising from the use or inability to use the Platform.</p>
+                                <p>Archi NG is provided &quot;as is&quot; and &quot;as available.&quot; We make no warranties, either express or implied, regarding the accuracy, reliability, or availability of the Platform. We shall not be liable for any direct or indirect damages arising from the use or inability to use the Platform.</p>
                             </div>
                         </section>
 
