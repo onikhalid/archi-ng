@@ -80,7 +80,7 @@ const Policy = () => {
                     </section>
 
                     <section>
-                        <h3>Children's Privacy</h3>
+                        <h3>Children&apos;s Privacy</h3>
                         <article>
                             <p>The Platform is not intended for children under the age of 13. We do not knowingly collect or solicit personal information from children under 13. If you believe that a child under 13 has provided us with personal information, please contact us, and we will promptly delete such information.</p>
                         </article>

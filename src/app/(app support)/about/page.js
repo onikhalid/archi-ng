@@ -29,7 +29,7 @@ const About = () => {
             <h3>Our Story</h3>
             <div>
               Archi NG was born out of a deep-seated need in the architectural community. As an architecture student who experienced firsthand the challenges of sourcing relevant case studies for design projects.
-              While there was an abundance of well-documented international buildings available online, the same couldn't be said for Nigerian architecture. This scarcity led to countless hours spent traveling sometimes long distances
+              While there was an abundance of well-documented international buildings available online, the same couldn&apos;t be said for Nigerian architecture. This scarcity led to countless hours spent traveling sometimes long distances
               to personally document these structures.
 
               It was during one of these journeys that the idea of Archi NG took shape. Recognizing the importance of easy access to comprehensive architectural data, Archi NG was conceived as a solution to address the inadequate
@@ -48,7 +48,7 @@ const About = () => {
 
 
           <section>
-            <h3>What You'll Find here</h3>
+            <h3>What You&apos;ll Find here</h3>
             <ul>
               <li>
                 <span>Comprehensive Database:</span> Archi NG is your one-stop resource for crowd-sourced/community-sourced meticulously documented Nigerian buildings. From historic landmarks to contemporary marvels, our database spans across various architectural styles and periods.
@@ -68,7 +68,7 @@ const About = () => {
           <section>
             <h3>Join Us in Shaping Nigerian Architecture</h3>
             <div>
-              Archi NG is more than just a website; it's a movement. We invite you to be a part of this journey in reshaping the architectural landscape of Nigeria. Whether you're an architect seeking inspiration, a student looking
+              Archi NG is more than just a website; it&apos;s a movement. We invite you to be a part of this journey in reshaping the architectural landscape of Nigeria. Whether you&apos;re an architect seeking inspiration, a student looking
               for valuable resources, or simply someone who appreciates the beauty of Nigerian architecture, Archi NG welcomes you with open arms. <Link href={'/auth'}>Join us today</Link>
               <br />
               Thank you for visiting Archi NG. Together, we can transform the way we perceive and create architecture in Nigeria.
@@ -80,7 +80,7 @@ const About = () => {
             <div>
 
 
-              Got questions, suggestions, or just want to say hello? Feel free to  <Link href={'/contact'}>contact us</Link> anytime. We'd love to hear from you!
+              Got questions, suggestions, or just want to say hello? Feel free to  <Link href={'/contact'}>contact us</Link> anytime. We&apos;d love to hear from you!
             </div>
           </section>
 

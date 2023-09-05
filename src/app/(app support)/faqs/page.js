@@ -22,7 +22,7 @@ const FAQ = () => {
 
             <article>
               <h5>2. How did the idea for Archi NG originate?</h5>
-              <p>The idea for Archi NG was born out of the founder's experience as an architecture student. Faced with a lack of readily available documentation of Nigerian buildings for case studies, the founder saw the need to create a platform that addresses the inadequate documentation of architecture in Nigeria.</p>
+              <p>The idea for Archi NG was born out of the founder&apos;s experience as an architecture student. Faced with a lack of readily available documentation of Nigerian buildings for case studies, the founder saw the need to create a platform that addresses the inadequate documentation of architecture in Nigeria.</p>
             </article>
 
             <article>
@@ -40,7 +40,7 @@ const FAQ = () => {
 
             <article>
               <h5>5. Is Archi NG only for architects?</h5>
-              <p>No, Archi NG is open to anyone with an interest in Nigerian architecture. Whether you're an architect, student, or someone who appreciates the beauty of architecture, you are welcome to explore, learn, and contribute to the platform.</p>
+              <p>No, Archi NG is open to anyone with an interest in Nigerian architecture. Whether you&apos;re an architect, student, or someone who appreciates the beauty of architecture, you are welcome to explore, learn, and contribute to the platform.</p>
             </article>
           </section>
 
@@ -54,7 +54,7 @@ const FAQ = () => {
         </main>
 
         <footer>
-          <p>If you have more questions or need further assistance, please don't hesitate to <Link href={'/contact'}>contact us</Link>.</p>
+          <p>If you have more questions or need further assistance, please don&apos;t hesitate to <Link href={'/contact'}>contact us</Link>.</p>
         </footer>
       </div>
     </>

@@ -15,7 +15,7 @@ const Terms = () => {
 
                 <main>
                     <section>
-                        Welcome to Archi NG's "Terms and Conditions" page. Before using our platform, please carefully read and understand the following terms and conditions
+                        Welcome to Archi NG&apos;s "Terms and Conditions" page. Before using our platform, please carefully read and understand the following terms and conditions
                         as they govern your use of the Archi NG website and services.
                     </section>
 
