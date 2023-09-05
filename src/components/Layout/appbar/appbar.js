@@ -56,15 +56,12 @@ const AppBar = () => {
 
       </div>
       <div className={styles.right}>
-        {/* show menu if user is logged in else show sign in */}
-        {!loading&&user && <Button name={menuOpen ? "Close" : "Menu"} type='secondary' link={showmenu} />}
-        {!loading&&!user && <Button name='Sign in' type='primary' link='/auth' />}
+        <Button name={menuOpen ? "Close" : "Menu"} type='secondary' link={showmenu} />
       </div>
 
-{/* //post page, typography error, pin post, delete post */}
 
       {/* display menu */}
-      <Menu menuclass={menuClass} menuOpen={menuOpen} setMenuOpen={setMenuOpen} setMenuClass={setMenuClass}/>
+      <Menu menuclass={menuClass} menuOpen={menuOpen} setMenuOpen={setMenuOpen} setMenuClass={setMenuClass} />
 
     </header>
   )

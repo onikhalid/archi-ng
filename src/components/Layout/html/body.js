@@ -35,9 +35,11 @@ const Body = ({ children }) => {
 
 
   useEffect(() => {
-
+    if (!(document.body.scrollHeight > window.innerHeight)) {
+      toggleHidden(false)
+    }
     const handleScroll = () => {
-      const shouldShowButton = window.scrollY >  600
+      const shouldShowButton = window.scrollY > 600
       setIsVisible(shouldShowButton);
 
 
@@ -51,7 +53,7 @@ const Body = ({ children }) => {
 
       if (window.scrollY == 0) {
         toggleHidden(false)
-      } 
+      }
       else if (window.scrollY < lastScrollY) {
         toggleHidden(false)
       } else {

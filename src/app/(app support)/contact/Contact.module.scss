@@ -1,0 +1,14 @@
+.container {
+    header {
+        margin-bottom: 4rem;
+    }
+
+    main {
+        width: 100%;
+        max-width: 750px;
+    }
+    input[type="email"],
+    input[type="password"] {
+      height: 30px;
+    }
+}

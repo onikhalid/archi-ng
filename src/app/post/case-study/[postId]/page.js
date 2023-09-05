@@ -22,6 +22,21 @@ import { formatDate } from "@/functions/Formatting";
 import { deletePost } from "@/functions/Delete";
 
 
+import Lightbox from "yet-another-react-lightbox";
+import Captions from "yet-another-react-lightbox/plugins/captions";
+import Fullscreen from "yet-another-react-lightbox/plugins/fullscreen";
+import Slideshow from "yet-another-react-lightbox/plugins/slideshow";
+import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
+import Video from "yet-another-react-lightbox/plugins/video";
+import Zoom from "yet-another-react-lightbox/plugins/zoom";
+import "yet-another-react-lightbox/plugins/captions.css";
+import "yet-another-react-lightbox/plugins/thumbnails.css";
+import "yet-another-react-lightbox/styles.css";
+
+
+
+
+
 
 export default function Page({ params }) {
     const { postId } = params
@@ -33,6 +48,33 @@ export default function Page({ params }) {
     const { register, handleSubmit, formState: { errors }, setValue } = useForm();
 
 
+    const [basicExampleOpen, setBasicExampleOpen] = useState(false);
+    const [galleryImages, setGalleryImages] = useState([]);
+    const [lightHouseOpen, setLightHouseOpen] = useState(false);
+
+
+
+    const slides = galleryImages.map((photo) => {
+        const width =  4000;
+        const height =  2500;
+        const breakpoints = [4320, 2160, 1080, 640, 384, 256, 128];
+
+        console.log(width)
+        return {
+            src: photo,
+            width,
+            height,
+            srcSet: breakpoints.map((breakpoint) => {
+                const breakpointHeight = Math.round((height / width) * breakpoint);
+                console.log(breakpointHeight)
+                return {
+                    src: photo,
+                    width: breakpoint,
+                    height: breakpointHeight,
+                };
+            }),
+        };
+    });
 
 
 
@@ -55,6 +97,7 @@ export default function Page({ params }) {
                     if (user) {
                         if (data) {
                             await updateDoc(postDocRef, { reads: arrayUnion(user.uid) })
+                            setGalleryImages(data.otherImages)
                         }
                     }
                 })
@@ -298,6 +341,22 @@ export default function Page({ params }) {
 
 
                         <main dangerouslySetInnerHTML={{ __html: content }} />
+
+
+
+
+                        <section>
+                            <button onClick={() => setLightHouseOpen(true)} >See Case Study Gallery</button>
+                            <Lightbox
+                                open={lightHouseOpen}
+                                close={() => setLightHouseOpen(false)}
+                                slides={slides}
+                                // slides={advancedSlides}
+                                plugins={[Captions, Fullscreen, Slideshow, Thumbnails, Video, Zoom]}
+                            />
+                        </section>
+
+
 
 
                         <section id="remarks" className={styles.commentsection}>

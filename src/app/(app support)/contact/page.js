@@ -1,0 +1,94 @@
+"use client"
+import { toast } from "react-toastify";
+import styles from "./Contact.module.scss"
+import { useForm } from 'react-hook-form';
+
+
+
+const Contact = () => {
+  const { register, handleSubmit, watch, formState: { errors }, setValue } = useForm();
+
+
+  const onSubmit = async (data) => {
+    try {
+      const response = await fetch('https://formspree.io/f/mvolenje', {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        setValue("Name", "");
+        toast.success("Message sent successful", {
+          position: "top-center",
+          autoClose: 2500
+        })
+
+      } else {
+        toast.success("Sending message failed, try again", {
+          position: "top-center",
+          autoClose: 2500
+        })
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+
+
+
+  return (
+    <>
+      <title>Contact Us | Archi NG</title>
+
+
+      <div className={`${styles.container} content-container`}>
+        <header>
+          <h1>Contact Us</h1>
+          <h6>Got questions, suggestions, or just want to say hello?</h6>
+        </header>
+
+        <main>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            {/* <form method="post" action="https://formspree.io/f/mvolenje"> */}
+            <div className='inputdiv'>
+              <label htmlFor="Name">Name<span>*</span></label>
+              <input id="Name" type="text" name="Name"
+                placeholder="Adanna Nwoku Elizabeth"
+                {...register("Name", { required: true })} />
+              {errors.Name && <span>Name field is required</span>}
+            </div>
+
+            <div className='inputdiv'>
+              <label htmlFor="Email">Email<span>*</span></label>
+              <input id="Email" type="email" name="Email"
+                placeholder="Adanna@gmail.com"
+                {...register("Email", { required: true })} />
+              {errors.Email && <span>Email field is required</span>}
+            </div>
+
+            <div className='inputdiv'>
+              <label htmlFor="Bio">Your Message<span>*</span></label>
+              <textarea name="Bio" rows="5"
+                placeholder="I hope this message finds you well. I just wanted to take a moment to express my sincere gratitude for creating such an incredible website.
+                I've been using it for 6 months, and it has truly become an indispensable part of my online experience."
+                {...register("Bio", { required: true })}></textarea>
+              {errors.Bio && <span>Message field is required</span>}
+            </div>
+
+
+            <input aria-label="Send your message" name="subnit-button" type="submit" value={"Send your message"}/>
+          </form>
+        </main>
+
+
+      </div>
+    </>
+
+  )
+}
+
+export default Contact

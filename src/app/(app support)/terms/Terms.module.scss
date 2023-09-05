@@ -1,0 +1,32 @@
+.container{
+    line-height: 1.8;
+    h1 {
+        margin-bottom: 20px;
+    }
+    
+    
+    section {
+        margin-block: 2rem 3rem;
+
+        div{
+            margin-left: 1.2rem;
+        }
+    }
+    
+    ul {
+        list-style-type: disc;
+        margin-left: 20px;
+    }
+    
+    a {
+        color: var(--accent);
+        text-decoration: underline;
+        &:hover{
+            color: var(--sec-text-clr);
+        }
+    }
+    p{
+        font-family: var(--text-poppins);
+    }
+    
+}

@@ -2,6 +2,8 @@ import './globals.scss'
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 config.autoAddCss = false;
+import "yet-another-react-lightbox/plugins/captions.css";
+import "yet-another-react-lightbox/styles.css";
 
 import { ThemeProvider } from '@/utils/ContextandProviders/Providers'
 import { MobileNavProvider } from '@/utils/ContextandProviders/Providers';
@@ -40,7 +42,7 @@ export default function RootLayout({ children }) {
               rel="stylesheet"
               href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css"
             />
-            <title>Home | Archi NG</title>
+            <title> Archi NG</title>
             <meta name="description" content="{metadata.description}" />
           </head>
           <Body>

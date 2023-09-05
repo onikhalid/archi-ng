@@ -15,11 +15,18 @@
     @media (max-width: 719px) {
         height: 55%;
     }
+    @media (min-width: 1150px) {
+        border-radius: 10px 0 0 10px;
+        flex: 1.6;
+        border-right: solid 1.5px var(--main-text-clr);
+    }
 }
 
 .cardbody {
     padding: 1.5rem;
     min-height: 50%;
+    flex: 1.4;
+
     @media (max-width: 719px) {
         max-height: 45%;
     }

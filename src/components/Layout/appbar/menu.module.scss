@@ -38,7 +38,8 @@
             align-items: center;
             font-weight: 600;
         }
-        .logout{
+
+        .logout {
             cursor: pointer;
         }
 
@@ -143,6 +144,7 @@
 
             .casestudies {
                 margin-top: 3rem;
+
                 ul {
                     columns: 2 35vw;
 
@@ -198,12 +200,19 @@
 
         .permalinks {
             display: flex;
-            gap: 0.75rem;
+            gap: 1rem;
+
 
             a {
                 &:hover {
                     color: var(--accent);
                 }
+            }
+
+            @media (max-width: 1019px) {
+                flex-direction: column;
+                gap: 0.75rem;
+
             }
 
         }

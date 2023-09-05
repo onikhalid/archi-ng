@@ -29,7 +29,7 @@ const Menu = ({ menuOpen, setMenuOpen, menuclass, setMenuClass }) => {
     const articlesTypologies = ["News", "How-Tos and Tutorials", "Architectural Tours", "Famous Architects and their Works", "Architectural Travel", "Architecture and Technology "];
     const articlesArray = width < 720 ? articlesTypologies.slice(0, 5) : articlesTypologies
 
-    
+
     const logOut = async () => {
         await setMenuOpen(false)
         await setMenuClass(`appbar_menu__RWEMy appbar_menuClose__BM0_l`)
@@ -47,14 +47,14 @@ const Menu = ({ menuOpen, setMenuOpen, menuclass, setMenuClass }) => {
 
 
 
-    
+
 
 
 
 
     return (
         <>
-           {menuOpen &&  <title>Menu | Archi NG</title>}
+            {menuOpen && <title>Menu | Archi NG</title>}
 
             <div className={menuclass}>
                 <div className={styles.container}>
@@ -67,25 +67,33 @@ const Menu = ({ menuOpen, setMenuOpen, menuclass, setMenuClass }) => {
                                 </div>
                             </div>
 
-                            <div className={styles.user}>
-                                <h6>{user?.displayName}</h6>
-                                {
-                                    !loading && user &&
-                                    <Image
-                                        src={user?.photoURL || logo}
-                                        alt={`picture - ${user?.displayName}`}
-                                        width={40}
-                                        height={40}
-                                    />
-                                }
-                            </div>
+                            {
+                                user ?
+                                    <div className={styles.user}>
+                                        <h6>{user?.displayName}</h6>
+                                        {
+                                            !loading && user &&
+                                            <Image
+                                                src={user?.photoURL || logo}
+                                                alt={`picture - ${user?.displayName}`}
+                                                width={40}
+                                                height={40}
+                                            />
+                                        }
+                                    </div>
+                                    :
+
+                                    <Button name='Sign in' type='quinta' link='/auth' />
+                            }
+
+
 
                         </section>
 
                         {
                             width < 720 &&
                             <section>
-                                <Button name={'Make Post'} link={"/post"} type={"quinta"} />
+                                {!loading && user && <span onClick={closemenu}><Button name={'Make Post'} link={"/post"} type={"quinta"} /></span>}
                                 {user && <span className={styles.logout} onClick={logOut}> <FontAwesomeIcon icon={faRightFromBracket} /> Logout</span>}
                             </section>
                         }
@@ -98,7 +106,7 @@ const Menu = ({ menuOpen, setMenuOpen, menuclass, setMenuClass }) => {
                             <ul>
                                 {buildingArray.map((type, index) => {
                                     return (
-                                        <li key={index}>
+                                        <li key={index} onClick={closemenu}>
                                             <Link href={`/search?q=${type}`}>
                                                 {type}
                                             </Link>
@@ -112,7 +120,7 @@ const Menu = ({ menuOpen, setMenuOpen, menuclass, setMenuClass }) => {
                             <ul>
                                 {articlesArray.map((type, index) => {
                                     return (
-                                        <li key={index}>
+                                        <li key={index} onClick={closemenu}>
                                             <Link href={`/search?q=${type}`}>
                                                 {type}
                                             </Link>
@@ -138,8 +146,10 @@ const Menu = ({ menuOpen, setMenuOpen, menuclass, setMenuClass }) => {
                             />
                         </Link>
                         <div className={styles.permalinks}>
-                            <Link href={'/about'} onClick={closemenu}>About</Link>
+                            <Link href={'/about'} onClick={closemenu}>About Archi NG</Link>
                             <Link href={'/contact'} onClick={closemenu}>Contact</Link>
+                            <Link href={'/faqs'} onClick={closemenu}>FAQs</Link>
+                            <Link href={'/policy'} onClick={closemenu}>Privacy Policy</Link>
                             <Link href={'/terms'} onClick={closemenu}>Terms and Conditions</Link>
                         </div>
                         <small>

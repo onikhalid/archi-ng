@@ -323,6 +323,13 @@
    @media (min-width:720px) {
      height: 600px;
    }
+
+   @media (min-width:1150px) {
+     flex-direction: row;
+     min-width: 800px;
+     height: 360px;
+
+   }
  }
 
  .skeleton {
@@ -534,7 +541,7 @@
          font-size: 0.8rem;
          font-weight: 400;
          display: flex;
-         gap: 0.35rem ;
+         gap: 0.35rem;
 
          img {
            border-radius: 50px;
@@ -805,3 +812,16 @@
    border-top-color: var(--accent) !important;
    border-left-color: var(--accent) !important;
  }
+
+
+
+
+
+ 
+ ////////////////////////////////////////////////
+ ////////////        LIGHTBOX       /////////////
+ ////////////////////////////////////////////////
+ 
+.yarl__thumbnails_thumbnail_active {
+  border-color: var(--accent) !important;
+}

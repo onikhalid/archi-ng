@@ -169,7 +169,7 @@ export default function Home() {
       }
     }
 
-    
+
   }, [currentPost, currentwhosePost, user]);
 
 
@@ -268,56 +268,62 @@ export default function Home() {
 
 
   return (
-    <main className={`app content-container`}>
-      <WhoseandWhichpostH1
-        variations={variations}
-        currentPost={currentPost}
-        setCurrentPost={setCurrentPost}
-      />
-      <WhoseandWhichpost variations={whosepostvariation} currentwhosePost={currentwhosePost} setCurrentWhosePost={setCurrentWhosePost} />
+    <>
+      <title>Home | Archi NG</title>
+
+
+      <main className={`app content-container`}>
+        <WhoseandWhichpostH1
+          variations={variations}
+          currentPost={currentPost}
+          setCurrentPost={setCurrentPost}
+        />
+        <WhoseandWhichpost variations={whosepostvariation} currentwhosePost={currentwhosePost} setCurrentWhosePost={setCurrentWhosePost} />
 
 
 
-      <section className={styles.allposts}>
-        {
-          // user signed in but no post in the db
-          user && currentwhosePost === 'Feed' && !loadingPosts && allPosts.length < 1 && <div className='infobox main'>
-            <h2>Nothing here, Be the first to make a post  </h2>
-            <Button name={'Make Post'} type={'primary'} link={'/post'} />
-          </div>
-        }
-        {
-          // user signed in but nothing in the following tab
-          user && currentwhosePost === 'Following' && !loadingPosts && allPosts.length < 1 && <div className='infobox main'>
-            <h2>Nothing here, Either you don&apos;t follow anyone or the people you follow haven&apos;t posted anything</h2>
-          </div>
-        }
-        {
-          // user not signed in and no post in the db
-          !user && currentwhosePost === 'Feed' && !loadingPosts && allPosts.length < 1 && <div className='infobox main'>
-            <h2>Nothing here, Sign in and be the first to make a post  </h2>
-          </div>
-        }
-        {
-          // user not signed in and current whose post = "following"
-          !user && allPosts.length < 1 && currentwhosePost === 'Following' && <div className='infobox main'>
-            <h2>Sign in 😏, you don&apos;t follow anybody  </h2>
-            <Button name={'Sign in'} type={'primary'} link={'/auth'} />
-          </div>
-        }
-        {allPosts?.map((post, index) => {
-
-          if (loadingPosts) {
-            return <PostSkeleton key={index} />
-          } else if (currentPost === 'Articles') {
-            return <ArticleCard key={index} post={post} />
-          } else if (currentPost === 'Case Studies') {
-            return <CaseStudyCard key={index} post={post} />
-          } else {
-            return <PhotoCard key={index} post={post} />
+        <section className={styles.allposts}>
+          {
+            // user signed in but no post in the db
+            user && currentwhosePost === 'Feed' && !loadingPosts && allPosts.length < 1 && <div className='infobox main'>
+              <h2>Nothing here, Be the first to make a post  </h2>
+              <Button name={'Make Post'} type={'primary'} link={'/post'} />
+            </div>
           }
-        })}
-      </section>
-    </main>
+          {
+            // user signed in but nothing in the following tab
+            user && currentwhosePost === 'Following' && !loadingPosts && allPosts.length < 1 && <div className='infobox main'>
+              <h2>Nothing here, Either you don&apos;t follow anyone or the people you follow haven&apos;t posted anything</h2>
+            </div>
+          }
+          {
+            // user not signed in and no post in the db
+            !user && currentwhosePost === 'Feed' && !loadingPosts && allPosts.length < 1 && <div className='infobox main'>
+              <h2>Nothing here, Sign in and be the first to make a post  </h2>
+            </div>
+          }
+          {
+            // user not signed in and current whose post = "following"
+            !user && allPosts.length < 1 && currentwhosePost === 'Following' && <div className='infobox main'>
+              <h2>Sign in 😏, you don&apos;t follow anybody  </h2>
+              <Button name={'Sign in'} type={'primary'} link={'/auth'} />
+            </div>
+          }
+          {allPosts?.map((post, index) => {
+
+            if (loadingPosts) {
+              return <PostSkeleton key={index} />
+            } else if (currentPost === 'Articles') {
+              return <ArticleCard key={index} post={post} />
+            } else if (currentPost === 'Case Studies') {
+              return <CaseStudyCard key={index} post={post} />
+            } else {
+              return <PhotoCard key={index} post={post} />
+            }
+          })}
+        </section>
+      </main>
+    </>
+
   )
 }

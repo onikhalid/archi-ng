@@ -1,6 +1,6 @@
 import styles from './MakeCaseStudy.module.scss'
 import Edit from "../TextEditor/Text"
-import { useRef, useState, useContext, useEffect, useMemo } from "react";
+import { useRef, useState, useContext, useEffect } from "react";
 import { useRouter } from 'next/navigation';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useForm } from "react-hook-form";
@@ -10,17 +10,23 @@ import { doc, collection, addDoc, updateDoc, where, query, getDoc, writeBatch, g
 import { db, auth, storage } from '@/utils/firebase';
 
 import { toast } from 'react-toastify';
+import ImageUploader from "@/components/Posts/MakingPosts/ImageUploader/ImageUploader";
 
+import { faNewspaper, faX } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const MakeCaseStudy = ({ postToEditId }) => {
   const router = useRouter()
   const editorRef = useRef(null);
   const [user, loading] = useAuthState(auth)
   const [caseContent, setCaseContent] = useState('') //tiny-mce content
-  const [selectedImage, setSelectedImage] = useState(null);
+
+  const [selectedCoverImage, setSelectedCoverImage] = useState(null);
   const [previousCoverImgURL, setPreviousCoverImgURL] = useState(null)
   const [coverImgURL, setCoverImgURL] = useState(null)
+
   const [savingPost, setSavingPost] = useState(false)
+  const [thePost, setThePost] = useState({})
   const { register, handleSubmit, formState: { errors }, setValue } = useForm();
 
 
@@ -69,9 +75,10 @@ const MakeCaseStudy = ({ postToEditId }) => {
 
   const submitForm = async (data) => {
     document.body.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: "smooth" })
 
 
-    if (selectedImage === null && !postToEditId) {
+    if (selectedCoverImage === null && !postToEditId) {
       toast.error("Select a cover image", {
         position: toast.POSITION.TOP_CENTER,
         autoClose: 4500,
@@ -80,11 +87,17 @@ const MakeCaseStudy = ({ postToEditId }) => {
     }
 
     setSavingPost(true)
+    const galleryImagesURL = await uploadGalleryImages()
 
-    let downloadURL
-    if (selectedImage) {
-      downloadURL = await uploadImage(selectedImage)
-    } else downloadURL = coverImgURL
+    let coverImageDownloadURL
+    if (selectedCoverImage) {
+      coverImageDownloadURL = await uploadCoverImage(selectedCoverImage)
+    } else coverImageDownloadURL = coverImgURL
+
+    // let galleryImagesURL
+    // if (selectedGalleryImageFiles) {
+    //   galleryImagesURL = await uploadGalleryImages()
+    // } else galleryImagesURL = coverImgURL
 
 
     const postData = {
@@ -93,9 +106,10 @@ const MakeCaseStudy = ({ postToEditId }) => {
       authorName: user.displayName,
       authorAvatar: user.photoURL,
       client: data.Client == '' ? 'unknown' : data.Client,
-      coverImageURL: downloadURL,
+      coverImageURL: coverImageDownloadURL,
       createdAt: new Date(),
       location: data.Location.split(",").map(item => item.trim()),
+      otherImages: postToEditId ? previewGalleryImageURLs : galleryImagesURL || [],
       postContent: caseContent,
       postId: postToEditId ? postToEditId : user.uid,
       postType: 'Case Studies',
@@ -104,6 +118,8 @@ const MakeCaseStudy = ({ postToEditId }) => {
       typology: data.Typology,
       year: data.Year,
     }
+
+
     const postCollectionRef = collection(db, "posts");
     if (postToEditId) {
       await updateDoc(doc(postCollectionRef, postToEditId), postData);
@@ -118,29 +134,27 @@ const MakeCaseStudy = ({ postToEditId }) => {
 
         batch.update(postDocRef, {
           postTitle: data.Title,
-          postCoverPhoto: downloadURL
+          postCoverPhoto: coverImageDownloadURL
         })
       })
-
       await batch.commit();
-
-
-    } else {
+    } 
+    else {
       const newPostRef = await addDoc(postCollectionRef, postData);
       const postId = newPostRef.id
       await updateDoc(doc(postCollectionRef, newPostRef.id), {
         postId: postId
       });
     }
-    
-    
+
+
     router.push('/')
     toast.success(`Your case study has been ${postToEditId ? 'updated' : 'submitted'} 😎`, {
       position: toast.POSITION.TOP_CENTER,
       autoClose: 3500,
     });
-    
-    window.scrollTo({top: 0, behavior: "smooth"})
+
+    window.scrollTo({ top: 0, behavior: "smooth" })
     setSavingPost(false)
   }
 
@@ -163,8 +177,10 @@ const MakeCaseStudy = ({ postToEditId }) => {
         const postToEditRef = doc(db, `posts/${postToEditId}`)
         const postToEditSnap = await getDoc(postToEditRef)
         const postToEdit = postToEditSnap.data()
-        const { coverImageURL, title, client, location, architect, year, typology, tags, postContent } = postToEdit
+        // setThePost(postToEdit)
+        const { coverImageURL, title, client, location, architect, year, typology, tags, postContent, otherImages } = postToEdit
         setCoverImgURL(coverImageURL)
+        setPreviewGalleryImageURLs(otherImages)
         setTitle(title)
         setClient(client)
         setLocation(location.join(','))
@@ -182,27 +198,29 @@ const MakeCaseStudy = ({ postToEditId }) => {
 
 
 
-  ///////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////
-  ////////////       IMAGE UPLOAD         //////////////////
-  ///////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////       IMAGE UPLOAD         /////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////////
 
-  const handleImageUpload = async (event) => {
+  ///////////////////////////////////////////////////////////
+  ////////////        COVER IMAGE          //////////////////
+  ///////////////////////////////////////////////////////////
+  const handleCoverImageFileChange = async (event) => {
     const file = event.target.files[0];
     if (postToEditId) {
       setPreviousCoverImgURL(coverImgURL)
     }
-    setSelectedImage(file);
+    setSelectedCoverImage(file);
 
     const newImgURL = URL.createObjectURL(file)
     setCoverImgURL(newImgURL)
 
   };
 
-
   //upload selected image to firebase
-  const uploadImage = async (imageFile) => {
+  const uploadCoverImage = async (imageFile) => {
     if (postToEditId) {
       //delete previous image from firebase
       const startIndex = previousCoverImgURL.indexOf('/o/') + 3;
@@ -232,19 +250,119 @@ const MakeCaseStudy = ({ postToEditId }) => {
 
 
 
+
+  ///////////////////////////////////////////////////////////
+  ////////////        GALLERY IMAGES          ///////////////
+  ///////////////////////////////////////////////////////////
+  const [selectedGalleryImageFiles, setSelectedGalleryImageFiles] = useState([]);
+  const [previewGalleryImageURLs, setPreviewGalleryImageURLs] = useState([]);
+  const [galleryURLs, setGalleryURLs] = useState([]);
+
+
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+
+  const handleFileChange = (e) => {
+    const selectedImages = Array.from(e.target.files);
+    setSelectedGalleryImageFiles([...selectedGalleryImageFiles, ...selectedImages]);
+
+    const selectedImagesURLs = selectedImages.map((image) => URL.createObjectURL(image));
+    setPreviewGalleryImageURLs([...previewGalleryImageURLs, ...selectedImagesURLs]);
+  };
+
+
+
+  const handleRemoveImage = (index) => {
+   
+    const updatedImages = [...selectedGalleryImageFiles];
+    const updatedImageURLs = [...previewGalleryImageURLs];
+
+    updatedImages.splice(index, 1);
+    updatedImageURLs.splice(index, 1);
+
+    setSelectedGalleryImageFiles(updatedImages);
+    setPreviewGalleryImageURLs(updatedImageURLs);
+  };
+
+
+  const uploadGalleryImages = async () => {
+    setUploading(true);
+    const storageRef = ref(storage, 'images');
+
+    if (postToEditId) {
+      console.log(previewGalleryImageURLs)
+      return previewGalleryImageURLs
+    }
+    else {
+      if (selectedGalleryImageFiles.length === 0) {
+        return;
+      }
+      else {
+
+        try {
+          const downloadURLs = await Promise.all(
+            selectedGalleryImageFiles.map(async (image) => {
+              const imageRef = ref(storageRef, image.name);
+
+              try {
+                const snapshot = await uploadBytes(imageRef, image);
+
+                const downloadURL = await getDownloadURL(imageRef);
+                return downloadURL;
+              } catch (error) {
+                toast.error('Error uploading an image', {
+                  position: "top-center",
+                  autoClose: 3000
+                })
+                console.error('Error uploading an image:', error);
+                return null;
+              }
+            })
+          );
+
+          setUploading(false);
+          setProgress(0);
+
+          console.log('Download URLs:', downloadURLs);
+          return downloadURLs
+        }
+
+        catch (error) {
+          toast.error('Error uploading images', {
+            position: "top-center",
+            autoClose: 3000
+          })
+          console.error('Error uploading images:', error);
+          setUploading(false);
+          setProgress(0);
+        }
+      }
+    }
+
+
+
+
+  };
+
+
+
+
+
+
+
+
+
+
+
+
   return (
     <>
-      {
-        savingPost &&
-        <div className={styles.saving}>
-          Saving Post...
-        </div>
-      }
       <div className={styles.makecase}>
         <article>
-          <input type="file" onChange={handleImageUpload} /> 
-          {!selectedImage&&!coverImgURL && <h6>Please make sure your image is in landscape form</h6>}
-          {(selectedImage || coverImgURL) && <img className={styles.uploadedimage} src={coverImgURL} alt="Preview" />}
+          <input type="file" onChange={handleCoverImageFileChange} />
+          {!selectedCoverImage && !coverImgURL && <h6>Please make sure your image is in landscape form</h6>}
+          {(selectedCoverImage || coverImgURL) && <img className={styles.uploadedimage} src={coverImgURL} alt="Preview" />}
         </article>
 
 
@@ -327,12 +445,40 @@ const MakeCaseStudy = ({ postToEditId }) => {
         </form>
 
         {/* TinyMCE RTE */}
-        <Edit
-          editorRef={editorRef} editorContent={editorContent} setContent={setCaseContent} />
+        <Edit editorRef={editorRef} editorContent={editorContent} setContent={setCaseContent} />
 
 
-        <button className={styles.submitbutton} form='CaseStudy' type="submit">Submit your Case Study 📒</button>
+        {/* <ImageUploader ready={ready}  setOtherImgURL={setOtherImgURL}/> */}
+        <section className={styles.galleryimages}>
+          <h3>Other Images</h3>
+          <input type="file" multiple onChange={handleFileChange} />
+          <h6>You can select multiple images at once, or select one by one. Once again, make sure your images are high resolution images but not too big in file sizes.</h6>
+          <div className={styles.imagepreviewcontainer}>
+            {previewGalleryImageURLs.map((url, index) => (
+              <div key={index} className={styles.imagepreview}>
+                <img src={url} alt={`Image ${index}`} />
+                <span className={styles.closebutton} onClick={() => handleRemoveImage(index)} title='Remove Image'>
+                  <FontAwesomeIcon icon={faX} />
+                </span>
+              </div>
+            ))}
+          </div>
+          {uploading && <p>Uploading... {progress.toFixed(2)}%</p>}
+        </section>
+
+
+        <button className={styles.submitbutton} form='CaseStudy' type="submit">Submit your Case Study <FontAwesomeIcon icon={faNewspaper} /></button>
+
+
       </div>
+
+
+      {
+        savingPost &&
+        <div className={styles.saving}>
+          Saving Post...this might take a while<br/> Please do not close tab.
+        </div>
+      }
     </>
   )
 }

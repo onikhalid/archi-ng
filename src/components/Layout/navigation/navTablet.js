@@ -22,7 +22,6 @@ const TabletNav = () => {
   const [user, loading] = useAuthState(auth);
   const currentPath = usePathname()
   const { theme, toggleTheme } = useContext(ThemeContext);
-  const [collapsed, setCollapsed] = useState(true);
   const logo = theme === 'light' ? "/assets/logo/logo-dark.svg" : "/assets/logo/logo-light.svg"
 
   //pages route
@@ -51,11 +50,11 @@ const TabletNav = () => {
 
 
 
-  const logOut = () =>{
+  const logOut = () => {
     toast.success("Succesfully signed out", {
       position: toast.POSITION.TOP_CENTER,
       autoClose: 3500,
-  });
+    });
     auth.signOut()
   }
 
@@ -85,9 +84,15 @@ const TabletNav = () => {
           }
         </div>
         <div className={styles.settings}>
-          <Button name={'Make Post'} link={"/post"} type={"primary"} />
-          {user && <span className={styles.settingslink}> <FontAwesomeIcon icon={faRightFromBracket} /> Logout</span>}
-          <span onClick={logOut} className={styles.settingslink}> <FontAwesomeIcon icon={faGear} /> Settings</span>
+
+          {(!loading && user) ?
+            <Button title={!user && 'You have to sign in to make posts'} name={"Make Post"} link={"/post"} type={"primary"} />
+            :
+            <Button name='Sign in' type='primary' link='/auth' />
+          }
+
+          {user && <span onClick={logOut} className={styles.settingslink}> <FontAwesomeIcon icon={faRightFromBracket} /> Logout</span>}
+          <span onClick={() => router.push('/settings')} className={styles.settingslink}> <FontAwesomeIcon icon={faGear} /> Settings</span>
         </div>
       </div>
     </aside>

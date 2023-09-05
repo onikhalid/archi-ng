@@ -79,9 +79,15 @@ const DesktopNav = () => {
           }
         </div>
         <div className={styles.settings}>
-          <Button title={!user && 'You have to sign in to make posts'} name={"Make Post"} link={"/post"} type={"primary"} />
+
+          {(!loading && user) ?
+            <Button title={!user && 'You have to sign in to make posts'} name={"Make Post"} link={"/post"} type={"primary"} />
+            :
+            <Button name='Sign in' type='primary' link='/auth' />
+          }
+
           {user && <span onClick={logOut} className={styles.settingslink}> <FontAwesomeIcon icon={faRightFromBracket} /> Logout</span>}
-          <span onClick={()=>router.push('/settings')} className={styles.settingslink}> <FontAwesomeIcon icon={faGear} /> Settings</span>
+          <span onClick={() => router.push('/settings')} className={styles.settingslink}> <FontAwesomeIcon icon={faGear} /> Settings</span>
         </div>
       </div>
 

@@ -49,7 +49,6 @@ const MobileNav = () => {
   
   
   
-  
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {

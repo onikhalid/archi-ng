@@ -1,0 +1,38 @@
+.container {
+    line-height: 1.8;
+
+    h3 {
+        font-size: 1.7rem
+    }
+    h5{
+        font-size: 1.2rem
+
+    }
+
+    header {
+        margin-bottom: 1rem;
+    }
+
+    a {
+        color: var(--accent);
+        text-decoration: underline;
+
+        &:hover {
+            color: var(--sec-text-clr);
+        }
+    }
+
+    p {
+        font-family: var(--text-poppins);
+    }
+
+    section {
+        margin-block: 1rem 3.5rem;
+
+        article {
+            margin-bottom: .75rem;
+        }
+    }
+
+
+}

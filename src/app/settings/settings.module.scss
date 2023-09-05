@@ -152,8 +152,10 @@
       .inputdiv {
         margin-bottom: .5rem;
 
-        input {
-          padding: 0.5rem;
+        input[type="email"],
+        input[type="password"] {
+          height: 40px;
+       
         }
       }
     }
