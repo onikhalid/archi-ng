@@ -3,7 +3,7 @@ import styles from './button.module.scss'
 import Link from "next/link"
 import { lora } from '@/app/layout'
 
-const Button = ({ title, name, icon, type, link }) => {
+const Button = ({ title, name, icon, type, link, chiquito }) => {
   const typ = type
   return (
     <>
@@ -15,19 +15,19 @@ const Button = ({ title, name, icon, type, link }) => {
       }
       {
         typ === 'secondary' &&
-        <button title={title || ''} onClick={link} className={`${lora.className} ${styles.secondary}`}>
+        <button title={title || ''} onClick={link} className={`${lora.className} ${styles.secondary} `}>
           {name}
         </button>
       }
       {
         typ === 'tertiary' &&
-        <button title={title || ''} onClick={link} className={styles.tertiary}>
+        <button title={title || ''} onClick={link} className={chiquito ? `${styles.tertiary} ${styles.chiquito}` : `${styles.tertiary}`}>
           {name} {icon}
         </button>
       }
       {
         typ === 'type4' &&
-        <Link title={title || ''} className={styles.type4} href={link}>
+        <Link title={title || ''} className={chiquito ? `${styles.type4} ${styles.chiquito}` : `${styles.type4}`} href={link}>
           {name} {icon}
         </Link>
       }

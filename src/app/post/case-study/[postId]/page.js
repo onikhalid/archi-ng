@@ -52,14 +52,13 @@ export default function Page({ params }) {
     const [galleryImages, setGalleryImages] = useState([]);
     const [lightHouseOpen, setLightHouseOpen] = useState(false);
 
-
-
-    const slides = galleryImages.map((photo) => {
+    
+    
+    const gallerySlides = galleryImages.map((photo) => {
         const width =  4000;
         const height =  2500;
         const breakpoints = [4320, 2160, 1080, 640, 384, 256, 128];
 
-        console.log(width)
         return {
             src: photo,
             width,
@@ -350,9 +349,11 @@ export default function Page({ params }) {
                             <Lightbox
                                 open={lightHouseOpen}
                                 close={() => setLightHouseOpen(false)}
-                                slides={slides}
+                                slides={gallerySlides}
                                 // slides={advancedSlides}
                                 plugins={[Captions, Fullscreen, Slideshow, Thumbnails, Video, Zoom]}
+                                // carousel={finite: false;}
+                                carousel={ {finite: true}}
                             />
                         </section>
 

@@ -69,13 +69,18 @@
     transition: all 250ms ease-out;
     border: solid 3px var(--accent);
     cursor: pointer;
-
+    
     &:hover {
         --border-radius: 5px;
         background-color: var(--accent);
         border: solid 3px var(--accent);
         color: var(--text-on-accent);
     }
+    
+    &.chiquito {
+        padding: 0.25rem .75rem;
+        font-size: 0.9rem;
+        border: solid 2.5px var(--accent);    }
 }
 
 
@@ -94,6 +99,11 @@
         text-decoration: underline;
         text-decoration-color: var(--accent);
         text-decoration-thickness: 4px
+    }
+    
+    &.chiquito {
+        padding: 0.25rem .75rem;
+        font-size: 0.9rem;
     }
 }
 
@@ -116,7 +126,7 @@
     border: solid 3px var(--accent);
     cursor: pointer;
     font-size: 0.9rem;
-    
+
     &:hover {
         --border-radius: 5px;
         background-color: var(--accent);
@@ -130,7 +140,7 @@
 
 
 
-.sexta{
+.sexta {
     color: var(--text-on-accent);
     background-color: var(--accent);
     width: 100%;
@@ -160,7 +170,7 @@
 
 
 
-.septima{
+.septima {
     color: var(--main-text-clr);
     background-color: transparent;
     width: 100%;

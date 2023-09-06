@@ -7,18 +7,20 @@ import { collection, getDocs, getDoc, doc, query, where, onSnapshot } from "fire
 import { db, auth } from "@/utils/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useState, useEffect, useLayoutEffect } from "react";
-
+import { useWindowWidth } from '@/utils/Hooks/ResponsiveHook';
 import Image from 'next/image';
 import Button from '@/components/Button/button';
 import WhoseandWhichpost from '@/components/Posts/ShowingPosts/Whosepost/whosepost';
 
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faThumbTack } from "@fortawesome/free-solid-svg-icons";
+import { faGear, faThumbTack } from "@fortawesome/free-solid-svg-icons";
 import { SmallPostCard } from '@/components/Posts/ShowingPosts/PostCards/SmallPostCard';
 import { FolderCard } from '@/components/Posts/ShowingPosts/PostCards/ArchivedPostCards/ArchiveCard';
 import { addFollow, removeFollow } from '@/functions/Following';
 
 import { FollowersFollowingandLikesList } from '@/components/Profile/Followers,FollowingandLikesList';
+import Link from 'next/link';
 
 
 
@@ -26,6 +28,7 @@ import { FollowersFollowingandLikesList } from '@/components/Profile/Followers,F
 export default function Page({ params }) {
     const { username } = params
     const router = useRouter()
+    const width = useWindowWidth()
     const [user, loading] = useAuthState(auth);
     const [loadingProfile, setloadingProfile] = useState(false);
     const [currentSection, setCurrentSection] = useState("Profile");
@@ -66,7 +69,7 @@ export default function Page({ params }) {
         const getBasicInfo = async () => {
             const usersCollection = collection(db, "users")
             const userQuery = query(usersCollection, where('username', '==', username));
-            
+
             let res = [];
 
             onSnapshot(userQuery, async (snapshot) => {
@@ -147,9 +150,7 @@ export default function Page({ params }) {
 
 
         getOtherInfo()
-        setTimeout(() => {
-            setloadingProfile(false)
-        }, 1000);
+        setloadingProfile(false)
 
         return () => { }
     }, [username, user, currentSection]);
@@ -212,7 +213,9 @@ export default function Page({ params }) {
                     <WhoseandWhichpost variations={sections} currentwhosePost={currentSection} setCurrentWhosePost={setCurrentSection} />
                 </header>
 
-
+                        {
+                            loadingProfile && <>Loading...</>
+                        }
                 {
                     !loadingProfile && !userInfo &&
                     <div className="infobox">
@@ -228,14 +231,35 @@ export default function Page({ params }) {
                             <div className={styles.main}>
                                 <Image
                                     src={userInfo.profilePicture}
-                                    width={200}
-                                    height={200}
+                                    width={150}
+                                    height={150}
                                     alt={`${userInfo.name} photo`}
                                 />
-                                <h3>{userInfo.name}</h3>
+                                <div>
+                                    <h3>{userInfo.name}</h3>
+                                    {user.uid == userInfo.id && width < 720 && <Link href={'/settings'}><FontAwesomeIcon icon={faGear} /></Link>}
+
+                                </div>
                                 <h6 className={styles.username}>@{userInfo.username}</h6>
                                 <h6>{userInfo.occupation}</h6>
                             </div>
+
+
+                            <div className={styles.following}>
+                                <h5>{userPosts?.length ? userPosts?.length : 0} <span>ArcPosts</span></h5>
+                                <span>
+                                    <h5>{userInfo.followers ? userInfo.followers.length : 0} <span>Followers</span></h5>
+                                    <FollowersFollowingandLikesList userId={userInfo.id} username={userInfo.username} followers={userInfo.followers} />
+                                </span>
+                                <span>
+                                    <h5>{userInfo.following ? userInfo.following.length : 0} <span>Following</span></h5>
+                                    <FollowersFollowingandLikesList userId={userInfo.id} username={userInfo.username} following={userInfo.following} />
+                                </span>
+
+
+                            </div>
+
+
 
                             <div>
                                 {
@@ -250,20 +274,6 @@ export default function Page({ params }) {
                                         }
                                     </>
                                 }
-
-
-                            </div>
-
-                            <div className={styles.following}>
-                                <h5>{userPosts?.length ? userPosts?.length : 0} <span>ArcPosts</span></h5>
-                                <span>
-                                    <h5>{userInfo.followers ? userInfo.followers.length : 0} <span>Followers</span></h5>
-                                    <FollowersFollowingandLikesList userId={userInfo.id} username={userInfo.username} followers={userInfo.followers} />
-                                </span>
-                                <span>
-                                    <h5>{userInfo.following ? userInfo.following.length : 0} <span>Following</span></h5>
-                                    <FollowersFollowingandLikesList userId={userInfo.id} username={userInfo.username} following={userInfo.following} />
-                                </span>
 
 
                             </div>

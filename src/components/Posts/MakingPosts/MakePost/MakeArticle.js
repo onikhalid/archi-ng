@@ -84,6 +84,7 @@ const MakeArticle = ({ postToEditId }) => {
       postType: 'Articles',
       tags: data.Tags.split(","),
       title: data.Title,
+      titleForSearch: data.Title.split(/[,:.\s-]+/).filter(word => word !== ''),
       timeToRead: data.TimeToRead,
       updatedAt: new Date()
     }
@@ -123,7 +124,7 @@ const MakeArticle = ({ postToEditId }) => {
       position: toast.POSITION.TOP_CENTER,
       autoClose: 3500,
     });
-    
+
     setSavingPost(false)
   }
 
@@ -218,10 +219,10 @@ const MakeArticle = ({ postToEditId }) => {
 
 
 
-  
 
 
-  return (
+
+  return (  
     <>
 
       {
@@ -233,7 +234,12 @@ const MakeArticle = ({ postToEditId }) => {
       <div className={styles.makearticle}>
         <article className='ImageUploader'>
           <input type="file" onChange={handleImageUpload} />
-          {!selectedImage && <h6>Please make sure your image is in landscape form</h6>}
+          {!selectedImage && !coverImgURL &&
+            <div className={styles.imagerules}>
+              <h6>1. Try as much as possible to ensure your image is in landscape form</h6>
+              <h6>2. If you&apos;re uploading an image you've previously uploaded in another post, make sure to change its name before uploading.</h6>
+            </div>
+          }
           {(selectedImage || coverImgURL) && <img className={styles.uploadedimage} src={coverImgURL} alt="Preview" />}
         </article>
 

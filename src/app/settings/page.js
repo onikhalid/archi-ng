@@ -472,7 +472,7 @@ const Settings = () => {
                       Terms and Conditions
                     </span>
 
-                    <span onClick={() => router.push("/policy")} className={styles.settingslink}> <FontAwesomeIcon icon={faFileContract} />
+                    <span onClick={() => router.push("/policy")} className={styles.settingslink}> <FontAwesomeIcon icon={faLock} />
                       Privacy Policy
                     </span>
 

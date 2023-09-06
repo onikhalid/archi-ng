@@ -6,12 +6,12 @@ import { useForm } from 'react-hook-form';
 
 
 const Contact = () => {
-  const { register, handleSubmit, watch, formState: { errors }, setValue } = useForm();
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm();
 
 
   const onSubmit = async (data) => {
     try {
-      const response = await fetch('https://formspree.io/f/mvolenje', {
+      const response = await fetch('https://formspree.io/f/mleynlpr', {
         method: 'POST',
         body: JSON.stringify(data),
         headers: {
@@ -21,9 +21,11 @@ const Contact = () => {
 
       if (response.ok) {
         setValue("Name", "");
-        toast.success("Message sent successful", {
+        setValue("Email", "");
+        setValue("Message", "");
+        toast.success("Message sent successful, Thank you for your contribution to Archi NG", {
           position: "top-center",
-          autoClose: 2500
+          autoClose: 3000
         })
 
       } else {
@@ -53,7 +55,6 @@ const Contact = () => {
 
         <main>
           <form onSubmit={handleSubmit(onSubmit)}>
-            {/* <form method="post" action="https://formspree.io/f/mvolenje"> */}
             <div className='inputdiv'>
               <label htmlFor="Name">Name<span>*</span></label>
               <input id="Name" type="text" name="Name"
@@ -71,12 +72,12 @@ const Contact = () => {
             </div>
 
             <div className='inputdiv'>
-              <label htmlFor="Bio">Your Message<span>*</span></label>
-              <textarea name="Bio" rows="5"
+              <label htmlFor="Message">Your Message<span>*</span></label>
+              <textarea name="Message" rows="5"
                 placeholder="I hope this message finds you well. I just wanted to take a moment to express my sincere gratitude for creating such an incredible website.
                 I've been using it for 6 months, and it has truly become an indispensable part of my online experience."
-                {...register("Bio", { required: true })}></textarea>
-              {errors.Bio && <span>Message field is required</span>}
+                {...register("Message", { required: true })}></textarea>
+              {errors.Message && <span>Message field is required</span>}
             </div>
 
 

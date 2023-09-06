@@ -10,7 +10,6 @@ import { doc, collection, addDoc, updateDoc, where, query, getDoc, writeBatch, g
 import { db, auth, storage } from '@/utils/firebase';
 
 import { toast } from 'react-toastify';
-import ImageUploader from "@/components/Posts/MakingPosts/ImageUploader/ImageUploader";
 
 import { faNewspaper, faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -26,7 +25,6 @@ const MakeCaseStudy = ({ postToEditId }) => {
   const [coverImgURL, setCoverImgURL] = useState(null)
 
   const [savingPost, setSavingPost] = useState(false)
-  const [thePost, setThePost] = useState({})
   const { register, handleSubmit, formState: { errors }, setValue } = useForm();
 
 
@@ -67,11 +65,13 @@ const MakeCaseStudy = ({ postToEditId }) => {
 
 
 
-  //////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////
-  /////////////          MAKE-EDIT POST         ////////////////
-  //////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  ///////////////////          CREATE OR EDIT POST         /////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   const submitForm = async (data) => {
     document.body.scrollTo({ top: 0, behavior: "smooth" });
@@ -87,17 +87,50 @@ const MakeCaseStudy = ({ postToEditId }) => {
     }
 
     setSavingPost(true)
-    const galleryImagesURL = await uploadGalleryImages()
+
 
     let coverImageDownloadURL
     if (selectedCoverImage) {
       coverImageDownloadURL = await uploadCoverImage(selectedCoverImage)
     } else coverImageDownloadURL = coverImgURL
 
-    // let galleryImagesURL
-    // if (selectedGalleryImageFiles) {
-    //   galleryImagesURL = await uploadGalleryImages()
-    // } else galleryImagesURL = coverImgURL
+
+
+    let galleryImagesURL = []
+
+
+    if (postToEditId) {
+      let deletedImages = [];
+
+      //if new image ifiles have been selected
+      if (selectedGalleryImageFiles.length > 0) {
+        //if there's a post to be edited and the user is adding new images, 
+        //upload the new/selected ones and add their urls to the original ones
+
+        const uploadedGalleryImagesURL = await uploadGalleryImages()
+        galleryImagesURL = [...updatedOriginalGalleryURLs, ...uploadedGalleryImagesURL]
+        deletedImages = originalGalleryURLs.filter(item => !galleryImagesURL.includes(item));
+
+      } else {
+        //no post to edit and no new Images, use what's already on ground
+        galleryImagesURL = previewGalleryImageURLs
+        deletedImages = originalGalleryURLs.filter(item => !galleryImagesURL.includes(item));
+      }
+      deletedImages.forEach(async (image) => {
+        //delete previous image from firebase
+        const startIndex = image.indexOf('/o/') + 3;
+        const endIndex = image.indexOf('?alt=media');
+        const encodedPath = image.substring(startIndex, endIndex);
+        const storagePath = decodeURIComponent(encodedPath);
+        const previousImageRef = ref(storage, storagePath)
+        await deleteObject(previousImageRef)
+      });
+
+    } else {
+      //no post to edit so I'm uploading the selected files and then using the URls
+      const uploadedGalleryImagesURL = await uploadGalleryImages()
+      galleryImagesURL = uploadedGalleryImagesURL
+    }
 
 
     const postData = {
@@ -109,11 +142,12 @@ const MakeCaseStudy = ({ postToEditId }) => {
       coverImageURL: coverImageDownloadURL,
       createdAt: new Date(),
       location: data.Location.split(",").map(item => item.trim()),
-      otherImages: postToEditId ? previewGalleryImageURLs : galleryImagesURL || [],
+      otherImages: galleryImagesURL || [],
       postContent: caseContent,
       postId: postToEditId ? postToEditId : user.uid,
       postType: 'Case Studies',
       tags: data.Tags.split(","),
+      titleForSearch: data.Title.split(/[,:.\s-]+/).filter(word => word !== ''),
       title: data.Title,
       typology: data.Typology,
       year: data.Year,
@@ -138,20 +172,20 @@ const MakeCaseStudy = ({ postToEditId }) => {
         })
       })
       await batch.commit();
-    } 
+    }
     else {
       const newPostRef = await addDoc(postCollectionRef, postData);
       const postId = newPostRef.id
       await updateDoc(doc(postCollectionRef, newPostRef.id), {
         postId: postId
-      });
+      });//updating the new post with the newly created document Id
     }
 
 
     router.push('/')
     toast.success(`Your case study has been ${postToEditId ? 'updated' : 'submitted'} 😎`, {
       position: toast.POSITION.TOP_CENTER,
-      autoClose: 3500,
+      autoClose: 2500,
     });
 
     window.scrollTo({ top: 0, behavior: "smooth" })
@@ -160,13 +194,11 @@ const MakeCaseStudy = ({ postToEditId }) => {
 
 
 
-
-
   ////////////////////////////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  ////////////       CHECK IF USER WANTS TO CREATE NEW POST OR EDIT PREVIOUS POSTS       //////////////////
-  //////////////////////////////////////////////////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////       CHECK IF USER WANTS TO CREATE NEW POST OR EDIT PREVIOUS POSTS       /////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////////////
 
   useEffect(() => {
     const checkPostToEdit = async () => {
@@ -177,10 +209,13 @@ const MakeCaseStudy = ({ postToEditId }) => {
         const postToEditRef = doc(db, `posts/${postToEditId}`)
         const postToEditSnap = await getDoc(postToEditRef)
         const postToEdit = postToEditSnap.data()
-        // setThePost(postToEdit)
         const { coverImageURL, title, client, location, architect, year, typology, tags, postContent, otherImages } = postToEdit
         setCoverImgURL(coverImageURL)
         setPreviewGalleryImageURLs(otherImages)
+        //save previously uploaded images into an array for later use [i.e the images firebase urls]
+        //doing this because the new image src will be pointing to a blob file just for preview, 
+        //which will later be uploaded to firebase when user submits
+        setOriginalGalleryURLs(otherImages)
         setTitle(title)
         setClient(client)
         setLocation(location.join(','))
@@ -198,9 +233,22 @@ const MakeCaseStudy = ({ postToEditId }) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////////
   ///////////////////////////////       IMAGE UPLOAD         /////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -255,15 +303,13 @@ const MakeCaseStudy = ({ postToEditId }) => {
   ////////////        GALLERY IMAGES          ///////////////
   ///////////////////////////////////////////////////////////
   const [selectedGalleryImageFiles, setSelectedGalleryImageFiles] = useState([]);
-  const [previewGalleryImageURLs, setPreviewGalleryImageURLs] = useState([]);
-  const [galleryURLs, setGalleryURLs] = useState([]);
+  const [previewGalleryImageURLs, setPreviewGalleryImageURLs] = useState([]);//for display and UI
+  const [originalGalleryURLs, setOriginalGalleryURLs] = useState([]);//for comparison, to check deleted images etc.
+  const [updatedOriginalGalleryURLs, setUpdatedOriginalGalleryURLs] = useState([]);//for upload, to add to the newly added/uploaded images
 
 
-  const [uploading, setUploading] = useState(false);
-  const [progress, setProgress] = useState(0);
 
-
-  const handleFileChange = (e) => {
+  const handleAddGalleryImage = (e) => {
     const selectedImages = Array.from(e.target.files);
     setSelectedGalleryImageFiles([...selectedGalleryImageFiles, ...selectedImages]);
 
@@ -273,13 +319,18 @@ const MakeCaseStudy = ({ postToEditId }) => {
 
 
 
-  const handleRemoveImage = (index) => {
-   
+
+  const handleRemoveGalleryImage = (index) => {
+
     const updatedImages = [...selectedGalleryImageFiles];
     const updatedImageURLs = [...previewGalleryImageURLs];
 
     updatedImages.splice(index, 1);
     updatedImageURLs.splice(index, 1);
+
+    const removedURL = updatedImageURLs[index];
+    const updatedOriginalURLs = originalGalleryURLs.filter((url) => url !== removedURL);
+    setUpdatedOriginalGalleryURLs(updatedOriginalURLs)
 
     setSelectedGalleryImageFiles(updatedImages);
     setPreviewGalleryImageURLs(updatedImageURLs);
@@ -287,61 +338,46 @@ const MakeCaseStudy = ({ postToEditId }) => {
 
 
   const uploadGalleryImages = async () => {
-    setUploading(true);
     const storageRef = ref(storage, 'images');
 
-    if (postToEditId) {
-      console.log(previewGalleryImageURLs)
-      return previewGalleryImageURLs
+
+    if (selectedGalleryImageFiles.length == 0) {
+      return;
     }
     else {
-      if (selectedGalleryImageFiles.length === 0) {
-        return;
-      }
-      else {
 
-        try {
-          const downloadURLs = await Promise.all(
-            selectedGalleryImageFiles.map(async (image) => {
-              const imageRef = ref(storageRef, image.name);
+      try {
+        const downloadURLs = await Promise.all(
+          selectedGalleryImageFiles.map(async (image) => {
+            const imageRef = ref(storageRef, image.name);
 
-              try {
-                const snapshot = await uploadBytes(imageRef, image);
+            try {
+              const snapshot = await uploadBytes(imageRef, image);
 
-                const downloadURL = await getDownloadURL(imageRef);
-                return downloadURL;
-              } catch (error) {
-                toast.error('Error uploading an image', {
-                  position: "top-center",
-                  autoClose: 3000
-                })
-                console.error('Error uploading an image:', error);
-                return null;
-              }
-            })
-          );
-
-          setUploading(false);
-          setProgress(0);
-
-          console.log('Download URLs:', downloadURLs);
-          return downloadURLs
-        }
-
-        catch (error) {
-          toast.error('Error uploading images', {
-            position: "top-center",
-            autoClose: 3000
+              const downloadURL = await getDownloadURL(imageRef);
+              return downloadURL;
+            } catch (error) {
+              toast.error('Error uploading an image', {
+                position: "top-center",
+                autoClose: 3000
+              })
+              console.error('Error uploading an image:', error);
+              return null;
+            }
           })
-          console.error('Error uploading images:', error);
-          setUploading(false);
-          setProgress(0);
-        }
+        );
+
+        return downloadURLs
+      }
+
+      catch (error) {
+        toast.error('Error uploading images', {
+          position: "top-center",
+          autoClose: 3000
+        })
+        console.error('Error uploading images:', error);
       }
     }
-
-
-
 
   };
 
@@ -360,8 +396,15 @@ const MakeCaseStudy = ({ postToEditId }) => {
     <>
       <div className={styles.makecase}>
         <article>
+        <h3>Cover Image</h3>
+
           <input type="file" onChange={handleCoverImageFileChange} />
-          {!selectedCoverImage && !coverImgURL && <h6>Please make sure your image is in landscape form</h6>}
+          {!selectedCoverImage && !coverImgURL &&
+            <div className={styles.imagerules}>
+              <h6>1. Try as much as possible to ensure your image is in landscape form</h6>
+              <h6>2. If you&apos;re uploading an image you've previously uploaded in another post, make sure to change its name before uploading.</h6>
+            </div>
+          }
           {(selectedCoverImage || coverImgURL) && <img className={styles.uploadedimage} src={coverImgURL} alt="Preview" />}
         </article>
 
@@ -448,22 +491,24 @@ const MakeCaseStudy = ({ postToEditId }) => {
         <Edit editorRef={editorRef} editorContent={editorContent} setContent={setCaseContent} />
 
 
-        {/* <ImageUploader ready={ready}  setOtherImgURL={setOtherImgURL}/> */}
         <section className={styles.galleryimages}>
           <h3>Other Images</h3>
-          <input type="file" multiple onChange={handleFileChange} />
-          <h6>You can select multiple images at once, or select one by one. Once again, make sure your images are high resolution images but not too big in file sizes.</h6>
+          <div className={styles.imagerules}>
+            <h6>1. You can select multiple images at once, or select one by one. Once again, make sure your images are high resolution images but not too big in file sizes.</h6>
+            <h6>2. It's best to properly name each image to avoid conflicts. Also if you&apos;re uploading a copy of the cover image here, duplicate and change its name before uploading.</h6>
+            <h6>3. If you&apos;re uploading an image you've previously uploaded in another post, make sure to change its name before uploading.</h6>
+          </div>
+          <input type="file" multiple onChange={handleAddGalleryImage} />
           <div className={styles.imagepreviewcontainer}>
             {previewGalleryImageURLs.map((url, index) => (
               <div key={index} className={styles.imagepreview}>
                 <img src={url} alt={`Image ${index}`} />
-                <span className={styles.closebutton} onClick={() => handleRemoveImage(index)} title='Remove Image'>
+                <span className={styles.closebutton} onClick={() => handleRemoveGalleryImage(index)} title='Remove Image'>
                   <FontAwesomeIcon icon={faX} />
                 </span>
               </div>
             ))}
           </div>
-          {uploading && <p>Uploading... {progress.toFixed(2)}%</p>}
         </section>
 
 
@@ -476,7 +521,7 @@ const MakeCaseStudy = ({ postToEditId }) => {
       {
         savingPost &&
         <div className={styles.saving}>
-          Saving Post...this might take a while<br/> Please do not close tab.
+          Saving Post...this might take a while<br /> Please do not close tab.
         </div>
       }
     </>

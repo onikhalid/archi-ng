@@ -88,12 +88,20 @@ const Search = () => {
         const architectQuery = query(postsCollection, where('postType', '==', whichPost()), where('architect', '>=', queryText), where('architect', '<=', queryText + '\uf8ff'));
         const architectResults = await getDocs(architectQuery);
 
+
+
+
         //////////////////////////////////////
         //////   case-insensitive search
         const sentenceCaseQueryText = queryText.charAt(0).toUpperCase() + queryText.slice(1).toLowerCase()
         const lowerCaseQueryText = queryText.toLowerCase()
         const upperCaseQueryText = queryText.toUpperCase()
-        const caseInsensitiveQueryText = [sentenceCaseQueryText, lowerCaseQueryText, upperCaseQueryText, queryText]
+        const splitText = queryText.split(/[,:.\s-]+/).filter(word => word !== '')
+        const splitQueryText = []
+        splitText.forEach(text => {
+          splitQueryText.push(text, text.toLowerCase(), text.toUpperCase(), text.charAt(0).toUpperCase() + text.slice(1).toLowerCase())
+        });
+        const caseInsensitiveQueryText = [sentenceCaseQueryText, lowerCaseQueryText, upperCaseQueryText, queryText, ...splitQueryText]
 
         //CI = caseInsensitive
         const authorCIQuery = query(postsCollection, where('postType', '==', whichPost()), where('authorName', 'in', caseInsensitiveQueryText), orderBy('authorName'));
@@ -114,6 +122,28 @@ const Search = () => {
         const locationCIQuery = query(postsCollection, where('postType', '==', whichPost()), where('location', 'array-contains-any', caseInsensitiveQueryText));
         const locationCIResults = await getDocs(locationCIQuery);
 
+
+
+        /////////////////////////////////////////////////
+        //////   partial match search
+
+        const titlePartialandCIQuery = query(postsCollection, where('postType', '==', whichPost()), where('titleForSearch', 'array-contains', queryText));
+        const titlePartialandCIResults = await getDocs(titlePartialandCIQuery);
+
+        /////////////////////////////////////////////////
+        //////   partial match + case insensitive search
+     
+
+        const partialandCITitleQuery = query(postsCollection, where('postType', '==', whichPost()), where('titleForSearch', 'array-contains-any', caseInsensitiveQueryText));
+        const partialandCITitleResults = await getDocs(partialandCITitleQuery);
+
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        /////////                         RESULTS                     //////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
         const results = [];
         authorResults.forEach((doc) => results.push(doc.data()));
 
@@ -121,6 +151,9 @@ const Search = () => {
         authorCIResults.forEach((doc) => { if (!results.find((result) => result.id === doc.id)) { results.push(doc.data()); } });
         titleResults.forEach((doc) => { if (!results.find((result) => result.id === doc.id)) { results.push(doc.data()); } });
         titleCIResults.forEach((doc) => { if (!results.find((result) => result.id === doc.id)) { results.push(doc.data()); } });
+        titlePartialandCIResults.forEach((doc) => { if (!results.find((result) => result.id === doc.id)) { results.push(doc.data()); } });
+        partialandCITitleResults.forEach((doc) => { if (!results.find((result) => result.id === doc.id)) { results.push(doc.data()); } });
+
         tagsResults.forEach((doc) => { if (!results.find((result) => result.id === doc.id)) { results.push(doc.data()); } });
         tagsCIResults.forEach((doc) => { if (!results.find((result) => result.id === doc.id)) { results.push(doc.data()); } });
         typologyResults.forEach((doc) => { if (!results.find((result) => result.id === doc.id)) { results.push(doc.data()); } });

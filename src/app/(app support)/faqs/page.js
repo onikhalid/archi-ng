@@ -22,12 +22,12 @@ const FAQ = () => {
 
             <article>
               <h5>2. How did the idea for Archi NG originate?</h5>
-              <p>The idea for Archi NG was born out of the founder&apos;s experience as an architecture student. Faced with a lack of readily available documentation of Nigerian buildings for case studies, the founder saw the need to create a platform that addresses the inadequate documentation of architecture in Nigeria.</p>
+              <p>The idea for Archi NG was born out of my experience as an architecture student. Faced with a lack of readily available documentation of Nigerian buildings for case studies, I saw the need to create a platform that addresses the inadequate documentation of architecture in Nigeria.</p>
             </article>
 
             <article>
-              <h5>3. Who is the founder of Archi NG?</h5>
-              <p>Archi NG was founded by Khalid Oni, an architecture student who is passionate about promoting Nigerian architecture and providing valuable resources to the architectural community.</p>
+              <h5>3. Who is the creator of Archi NG?</h5>
+              <p>Archi NG was created by Khalid Oni, an architecture student who is passionate about promoting Nigerian architecture and providing valuable resources to the architectural community.</p>
             </article>
           </section>
 

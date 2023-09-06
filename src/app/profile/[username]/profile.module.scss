@@ -42,25 +42,19 @@
         flex: 1.2;
         text-align: center;
 
+   
+
+        p {
+            font-family: var(--text-poppins);
+            font-size: .85rem;
+
+        }
 
         h3 {
-            font-size: clamp(1.5rem, 2.2vw, 2.2rem);
+            font-size: clamp(1.5rem, 1.7vw, 1.8rem);
             margin-bottom: 0;
             max-width: 15ch;
             word-wrap: break-word;
-        }
-
-        h6 {
-            color: var(--accent);
-            font-size: 0.95rem;
-            margin-top: .5rem;
-            text-transform: capitalize;
-            
-            &.username {
-                color: var(--sec-text-clr);
-                font-style: italic;
-                margin-top: 0;
-            }
         }
 
         h5 {
@@ -68,12 +62,23 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.35rem;
             flex: 1;
 
             span {
-                font-size: 0.8rem;
+                font-size: 0.7rem;
                 color: var(--sec-text-clr);
+            }
+        }
+
+        h6 {
+            color: var(--accent);
+            font-size: 0.9rem;
+
+            &.username {
+                color: var(--sec-text-clr);
+                font-style: italic;
+                margin-top: 0;
             }
         }
 
@@ -98,9 +103,29 @@
 
         }
 
+        .main {
+
+            //name and settings gear on mobile
+            div {
+                display: flex;
+                align-items: center;
+                gap: .75rem;
+
+                 svg {
+                    display: inline-block;
+                    font-size: 1.2rem;
+
+                    &:hover{
+                        color: var(--accent);
+                    }
+                }
+            }
+
+        }
+
         .following {
             flex-direction: row;
-            gap: 1.5rem;
+            gap: 1rem;
 
         }
     }
@@ -112,21 +137,21 @@
         align-items: center;
         flex: 2.7;
         gap: 1.2rem;
-
+        // border: solid 2px var(--main-text-clr);
+        // border-radius: 12px;
         .pinnedposts {
             display: flex;
             gap: 1.2rem;
             flex-wrap: wrap;
             justify-content: center;
-            transform: scale(0.75);
-            margin-top: -2rem;
+            // transform: scale(0.75);
+            // margin-top: -2rem;
 
             @media (max-width: 1019px) {
-                margin-top: -5rem;
+                // margin-top: -5rem;
             }
-            // @media (min-width: 720px) and (max-width: 1019px)  {
-            //     margin-top: 0rem;
-            // }
+
+
         }
     }
 }
@@ -139,7 +164,7 @@
 .posts {
     display: flex;
     flex-wrap: wrap;
-    gap: 3.5rem;
+    gap: 1.2rem;
     align-items: center;
     justify-content: center;
     margin-top: 3rem;
