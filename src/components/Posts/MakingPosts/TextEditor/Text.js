@@ -7,7 +7,7 @@ import { ThemeContext } from '@/utils/ContextandProviders/Contexts';
 
 
 
-export default function Edit({ editorRef, setContent, editorContent }) {
+export default function Edit({ editorRef, setContent, editorContent, type}) {
   const [user, loading] = useAuthState(auth)
   const previousContentRef = useRef('')
 
@@ -24,7 +24,7 @@ export default function Edit({ editorRef, setContent, editorContent }) {
   // ///////////////////////////////////////////////////////////
   // ///////////////////////////////////////////////////////////
   const handleImageUpload = async (blobInfo, progress) => {
-    const storageRef = ref(storage, `blog_images/${user?.uid}/${blobInfo.filename()}`);
+    const storageRef = ref(storage, `post_images/${user?.uid}/${type}/${blobInfo.filename()}`);
 
     try {
       const snapshot = await uploadBytes(storageRef, blobInfo.blob(), {

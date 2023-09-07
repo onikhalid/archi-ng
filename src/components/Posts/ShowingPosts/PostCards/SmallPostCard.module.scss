@@ -138,10 +138,11 @@
         min-height: 32%; 
 
         h3 {
-            font-size: clamp(0.9rem, 1.1vw, 1.1rem); 
-            line-break: normal;
             display: flex;
             flex-direction: column;
+            margin-bottom: 0;
+            font-size: clamp(0.9rem, 1.1vw, 1.1rem); 
+            line-break: normal;
             -webkit-line-clamp: 3;
             overflow: hidden;
         }

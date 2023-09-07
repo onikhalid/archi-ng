@@ -408,10 +408,25 @@
    flex-direction: column;
    align-items: center;
    margin-block: 5rem;
+   text-align: center;
+
+   small {
+     margin-top: -0.35rem;
+     margin-bottom: 1.5rem;
+   }
 
    h2 {
      max-width: 20ch;
-     text-align: center;
+   }
+
+   h3 {
+     max-width: 20ch;
+     line-height: 1.25;
+   }
+
+   h4 {
+     max-width: 30ch;
+     font-family: var(--text-poppins) !important;
    }
  }
 
@@ -817,11 +832,11 @@
 
 
 
- 
+
  ////////////////////////////////////////////////
  ////////////        LIGHTBOX       /////////////
  ////////////////////////////////////////////////
- 
-.yarl__thumbnails_thumbnail_active {
-  border-color: var(--accent) !important;
-}
+
+ .yarl__thumbnails_thumbnail_active {
+   border-color: var(--accent) !important;
+ }

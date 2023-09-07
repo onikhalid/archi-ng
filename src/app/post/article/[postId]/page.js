@@ -325,7 +325,7 @@ export default function Page({ params }) {
                                     })
                                 }
 
-                                {(!postData.comments || postData.comments.length < 1) && <h6>No comments yet, Be the first to comment</h6>
+                                {(!postData.comments || postData.comments.length < 1) && <h6>No remarks yet, Be the first to post a remark</h6>
                                 }
                             </div>
                         </section>

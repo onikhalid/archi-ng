@@ -90,7 +90,7 @@ export default function Home() {
   //////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////
-  const [allPosts, setAllPosts] = useState([]);
+  const [allPosts, setAllPosts] = useState(null);
   const postsPerFetch = 20;
   const [fetchedPosts, setfetchedPosts] = useState(null);
 
@@ -106,11 +106,28 @@ export default function Home() {
     const currentUserId = user?.uid
 
     const GetFollowedUsersIds = async () => {
-      const followedUsersQuerySnapshot = user && await getDocs(
-        query(followsCollectionRef, where('followerId', '==', currentUserId)));
-      const followedUserIds = user && followedUsersQuerySnapshot.docs.map((doc) => doc.data().followingId);
-      setfollowedUserIds(followedUserIds)
-      return followedUserIds
+      try {
+        const followedUsersQuerySnapshot = user && await getDocs(
+          query(followsCollectionRef, where('followerId', '==', currentUserId)));
+        const followedUserIds = user && followedUsersQuerySnapshot.docs.map((doc) => doc.data().followingId);
+        setfollowedUserIds(followedUserIds)
+        return followedUserIds
+      } catch (error) {
+        if (error.code === "failed-precondition") {
+          toast.error("Poor internet connection")
+        }
+        else if (error.code === "auth/network-request-failed" || "unavailable") {
+          toast.error("There appears to be a problem with your connection", {
+            position: "top-center"
+          })
+        }
+        else if (error.message.includes('Backend didn\'t respond' || "[code=unavailable]")) {
+          toast.error("There appears to be a problem with your connection", {
+            position: "top-center"
+          })
+        }
+      }
+
     }
 
 
@@ -118,7 +135,7 @@ export default function Home() {
       // start fetching
       setLoadingPosts(true)
       await GetFollowedUsersIds()
-
+      
       const getQuery = () => {
         if (currentwhosePost === "Feed") {
           return query(postsCollectionRef, where('postType', '==', currentPost), orderBy("createdAt", 'desc'), limit(postsPerFetch))
@@ -165,8 +182,19 @@ export default function Home() {
       getPosts();
     } catch (error) {
       if (error.code === "failed-precondition") {
-        toast.error("Internet ")
+        toast.error("Poor internet connection")
       }
+      else if (error.code === "auth/network-request-failed" || "unavailable") {
+        toast.error("There appears to be a problem with your connection", {
+          position: "top-center"
+        })
+      }
+      else if (error.message.includes('Backend didn\'t respond' || "[code=unavailable]")) {
+        toast.error("There appears to be a problem with your connection", {
+          position: "top-center"
+        })
+      }
+
     }
 
 
@@ -283,44 +311,59 @@ export default function Home() {
 
 
         <section className={styles.allposts}>
-          {
-            // user signed in but no post in the db
-            user && currentwhosePost === 'Feed' && !loadingPosts && allPosts.length < 1 && <div className='infobox main'>
-              <h2>Nothing here, Be the first to make a post  </h2>
-              <Button name={'Make Post'} type={'primary'} link={'/post'} />
+          {/* {
+            allPosts == null &&
+            <div className='infobox main'>
+              <h3>Internet  </h3>
             </div>
-          }
+          } */}
           {
-            // user signed in but nothing in the following tab
-            user && currentwhosePost === 'Following' && !loadingPosts && allPosts.length < 1 && <div className='infobox main'>
-              <h2>Nothing here, Either you don&apos;t follow anyone or the people you follow haven&apos;t posted anything</h2>
-            </div>
-          }
-          {
-            // user not signed in and no post in the db
-            !user && currentwhosePost === 'Feed' && !loadingPosts && allPosts.length < 1 && <div className='infobox main'>
-              <h2>Nothing here, Sign in and be the first to make a post  </h2>
-            </div>
-          }
-          {
-            // user not signed in and current whose post = "following"
-            !user && allPosts.length < 1 && currentwhosePost === 'Following' && <div className='infobox main'>
-              <h2>Sign in 😏, you don&apos;t follow anybody  </h2>
-              <Button name={'Sign in'} type={'primary'} link={'/auth'} />
-            </div>
-          }
-          {allPosts?.map((post, index) => {
+            allPosts !== null &&
+            <>
 
-            if (loadingPosts) {
-              return <PostSkeleton key={index} />
-            } else if (currentPost === 'Articles') {
-              return <ArticleCard key={index} post={post} />
-            } else if (currentPost === 'Case Studies') {
-              return <CaseStudyCard key={index} post={post} />
-            } else {
-              return <PhotoCard key={index} post={post} />
-            }
-          })}
+              {
+                // user signed in but no post in the db
+                (user && currentwhosePost === 'Feed' && !loadingPosts && allPosts.length < 1) && <div className='infobox main'>
+                  <h3>🙁Nothing has been posted here yet, Be the first to make a post</h3>
+                  <small>This could also be as a result of your bad internet connection.</small>
+                  <Button name={'Make Post'} type={'primary'} link={'/post'} />
+                </div>
+              }
+              {
+                // user signed in but nothing in the following tab
+                (user && currentwhosePost === 'Following' && !loadingPosts && allPosts.length < 1) && <div className='infobox main'>
+                  <h3>🙁Nothing has been posted here yet, Either you don&apos;t follow anyone or the people you follow haven&apos;t posted anything</h3>
+                  <small>This could also be as a result of your bad internet connection.</small>
+                </div>
+              }
+              {
+                // user not signed in and no post in the db
+                (!user && currentwhosePost === 'Feed' && !loadingPosts && allPosts.length < 1) && <div className='infobox main'>
+                  <h3>🙁Nothing has been posted here yet, Sign in and be the first to make a post  </h3>
+                  <small>This could also be as a result of your bad internet connection.</small>
+                </div>
+              }
+              {
+                // user not signed in and current whose post = "following"
+                (!user && allPosts.length < 1 && currentwhosePost === 'Following') && <div className='infobox main'>
+                  <h3>Sign in 😏, you can&apos;t follow anybody if you&apos;re not signed in</h3>
+                  <Button name={'Sign in'} type={'primary'} link={'/auth'} />
+                </div>
+              }
+              {allPosts?.map((post, index) => {
+
+                if (loadingPosts) {
+                  return <PostSkeleton key={index} />
+                } else if (currentPost === 'Articles') {
+                  return <ArticleCard key={index} post={post} />
+                } else if (currentPost === 'Case Studies') {
+                  return <CaseStudyCard key={index} post={post} />
+                } else {
+                  return <PhotoCard key={index} post={post} />
+                }
+              })}
+            </>
+          }
         </section>
       </main>
     </>

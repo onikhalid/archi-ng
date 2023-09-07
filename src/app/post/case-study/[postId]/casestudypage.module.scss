@@ -26,14 +26,15 @@
             gap: 0.5rem;
         }
 
-        .title{
+        .title {
             h1 {
                 font-size: clamp(2.3rem, 4vw, 4rem);
                 width: 100%;
                 text-align: left;
                 font-size: clamp(2rem, 4vw, 4rem);
             }
-            em{
+
+            em {
                 color: var(--sec-text-clr);
             }
         }
@@ -56,7 +57,7 @@
         display: flex;
         gap: 1rem;
         margin-bottom: 2rem;
-        width: 120%;
+        width: 110%;
 
 
 
@@ -355,7 +356,7 @@
         h5,
         h6 {
             line-height: 1.2;
-            margin-top: 2.25rem;
+            margin-top: 1.1rem;
             margin-bottom: .5rem;
         }
 
@@ -376,6 +377,89 @@
         }
     }
 }
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
+///////////////           GALLERY           ////////////////////
+/////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
+
+.gallery {
+    width: 100%;
+    margin-top: 3.5rem;
+
+    .openlightboxbutton {
+        appearance: none;
+        font-family: var(--text-poppins);
+        background-color: transparent;
+        color: var(--main-text-clr);
+        padding: .25rem .7rem;
+        border: solid 2px var(--main-text-clr);
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all ease-in-out 250ms;
+        margin-top: 1rem;
+
+        &:hover {
+            border-radius: 5px;
+            color: var(--background);
+            background-color: var(--accent);
+            border: solid 2px transparent;
+        }
+    }
+
+    .previewcontainer {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+
+        .previewgalleryimage {
+            width: 100%;
+            max-width: 250px;
+            min-width: 180px;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            object-position: top right;
+            border-radius: 10px;
+        }
+
+        .previewmore {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-width: 250px;
+            min-width: 180px;
+            border: solid 2px var(--main-text-clr);
+            border-radius: 10px;
+            font-size: 2rem;
+            cursor: pointer;
+            
+            
+            background-color: transparent;
+            color: var(--main-text-clr);
+            border: solid 2px var(--main-text-clr);
+            transition: all ease-in-out 250ms;
+
+
+            &:hover {
+                border-radius: 5px;
+                color: var(--background);
+                background-color: var(--accent);
+                border: solid 2px transparent;
+            }
+        }
+    }
+
+}
+
 
 
 

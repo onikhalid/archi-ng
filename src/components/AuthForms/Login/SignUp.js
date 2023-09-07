@@ -61,7 +61,7 @@ export const SignupForm = () => {
     return (
 
         <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
-            <h4>Sign Up with Email</h4>
+            <h5>Sign Up with Email</h5>
             <div className={styles.inputdiv}>
                 <label>Email</label>
                 <input type="email" {...register('email', { required: 'Email is required' })} />
@@ -157,7 +157,7 @@ export const LoginForm = () => {
 
     return (
         <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
-            <h4>Login with Email</h4>
+            <h5>Login with Email</h5>
             <div className={styles.inputdiv}>
                 <label>Email</label>
                 <input type="email" {...register('email', { required: 'Email is required' })} />

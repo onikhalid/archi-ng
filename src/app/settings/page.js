@@ -74,7 +74,7 @@ const Settings = () => {
               position: "top-center",
               autoClose: 2500
             })
-            router.push('/auth?redirect=settings')
+            router.push('/auth?redirect=home')
           }
           else {
 

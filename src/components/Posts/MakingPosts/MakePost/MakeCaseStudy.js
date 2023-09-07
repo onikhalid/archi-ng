@@ -107,15 +107,16 @@ const MakeCaseStudy = ({ postToEditId }) => {
         //if there's a post to be edited and the user is adding new images, 
         //upload the new/selected ones and add their urls to the original ones
 
+      
         const uploadedGalleryImagesURL = await uploadGalleryImages()
         galleryImagesURL = [...updatedOriginalGalleryURLs, ...uploadedGalleryImagesURL]
         deletedImages = originalGalleryURLs.filter(item => !galleryImagesURL.includes(item));
-
       } else {
-        //no post to edit and no new Images, use what's already on ground
-        galleryImagesURL = previewGalleryImageURLs
+        //post to edit and no new Images, use what's already on ground
+        galleryImagesURL = updatedOriginalGalleryURLs
         deletedImages = originalGalleryURLs.filter(item => !galleryImagesURL.includes(item));
       }
+
       deletedImages.forEach(async (image) => {
         //delete previous image from firebase
         const startIndex = image.indexOf('/o/') + 3;
@@ -216,6 +217,7 @@ const MakeCaseStudy = ({ postToEditId }) => {
         //doing this because the new image src will be pointing to a blob file just for preview, 
         //which will later be uploaded to firebase when user submits
         setOriginalGalleryURLs(otherImages)
+        setUpdatedOriginalGalleryURLs(otherImages)
         setTitle(title)
         setClient(client)
         setLocation(location.join(','))
@@ -329,7 +331,9 @@ const MakeCaseStudy = ({ postToEditId }) => {
     updatedImageURLs.splice(index, 1);
 
     const removedURL = updatedImageURLs[index];
+    console.log(removedURL)
     const updatedOriginalURLs = originalGalleryURLs.filter((url) => url !== removedURL);
+    console.log(updatedOriginalURLs)
     setUpdatedOriginalGalleryURLs(updatedOriginalURLs)
 
     setSelectedGalleryImageFiles(updatedImages);
@@ -338,7 +342,7 @@ const MakeCaseStudy = ({ postToEditId }) => {
 
 
   const uploadGalleryImages = async () => {
-    const storageRef = ref(storage, 'images');
+    const storageRef = ref(storage, `post_images/${user.uid}/Case Studies`);
 
 
     if (selectedGalleryImageFiles.length == 0) {
@@ -488,7 +492,7 @@ const MakeCaseStudy = ({ postToEditId }) => {
         </form>
 
         {/* TinyMCE RTE */}
-        <Edit editorRef={editorRef} editorContent={editorContent} setContent={setCaseContent} />
+        <Edit editorRef={editorRef} editorContent={editorContent} setContent={setCaseContent} type={"Case Studies"}/>
 
 
         <section className={styles.galleryimages}>

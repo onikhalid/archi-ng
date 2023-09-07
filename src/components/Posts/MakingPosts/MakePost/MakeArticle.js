@@ -303,7 +303,7 @@ const MakeArticle = ({ postToEditId }) => {
         </form>
 
         {/* TinyMCE RTE */}
-        <Edit editorRef={editorRef} editorContent={editorContent} setContent={setArticleContent} />
+        <Edit editorRef={editorRef} editorContent={editorContent} setContent={setArticleContent} type={"Case Studies"}/>
 
 
         <button className={styles.submitbutton} form='Article' type="submit">Post your Article 📒</button>

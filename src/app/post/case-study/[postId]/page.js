@@ -21,9 +21,10 @@ import { addBookmark, deleteBookmark } from "@/functions/Bookmark";
 import { formatDate } from "@/functions/Formatting";
 import { deletePost } from "@/functions/Delete";
 
-
+import PhotoAlbum from "react-photo-album";
 import Lightbox from "yet-another-react-lightbox";
 import Captions from "yet-another-react-lightbox/plugins/captions";
+import Counter from "yet-another-react-lightbox/plugins/counter";
 import Fullscreen from "yet-another-react-lightbox/plugins/fullscreen";
 import Slideshow from "yet-another-react-lightbox/plugins/slideshow";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
@@ -48,15 +49,14 @@ export default function Page({ params }) {
     const { register, handleSubmit, formState: { errors }, setValue } = useForm();
 
 
-    const [basicExampleOpen, setBasicExampleOpen] = useState(false);
     const [galleryImages, setGalleryImages] = useState([]);
     const [lightHouseOpen, setLightHouseOpen] = useState(false);
 
-    
-    
+
+
     const gallerySlides = galleryImages.map((photo) => {
-        const width =  4000;
-        const height =  2500;
+        const width = 4000;
+        const height = 2500;
         const breakpoints = [4320, 2160, 1080, 640, 384, 256, 128];
 
         return {
@@ -65,7 +65,26 @@ export default function Page({ params }) {
             height,
             srcSet: breakpoints.map((breakpoint) => {
                 const breakpointHeight = Math.round((height / width) * breakpoint);
-                console.log(breakpointHeight)
+                return {
+                    src: photo,
+                    width: breakpoint,
+                    height: breakpointHeight,
+                };
+            }),
+        };
+    });
+
+    const gallerypreviewImages = galleryImages.slice(0, 4).map((photo) => {
+        const width = 250;
+        const height = 200;
+        const breakpoints = [4320, 2160, 1080, 640, 384, 256, 128];
+
+        return {
+            src: photo,
+            width,
+            height,
+            srcSet: breakpoints.map((breakpoint) => {
+                const breakpointHeight = Math.round((height / width) * breakpoint);
                 return {
                     src: photo,
                     width: breakpoint,
@@ -174,7 +193,7 @@ export default function Page({ params }) {
 
 
     const content = postData?.postContent
-    const pageTitle = postData && `${postData.title} - Case Study by ${postData.authorName} | Archi NG`
+    const pageTitle = postData && `${lightHouseOpen ? `Gallery of` : ``} ${postData.title} - Case Study by ${postData.authorName} | Archi NG`
 
 
 
@@ -344,17 +363,36 @@ export default function Page({ params }) {
 
 
 
-                        <section>
-                            <button onClick={() => setLightHouseOpen(true)} >See Case Study Gallery</button>
+                        <section className={styles.gallery}>
+                            <h2>Gallery</h2>
+                            <div className={styles.previewcontainer}>
+                                {
+                                    gallerySlides.slice(0, 5).map((image, index) => {
+
+                                        return (
+                                            <img className={styles.previewgalleryimage} src={image.src} key={index} />
+
+                                        )
+                                    })
+                                }
+                                {
+                                    gallerySlides.length > 5 &&
+                                        <button className={styles.previewmore} onClick={() => setLightHouseOpen(true)} title="open gallery">
+                                            +{gallerySlides.length - 5}
+                                        </button>
+                                }
+                            </div>
+
+                            <button className={styles.openlightboxbutton} onClick={() => setLightHouseOpen(true)} >See The Full Gallery</button>
                             <Lightbox
                                 open={lightHouseOpen}
                                 close={() => setLightHouseOpen(false)}
                                 slides={gallerySlides}
-                                // slides={advancedSlides}
-                                plugins={[Captions, Fullscreen, Slideshow, Thumbnails, Video, Zoom]}
-                                // carousel={finite: false;}
-                                carousel={ {finite: true}}
+                                plugins={[Captions, Fullscreen, Slideshow, Thumbnails, Video, Zoom, Counter]}
+                                carousel={{ finite: true }}
                             />
+
+                            {/* <PhotoAlbum layout="rows" photos={gallerypreviewImages} columns={4}/>; */}
                         </section>
 
 
@@ -390,7 +428,7 @@ export default function Page({ params }) {
                                     })
                                 }
 
-                                {(!postData.comments || postData.comments.length < 1) && <h6>No comments yet, Be the first to comment</h6>
+                                {(!postData.comments || postData.comments.length < 1) && <h6>No remarks yet, Be the first to post a remark</h6>
                                 }
                             </div>
                         </section>

@@ -14,13 +14,15 @@ import WhoseandWhichpost from '@/components/Posts/ShowingPosts/Whosepost/whosepo
 
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGear, faThumbTack } from "@fortawesome/free-solid-svg-icons";
+import { faEnvelope, faGear, faThumbTack } from "@fortawesome/free-solid-svg-icons";
 import { SmallPostCard } from '@/components/Posts/ShowingPosts/PostCards/SmallPostCard';
 import { FolderCard } from '@/components/Posts/ShowingPosts/PostCards/ArchivedPostCards/ArchiveCard';
 import { addFollow, removeFollow } from '@/functions/Following';
 
 import { FollowersFollowingandLikesList } from '@/components/Profile/Followers,FollowingandLikesList';
 import Link from 'next/link';
+import { faBehance, faInstagram, faTwitter } from '@fortawesome/free-brands-svg-icons';
+import { toast } from 'react-toastify';
 
 
 
@@ -30,7 +32,7 @@ export default function Page({ params }) {
     const router = useRouter()
     const width = useWindowWidth()
     const [user, loading] = useAuthState(auth);
-    const [loadingProfile, setloadingProfile] = useState(false);
+    const [loadingProfile, setloadingProfile] = useState(true);
     const [currentSection, setCurrentSection] = useState("Profile");
     const [following, setfollowing] = useState(null);
     const [userPosts, setUserPosts] = useState(null);
@@ -65,33 +67,45 @@ export default function Page({ params }) {
     useLayoutEffect(() => {
         setloadingProfile(true)
 
+        const usersCollection = collection(db, "users")
+        const userQuery = query(usersCollection, where('username', '==', username));
 
-        const getBasicInfo = async () => {
-            const usersCollection = collection(db, "users")
-            const userQuery = query(usersCollection, where('username', '==', username));
 
-            let res = [];
+        const checkUserExists = async () => {
+            const userDocSnap = await getDocs(userQuery)
+            if (userDocSnap.docs.length < 1) {
+                setUserInfo("Doesn't Exist")
+                return
+            } else {
+                getUserInfo()
 
-            onSnapshot(userQuery, async (snapshot) => {
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    res = [data]
-                    setUserInfo(data)
+            }
+            // const userDoc = userDocSnap.data()
+            console.log(userDocSnap.docs)
+            // console.log(userDoc)
 
-                });
-            })
         }
 
 
 
 
 
-        const getOtherInfo = async () => {
-            await getBasicInfo()
 
+
+        const getUserInfo = async () => {
+
+            const getBasicInfo = async () => {
+
+                onSnapshot(userQuery, async (snapshot) => {
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        setUserInfo(data)
+
+                    });
+                })
+            }
 
             // check if signed-in user follows proile user on component mountt 
-
             const profileUserId = userInfo && userInfo.id
             if (userInfo) {
                 if (user?.uid == userInfo.id) {
@@ -123,7 +137,6 @@ export default function Page({ params }) {
                     })
                     return unsubscribe
                 }
-                await getUserPosts()
 
 
                 const getUserFolders = async () => {
@@ -141,15 +154,37 @@ export default function Page({ params }) {
                     return unsub
                 }
 
-                await getUserFolders()
+
+
             }
 
 
+            try {
 
+                await getBasicInfo()
+                await getUserPosts()
+                await getUserFolders()
+
+
+            } catch (error) {
+                if (error.code === "failed-precondition") {
+                    toast.error("Poor internet connection")
+                }
+                else if (error.code === "auth/network-request-failed" || "unavailable") {
+                    toast.error("There appears to be a problem with your connection", {
+                        position: "top-center"
+                    })
+                }
+                else if (error.message.includes('Backend didn\'t respond' || "[code=unavailable]")) {
+                    toast.error("There appears to be a problem with your connection", {
+                        position: "top-center"
+                    })
+                }
+            }
         }
 
 
-        getOtherInfo()
+        checkUserExists()
         setloadingProfile(false)
 
         return () => { }
@@ -185,7 +220,7 @@ export default function Page({ params }) {
 
 
 
-
+    console.log(userInfo)
 
 
     ////////////////////////////////////////////////////////////
@@ -213,18 +248,20 @@ export default function Page({ params }) {
                     <WhoseandWhichpost variations={sections} currentwhosePost={currentSection} setCurrentWhosePost={setCurrentSection} />
                 </header>
 
-                        {
-                            loadingProfile && <>Loading...</>
-                        }
                 {
-                    !loadingProfile && !userInfo &&
-                    <div className="infobox">
-                        <h2>User does&apos;t exists 🥱</h2>
-                    </div>
+                    loadingProfile && <>Loading...</>
                 }
 
                 {
-                    !loadingProfile && userInfo && currentSection === "Profile" &&
+                    !loadingProfile && userInfo == "Doesn't Exist" &&
+                    <div className="infobox">
+                        <h3>User does&apos;t exists 🥱</h3>
+                    </div>
+                }
+
+
+                {
+                    !loadingProfile && userInfo && userInfo !== "Doesn't Exist" && currentSection === "Profile" &&
 
                     <section className={styles.profile}>
                         <section className={styles.userinfo}>
@@ -278,10 +315,50 @@ export default function Page({ params }) {
 
                             </div>
 
-                            <div>
+                            <div className={styles.bio}>
                                 <p>
                                     {userInfo.bio}
                                 </p>
+                            </div>
+
+                            <div className={styles.socials}>
+                                <span className={(!userInfo.twitter || userInfo.twitter.length < 2) ? `${styles.disabledicon}` : `${styles.socialicon}`}>
+                                    {
+                                        !userInfo.twitter || userInfo.twitter.length < 2 ?
+                                            <FontAwesomeIcon icon={faTwitter} />
+                                            :
+                                            <Link href={userInfo.twitter}><FontAwesomeIcon icon={faTwitter} /></Link>
+                                    }
+                                </span>
+
+                                <span className={(!userInfo.instagram || userInfo.instagram.length < 2) ? `${styles.disabledicon}` : `${styles.socialicon}`}>
+                                    {
+                                        !userInfo.instagram || userInfo.instagram.length < 2 ?
+                                            <FontAwesomeIcon icon={faInstagram} />
+                                            :
+                                            <Link href={userInfo.instagram}><FontAwesomeIcon icon={faInstagram} /></Link>
+                                    }
+                                </span>
+
+                                <span className={(!userInfo.behance || userInfo.behance.length < 2) ? `${styles.disabledicon}` : `${styles.socialicon}`}>
+                                    {
+                                        !userInfo.behance || userInfo.behance.length < 2 ?
+                                            <FontAwesomeIcon icon={faBehance} />
+                                            :
+                                            <Link href={userInfo.behance}><FontAwesomeIcon icon={faBehance} /></Link>
+                                    }
+                                </span>
+
+                                <span className={(!userInfo.mail || userInfo.mail.length < 2) ? `${styles.disabledicon}` : `${styles.socialicon}`}>
+                                    {
+                                        !userInfo.mail || userInfo.mail.length < 2 ?
+                                            <FontAwesomeIcon icon={faEnvelope} />
+                                            :
+                                            <Link href={userInfo.mail}><FontAwesomeIcon icon={faEnvelope} /></Link>
+                                    }
+                                </span>
+
+
                             </div>
                         </section>
 
@@ -300,9 +377,9 @@ export default function Page({ params }) {
                                 </section>
                             }
                             {
-                                !userInfo.pinnedPosts &&
+                                !userInfo.pinnedPosts || userInfo.pinnedPosts.length == 0 &&
                                 <div className='infobox'>
-                                    <h3>User hasn&apos;t pinned any post</h3>
+                                    <h5>{userInfo.name} hasn&apos;t pinned any post</h5>
                                 </div>
                             }
 

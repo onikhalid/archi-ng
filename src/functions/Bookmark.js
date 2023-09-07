@@ -154,7 +154,7 @@ export const pinPost = async (userId, postId) => {
   const userDoc = await getDoc(userDocRef);
   const userData = userDoc.data();
 
-  if (!userData.pinnedPosts || userData.pinnedPosts.length < 4) {
+  if (!userData.pinnedPosts || userData.pinnedPosts.length < 6) {
     await updateDoc(userDocRef, { pinnedPosts: arrayUnion(postId) });
   } else {
     const updatedPinnedPosts = userData.pinnedPosts.slice(1);

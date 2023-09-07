@@ -140,7 +140,7 @@ export default function Home() {
         loading && <h1> Loading...</h1>
       }
       {
-        !loading && !user && router.push('/auth?redirect=post')
+        !loading && !user && router.push('/auth?redirect=home')
       }
       {
         (postToEdit === '' || postTypeToEdit === '') && router.push('/post')

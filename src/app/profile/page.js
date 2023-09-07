@@ -22,11 +22,11 @@ export default function Profile() {
         const userDocSnap = await getDoc(userDocRef)
         if (userDocSnap) {
           const userData = userDocSnap.data()
-          router.replace(`/profile/${userData.username}`)
+          router.replace(`/profile/${userData?.username}`)
         }
       }
       else if (!loading && !user && !profileUserId) {
-        router.push(`/auth`)
+        router.push(`/auth?redirect=home`)
       }
       else if (profileUserId) {
 
@@ -34,7 +34,7 @@ export default function Profile() {
         const profileUserSnap = await getDoc(profileUserRef)
         if (profileUserSnap.data()) {
           const userData = profileUserSnap.data()
-          router.replace(`/profile/${userData.username}`)
+          router.replace(`/profile/${userData?.username}`)
         }
         else {
           toast.error("User doesn't exist", {
@@ -57,7 +57,7 @@ export default function Profile() {
       <main className="content-container">
         <div className="infobox">
           <h2>
-            Loading Profile...
+            loading profile...
           </h2>
         </div>
 

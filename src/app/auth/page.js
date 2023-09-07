@@ -11,8 +11,9 @@ import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import Button from "@/components/Button/button";
 import { LoginForm, SignupForm } from "@/components/AuthForms/Login/SignUp";
 import WhoseandWhichpost from "@/components/Posts/ShowingPosts/Whosepost/whosepost";
-import { faG, faX } from "@fortawesome/free-solid-svg-icons";
+import { faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 
 
 export default function Login() {
@@ -77,7 +78,7 @@ export default function Login() {
 
   const goBack = () => {
     if (query) {
-      if (query == "settings" || "post") {
+      if (query == "home") {
         route.push('/')
       }
     } else {
@@ -96,7 +97,6 @@ export default function Login() {
       <section className={styles.auth}>
         <header>
           <h1>{currentType === 'Sign up' ? "Join" : "Login"} <em>Archi NG</em></h1>
-          <h5></h5>
           <WhoseandWhichpost variations={whichAuthType} currentwhosePost={currentType} setCurrentWhosePost={setCurrentType} />
         </header>
 
@@ -109,8 +109,8 @@ export default function Login() {
           </section>
 
           <section className={styles.google}>
-            <h4>Continue with Google</h4>
-            <span className={styles.googlebutton}><Button name='Sign in' type='tertiary' icon={<FontAwesomeIcon icon={faG} />} link={GoogleLogin} /></span>
+            <h5>Continue with Google</h5>
+            <span className={styles.googlebutton}><Button name='Sign in' type='septima' icon={<FontAwesomeIcon icon={faGoogle} />} link={GoogleLogin} /></span>
           </section>
         </div>
 

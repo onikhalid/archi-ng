@@ -9,8 +9,11 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { getMetadata, getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { doc, collection, updateDoc, getDoc, setDoc, getDocs, query, where, writeBatch } from 'firebase/firestore';
 import { toast } from "react-toastify";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEnvelope, faThumbTack } from "@fortawesome/free-solid-svg-icons";
+import { faBehance, faInstagram, faTwitter } from "@fortawesome/free-brands-svg-icons";
 
-const EditProfile = ({ save }) => {
+const EditProfile = ({ save, update }) => {
   const { register, handleSubmit, watch, formState: { errors }, setValue } = useForm();
   const [user, loading] = useAuthState(auth)
   const router = useRouter()
@@ -31,17 +34,31 @@ const EditProfile = ({ save }) => {
   const [name, setName] = useState('');
   const [bio, setBio] = useState('');
   const [username, setuserName] = useState('');
+  const [twitter, setTwitter] = useState('');
+  const [instagram, setInstagram] = useState('');
+  const [behance, setBehance] = useState('');
+  const [mail, setMail] = useState('');
   const [occupation, setOccupation] = useState([]);
 
   const handleInputChange = (e) => {
-    setValue(e.target.name, e.target.value);
+    const { name, value } = e.target;
+    setValue(name, value);
+
+    if (name == "Bio") {
+      setBio(value)
+    }
   };
+
   useEffect(() => {
     setValue("Name", name || "");
     setValue("Bio", bio || "");
     setValue("Username", username || "");
     setValue("Occupation", occupation || "");
-  }, [name, bio, username, occupation]);
+    setValue("Twitter", twitter || "");
+    setValue("Instagram", instagram || "");
+    setValue("Behance", behance || "");
+    setValue("Mail", mail || "");
+  }, [name, bio, username, occupation, twitter, instagram, behance, mail]);
 
 
 
@@ -53,16 +70,19 @@ const EditProfile = ({ save }) => {
         const userProfileSnap = await getDoc(userProfileRef)
         const userData = userProfileSnap.data()
 
-        const { name, username, bio, profilePicture, occupation } = userData
+        const { name, username, bio, profilePicture, occupation, twitter, instagram, behance, mail } = userData
 
         setPictureURL(profilePicture)
         setName(name)
         setuserName(username)
         setBio(bio)
         setOccupation(occupation)
+
+        setTwitter(twitter)
+        setInstagram(instagram)
+        setBehance(behance)
+        setMail(mail)
       }
-
-
     }
     GetUserInfo()
   }, [user, loading]);
@@ -106,7 +126,11 @@ const EditProfile = ({ save }) => {
       username: data.Username,
       bio: data.Bio,
       profilePicture: selectedImage ? newImageURL : pictureURL,
-      occupation: data.Occupation
+      occupation: data.Occupation,
+
+      twitter: data.Twitter,
+      instagram: data.Instagram,
+      behance: data.Behance,
     }
 
     const userDocRef = doc(db, `users/${user?.uid}`);
@@ -116,8 +140,11 @@ const EditProfile = ({ save }) => {
 
 
 
+
+
     //////////////////////////////////////////////////////////////////////////////////
     /////   UPDATE NAME AND AVATAR IN POSTS USER HAS PREVIOUSLY CREATED/FEATURED IN
+
     /////  POSTS
     const allUsersPostsQuery = query(collection(db, 'posts'), where('authorId', '==', user?.uid));
     const allUsersPostsSnap = await getDocs(allUsersPostsQuery)
@@ -162,13 +189,19 @@ const EditProfile = ({ save }) => {
 
     await batch.commit();
 
-
+    
     toast.success("Profile updated successfully", {
       position: 'top-center',
       autoClose: 2000,
     })
+    
+    if (update) {
+      router.push(`/`)
+      
+    }else{
+      router.push(`/profile/${username}`)
 
-    router.push(`/profile/${username}`)
+    }
   }
 
 
@@ -240,72 +273,144 @@ const EditProfile = ({ save }) => {
       {
         user && <div className={styles.userDetails}>
 
-          <article className={styles.imagecontainer}>
-            <input type="file" accept="image/jpeg, image/jpg, image/png, image/gif" onChange={handleImageUpload} />
-            {pictureURL && <img className={styles.picture} src={pictureURL || newUserPic} alt="Preview" />}
-          </article>
-          <form id='userDetails' className={styles.userInfoForm} onSubmit={handleSubmit(createOrUpdateProfile)}>
-            <div className={styles.inputdiv}>
-              <label htmlFor="Name">Full name<span>*</span></label>
-              <input id="Name" type="text" name="Name"
-                placeholder="Adanna Nwoku Elizabeth" onChange={handleInputChange}
-                {...register("Name", { required: true })} />
-              {errors.Name && <span>Full Name field is required</span>}
-            </div>
-            <div className={styles.inputdiv}>
-              <label htmlFor="Bio">About me<span>*</span></label>
-              <textarea name="Bio" rows="3" maxLength="150" onChange={handleInputChange}
-                placeholder="Write a little about yourself" {...register("Bio", { required: true })}></textarea>
-              {errors.Bio && <span>About me field is required</span>}
-            </div>
+          <form id='userDetails' className={styles.Form} onSubmit={handleSubmit(createOrUpdateProfile)}>
 
-            <div className={styles.inputdiv}>
-              <label htmlFor="Username">Username<span>*</span></label>
-              <input id="Username" type="text" name="Username"
-                placeholder="Choose a unique username" onChange={handleInputChange}
-                {...register("Username", {
-                  required: true,
-                  pattern: {
-                    value: /^[a-zA-Z0-9_]+$/,
-                    message: 'Field can only contain letters, numbers and underscores',
-                  },
-                  validate: checkIfUsernameTaken
-                })}
-              />
-              {errors.Username && errors.Username.type === 'required' && (
-                <span>Username is required</span>
-              )}
-              {errors.Username && errors.Username.type === 'pattern' && (
-                <span>Username must only contain letters</span>
-              )}
-              {errors.Username && errors.Username.type === 'validate' && (
-                <span>Username taken, please choose something else</span>
-              )}
-            </div>
+            <section className={styles.userinfosection}>
+              <h5>User Info</h5>
 
-            <div>
-              <label htmlFor="occupation">Occupation</label>
-              <select id="occupation" name="Occupation"
-                onChange={handleInputChange}
-                {...register("Occupation")}>
-                <option value="Architecture: Firm">Architecture: Firm</option>
-                <option value="Architecture: Freelancer">Architecture: Freelancer / Freelancer</option>
-                <option value="Architecture: Construction / Real Estate">Architecture: Construction / Real Estate</option>
-                <option value="Architecture: Academic Organization">Architecture: Academic Organization</option>
-                <option value="Architecture: Student">Architecture: Student</option>
-                <option value="Landscape">Landscape</option>
-                <option value="Urban Designer">Urban Designer</option>
-                <option value="Interior Designer">Interior Designer</option>
-                <option value="Graphic Designer">Graphic Designer</option>
-                <option value="Photographer">Photographer</option>
-                <option value="Real Estate">Real Estate</option>
-                <option value="Engineering">Engineering</option>
-                <option value="Media / PR Agency">Media / PR Agency</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
+              <article className={styles.imagecontainer}>
+                <input type="file" accept="image/jpeg, image/jpg, image/png, image/gif" onChange={handleImageUpload} />
+                {pictureURL && <img className={styles.picture} src={pictureURL || newUserPic} alt="Preview" />}
+              </article>
+              <div className={styles.inputdiv}>
+                <label htmlFor="Name">Full name<span>*</span></label>
+                <input id="Name" type="text" name="Name"
+                  placeholder="Adanna Nwoku Elizabeth" onChange={handleInputChange}
+                  {...register("Name", { required: true })} />
+                {errors.Name && <span>Full Name field is required</span>}
+              </div>
+
+              <div className={styles.inputdiv}>
+                <label htmlFor="Username">Username<span>*</span></label>
+                <input id="Username" type="text" name="Username"
+                  placeholder="Choose a unique username" onChange={handleInputChange}
+                  {...register("Username", {
+                    required: true,
+                    pattern: {
+                      value: /^[a-zA-Z0-9_]+$/,
+                      message: 'Field can only contain letters, numbers and underscores',
+                    },
+                    validate: checkIfUsernameTaken
+                  })}
+                />
+                {errors.Username && errors.Username.type === 'required' && (
+                  <span>Username is required</span>
+                )}
+                {errors.Username && errors.Username.type === 'pattern' && (
+                  <span>Username must only contain letters, numbers or underscores</span>
+                )}
+                {errors.Username && errors.Username.type === 'validate' && (
+                  <span>Username not available, please choose something else</span>
+                )}
+              </div>
+
+              <div className={styles.inputdiv}>
+                <label htmlFor="Bio">Bio<span>*</span></label>
+                <textarea name="Bio" rows="3" maxLength="250" onChange={handleInputChange}
+                  placeholder="Write a little about yourself" {...register("Bio", { required: true })}></textarea>
+                <span>{`/250`}</span>
+                {errors.Bio && <span>About me field is required</span>}
+              </div>
+
+              <div>
+                <label htmlFor="occupation">Occupation/Category</label>
+                <select id="occupation" name="Occupation"
+                  onChange={handleInputChange}
+                  {...register("Occupation")}>
+
+                  <optgroup label="Architecture">
+                    <option value="Architecture: Student">Architecture: Student</option>
+                    <option value="Architecture: Licensed Professional">Architecture: Licensed Professional</option>
+                    <option value="Architecture: Licensed Professional">Architecture: Educator</option>
+                    <option value="Architecture: Design Firm">Architecture: Design Firm</option>
+                    <option value="Architecture: Academic Organization">Architecture: Academic Organization</option>
+                  </optgroup>
+
+                  <optgroup label="Construction">
+                    <option value="Construction: Construction Firm">Construction: Construction Firm</option>
+                    <option value="Construction: Engineer">Construction: Engineer</option>
+                  </optgroup>
+
+                  <optgroup label="Real Estate">
+                    <option value="Real Estate: Agent">Real Estate: Agent</option>
+                    <option value="Real Estate: Property Developer">Real Estate: Property Developer</option>
+                  </optgroup>
+
+                  <optgroup label="Others">
+                    <option value="Architectural Enthusiast">Architectural Enthusiast</option>
+                    <option value="Architectural Critic">Architectural Critic</option>
+                    <option value="Photographer"> Photographer</option>
+                    <option value="Urban Designer">Urban Designer</option>
+                  </optgroup>
+
+                </select>
+              </div>
+            </section>
 
 
+            <section className={styles.usersocialssection}>
+              <h5>Socials</h5>
+
+              <div className={styles.inputdiv}>
+                <label htmlFor="Twitter">Twitter <FontAwesomeIcon icon={faTwitter} /></label>
+                <input id="Twitter" type="text" name="Twitter"
+                  placeholder="https://www.twitter.com/archi-ng" onChange={handleInputChange}
+                  {...register("Twitter", {
+                    required: false,
+                    pattern: {
+                      value: /(https?|ftp):\/\/[^\s/$.?#].[^\s]*/i,
+                      message: 'Field can only contain urls with "https://..."',
+                    }
+                  })}
+                />
+              </div>
+
+              <div className={styles.inputdiv}>
+                <label htmlFor="Instagram">Instagram <FontAwesomeIcon icon={faInstagram} /> </label>
+                <input id="Instagram" type="text" name="Instagram"
+                  placeholder="https://www.instagram.com/archi-ng" onChange={handleInputChange}
+                  {...register("Instagram", {
+                    required: false,
+                    pattern: {
+                      value: /(https?|ftp):\/\/[^\s/$.?#].[^\s]*/i,
+                      message: 'Field can only contain urls with "https://..."',
+                    }
+                  })}
+                />
+              </div>
+
+              <div className={styles.inputdiv}>
+                <label htmlFor="Behance">Behance <FontAwesomeIcon icon={faBehance} /> </label>
+                <input id="Behance" type="text" name="Behance"
+                  placeholder="https://www.behance.net/archi-ng" onChange={handleInputChange}
+                  {...register("Behance", {
+                    required: false,
+                    pattern: {
+                      value: /(https?|ftp):\/\/[^\s/$.?#].[^\s]*/i,
+                      message: 'Field can only contain urls with "https://..."',
+                    }
+                  })}
+                />
+              </div>
+
+              <div className={styles.inputdiv}>
+                <label htmlFor="Mail">Mail <FontAwesomeIcon icon={faEnvelope} /> </label>
+                <input id="Mail" type="email" name="Mail"
+                  placeholder="archi-ng@gmail.com" onChange={handleInputChange}
+                  {...register("Mail", { required: false })}
+                />
+              </div>
+            </section>
 
           </form>
 

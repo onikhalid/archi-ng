@@ -41,12 +41,16 @@
         gap: 1rem;
         flex: 1.2;
         text-align: center;
+        padding-right: 2.5rem;
+        border-right: solid 2px var(--main-text-clr);
 
-   
 
         p {
             font-family: var(--text-poppins);
             font-size: .85rem;
+            text-align: justify;
+            hyphens: auto;
+            width: 100%;
 
         }
 
@@ -111,11 +115,11 @@
                 align-items: center;
                 gap: .75rem;
 
-                 svg {
+                svg {
                     display: inline-block;
                     font-size: 1.2rem;
 
-                    &:hover{
+                    &:hover {
                         color: var(--accent);
                     }
                 }
@@ -128,6 +132,20 @@
             gap: 1rem;
 
         }
+
+        .socials {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+
+            svg {
+                font-size: 1.5rem;
+            }
+
+            .disabledicon {
+                color: var(--sec-text-clr);
+            }
+        }
     }
 
 
@@ -137,21 +155,20 @@
         align-items: center;
         flex: 2.7;
         gap: 1.2rem;
-        // border: solid 2px var(--main-text-clr);
-        // border-radius: 12px;
+
+        h5 {
+            font-size: 1rem;
+        }
+
         .pinnedposts {
             display: flex;
             gap: 1.2rem;
             flex-wrap: wrap;
             justify-content: center;
-            // transform: scale(0.75);
-            // margin-top: -2rem;
 
             @media (max-width: 1019px) {
                 // margin-top: -5rem;
             }
-
-
         }
     }
 }

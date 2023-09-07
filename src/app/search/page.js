@@ -274,7 +274,7 @@ const Search = () => {
           <div className={styles.searchpage}>
             <header className={styles.header}>
               <h1>Explore</h1>
-              <p>Search tags, titles, authors, building typologies ... etc</p>
+              <p>Search authors, tags, titles, locations, building typologies... etc</p>
             </header>
 
             <form className={styles.searchbar} onSubmit={handleSearch}>

@@ -7,6 +7,7 @@
     .imagecontainer {
         display: flex;
         align-items: center;
+        justify-content: center;
 
 
         .picture {
@@ -18,21 +19,33 @@
 
 
 
-    .userInfoForm {
+    .Form {
         width: 100%;
         max-width: 650px;
         display: flex;
         flex-direction: column;
+        gap: 2rem;
 
         .inputdiv {
             display: flex;
             flex-direction: column;
             margin-bottom: .75rem;
 
+            label {
+                display: flex;
+                align-items: center;
+                gap: 0.2rem;
+                margin-bottom: 0.2rem;
+            }
+
             span {
                 font-family: var(--text-poppins);
                 color: red;
                 font-size: 0.85rem;
+            }
+
+            input[type="email"] {
+                height: 30px;
             }
         }
     }
