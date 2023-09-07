@@ -62,7 +62,7 @@ const MobileNav = () => {
     return () => {
       document.removeEventListener('click', handleClickOutside);
     };
-  }, [hidden]);
+  }, [hidden, toggleHidden]);
 
 
 

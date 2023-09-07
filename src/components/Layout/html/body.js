@@ -70,7 +70,7 @@ const Body = ({ children }) => {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [lastScrollY, width, hidden]);
+  }, [lastScrollY, width, hidden, toggleHidden]);
 
   const scrollToTop = () => {
     document.body.scrollTo({ top: 0, behavior: "smooth" });

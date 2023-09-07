@@ -39,7 +39,7 @@ const MakeArticle = ({ postToEditId }) => {
     setValue("Desc", desc || "");
     setValue("TimeToRead", timeToRead || "");
     setValue("Tags", tags || "");
-  }, [title, desc, timeToRead, tags]);
+  }, [title, desc, timeToRead, tags, setValue]);
 
 
 
@@ -237,7 +237,7 @@ const MakeArticle = ({ postToEditId }) => {
           {!selectedImage && !coverImgURL &&
             <div className={styles.imagerules}>
               <h6>1. Try as much as possible to ensure your image is in landscape form</h6>
-              <h6>2. If you&apos;re uploading an image you've previously uploaded in another post, make sure to change its name before uploading.</h6>
+              <h6>2. If you&apos;re uploading an image you&apos;ve previously uploaded in another post, make sure to change its name before uploading.</h6>
             </div>
           }
           {(selectedImage || coverImgURL) && <img className={styles.uploadedimage} src={coverImgURL} alt="Preview" />}

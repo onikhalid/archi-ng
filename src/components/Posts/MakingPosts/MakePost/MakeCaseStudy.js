@@ -38,6 +38,7 @@ const MakeCaseStudy = ({ postToEditId }) => {
   const [typology, setTypology] = useState('')
   const [tags, setTags] = useState('')
   const [editorContent, setEditorContent] = useState("")
+
   const handleInputChange = (e) => {
     setValue(e.target.name, e.target.value);
   };
@@ -51,7 +52,7 @@ const MakeCaseStudy = ({ postToEditId }) => {
     setValue("Year", year || "");
     setValue("Typology", typology || "Residential");
     setValue("Tags", tags || "");
-  }, [title, client, location, architect, year, typology, tags]);
+  }, [title, client, location, architect, year, typology, tags, setValue]);
 
 
 
@@ -406,7 +407,7 @@ const MakeCaseStudy = ({ postToEditId }) => {
           {!selectedCoverImage && !coverImgURL &&
             <div className={styles.imagerules}>
               <h6>1. Try as much as possible to ensure your image is in landscape form</h6>
-              <h6>2. If you&apos;re uploading an image you've previously uploaded in another post, make sure to change its name before uploading.</h6>
+              <h6>2. If you&apos;re uploading an image you&apos;ve previously uploaded in another post, make sure to change its name before uploading.</h6>
             </div>
           }
           {(selectedCoverImage || coverImgURL) && <img className={styles.uploadedimage} src={coverImgURL} alt="Preview" />}
@@ -499,8 +500,8 @@ const MakeCaseStudy = ({ postToEditId }) => {
           <h3>Other Images</h3>
           <div className={styles.imagerules}>
             <h6>1. You can select multiple images at once, or select one by one. Once again, make sure your images are high resolution images but not too big in file sizes.</h6>
-            <h6>2. It's best to properly name each image to avoid conflicts. Also if you&apos;re uploading a copy of the cover image here, duplicate and change its name before uploading.</h6>
-            <h6>3. If you&apos;re uploading an image you've previously uploaded in another post, make sure to change its name before uploading.</h6>
+            <h6>2. It&apos;s best to properly name each image to avoid conflicts. Also if you&apos;re uploading a copy of the cover image here, duplicate and change its name before uploading.</h6>
+            <h6>3. If you&apos;re uploading an image you&apos;ve previously uploaded in another post, make sure to change its name before uploading.</h6>
           </div>
           <input type="file" multiple onChange={handleAddGalleryImage} />
           <div className={styles.imagepreviewcontainer}>

@@ -78,12 +78,7 @@ export default function Page({ params }) {
                 return
             } else {
                 getUserInfo()
-
             }
-            // const userDoc = userDocSnap.data()
-            console.log(userDocSnap.docs)
-            // console.log(userDoc)
-
         }
 
 
@@ -95,7 +90,6 @@ export default function Page({ params }) {
         const getUserInfo = async () => {
 
             const getBasicInfo = async () => {
-
                 onSnapshot(userQuery, async (snapshot) => {
                     snapshot.forEach((doc) => {
                         const data = doc.data();
@@ -107,7 +101,7 @@ export default function Page({ params }) {
 
             // check if signed-in user follows proile user on component mountt 
             const profileUserId = userInfo && userInfo.id
-            if (userInfo) {
+           
                 if (user?.uid == userInfo.id) {
                     setfollowing(null)
                 } else {
@@ -121,7 +115,7 @@ export default function Page({ params }) {
                     } else {
                         setfollowing(false)
                     }
-                }
+                
 
 
                 const getUserPosts = async () => {
@@ -170,11 +164,11 @@ export default function Page({ params }) {
                 if (error.code === "failed-precondition") {
                     toast.error("Poor internet connection")
                 }
-                else if (error.code === "auth/network-request-failed" || "unavailable") {
-                    toast.error("There appears to be a problem with your connection", {
-                        position: "top-center"
-                    })
-                }
+                // else if (error.code === "auth/network-request-failed" || "unavailable") {
+                //     toast.error("There appears to be a problem with your connection", {
+                //         position: "top-center"
+                //     })
+                // }
                 else if (error.message.includes('Backend didn\'t respond' || "[code=unavailable]")) {
                     toast.error("There appears to be a problem with your connection", {
                         position: "top-center"
@@ -220,7 +214,6 @@ export default function Page({ params }) {
 
 
 
-    console.log(userInfo)
 
 
     ////////////////////////////////////////////////////////////
