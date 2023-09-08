@@ -10,17 +10,22 @@ import { useRouter } from 'next/navigation';
 
 
 //1 extract 4rm content
-const extractImages = async (content) => {
+export const extractImages = async (content) => {
     const imageRegex = /<img[^>]+src="([^"]+)"/g;
     const matches = Array.from(content.matchAll(imageRegex), match => match[0]);
     return matches;
 };
+
 //2 extrat url
-const extractImageUrl = async (image) => {
-    console.log(image)
-    const srcRegex = /src="([^"]+)"/;
-    const match = image.match(srcRegex);
-    return match ? match[1] : null;
+export const extractImageUrl = async (image) => {
+    console.log(image);
+    const srcRegex = /src="([^"]+)"/g;
+    const matches = [];
+    let match;
+    while ((match = srcRegex.exec(image))) {
+        matches.push(match[1]);
+    }
+    return matches;
 };
 
 const deleteImageFromFirebase = async (imageUrl) => {
@@ -49,11 +54,18 @@ export const deletePost = async (postId, content, coverImage) => {
         await deleteObject(coverImageRef)
 
 
-        //delete all posts images
-        const extractedImages = await extractImages(content)
+        // Delete all post images
+        const extractedImages = await extractImages(content);
         if (extractedImages.length > 0) {
-            const ImageURLs = await extractImageUrl(extractedImages)
-            await deleteImageFromFirebase(ImageURLs)
+            for (const image of extractedImages) {
+                const imageUrl = await extractImageUrl(image);
+                if (imageUrl && imageUrl.includes("firebasestorage.googleapis.com/v0/b/archi-nigeria.appspot.com/")) {
+                    await deleteImageFromFirebase(imageUrl);
+                }
+                // if (imageUrl && imageUrl.includes("firebasestorage.googleapis.com/v0/b/architecture-ng.appspot.com/")) {
+                //     await deleteImageFromFirebase(imageUrl);
+                // }
+            }
         }
 
         const postRef = doc(db, `posts/${postId}`)
@@ -62,7 +74,7 @@ export const deletePost = async (postId, content, coverImage) => {
             position: "top-center",
             autoClose: 2500
         })
-    
+
     } catch (error) {
         if (error.code == "storage/object-not-found") {
             toast.error("The post you are trying to delete no longer exist", {

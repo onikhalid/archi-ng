@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { collection, getDocs, getDoc, doc, query, where, onSnapshot } from "firebase/firestore";
 import { db, auth } from "@/utils/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { useState, useEffect, useLayoutEffect } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { useWindowWidth } from '@/utils/Hooks/ResponsiveHook';
 import Image from 'next/image';
 import Button from '@/components/Button/button';
@@ -14,7 +14,7 @@ import WhoseandWhichpost from '@/components/Posts/ShowingPosts/Whosepost/whosepo
 
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEnvelope, faGear, faThumbTack } from "@fortawesome/free-solid-svg-icons";
+import { faCircleChevronDown, faCircleChevronUp, faEnvelope, faGear, faThumbTack } from "@fortawesome/free-solid-svg-icons";
 import { SmallPostCard } from '@/components/Posts/ShowingPosts/PostCards/SmallPostCard';
 import { FolderCard } from '@/components/Posts/ShowingPosts/PostCards/ArchivedPostCards/ArchiveCard';
 import { addFollow, removeFollow } from '@/functions/Following';
@@ -58,17 +58,66 @@ export default function Page({ params }) {
 
 
 
+    const [sortBy, setSortBy] = useState('Title');
+    const [sortOptionsOpen, setSortOptionsOpen] = useState(null);
+
+    const sortUserPosts = (key) => {
+        if (userPosts) {
+            if (key === 'Title') {
+                return [...userPosts].sort((a, b) => a.title.localeCompare(b.title));
+            } else if (key === 'Newest First') {
+                return [...userPosts].sort((a, b) => a.createdAt.seconds - b.createdAt.seconds);
+            }
+            else if (key === 'Oldest First') {
+                return [...userPosts].sort((a, b) => b.createdAt.seconds - a.createdAt.seconds);
+            }
+        }
+    };
+
+    const sortmenuclasses = () => {
+        if (sortOptionsOpen == null) {
+            return 'menu'
+        } else if (sortOptionsOpen == true) {
+            return 'menu open'
+        } else return 'menu close'
+    }
+
+    const showSortOptions = () => {
+        if (sortOptionsOpen === null) {
+            setSortOptionsOpen(true)
+        } else if (sortOptionsOpen === true) {
+            setSortOptionsOpen(false)
+        } else if (sortOptionsOpen === false) {
+            setSortOptionsOpen(true)
+        }
+    }
+
+    const sort = (option) => {
+        setSortOptionsOpen(false)
+        setSortBy(option)
+    }
+
+    const sortedPosts = sortUserPosts(sortBy);
+    const sortOptions = ["Title", "Newest First", "Oldest First"]
+    const wrapperRef = useRef(null)
+
+
+
 
     /////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////
     ///////////////////     GET USERS INORMATION        /////////////////////
     /////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////
-    useLayoutEffect(() => {
+    useEffect(() => {
         setloadingProfile(true)
+        setSortOptionsOpen(null)
+
 
         const usersCollection = collection(db, "users")
         const userQuery = query(usersCollection, where('username', '==', username));
+
+
 
 
         const checkUserExists = async () => {
@@ -84,24 +133,11 @@ export default function Page({ params }) {
 
 
 
-
-
-
         const getUserInfo = async () => {
-
-            const getBasicInfo = async () => {
-                onSnapshot(userQuery, async (snapshot) => {
-                    snapshot.forEach((doc) => {
-                        const data = doc.data();
-                        setUserInfo(data)
-
-                    });
-                })
-            }
 
             // check if signed-in user follows proile user on component mountt 
             const profileUserId = userInfo && userInfo.id
-           
+            if (userInfo) {
                 if (user?.uid == userInfo.id) {
                     setfollowing(null)
                 } else {
@@ -115,43 +151,54 @@ export default function Page({ params }) {
                     } else {
                         setfollowing(false)
                     }
-                
-
-
-                const getUserPosts = async () => {
-                    const userProfileId = userInfo.id
-                    const userPostsQuery = query(collection(db, "posts"), where('authorId', '==', userProfileId))
-                    const unsubscribe = onSnapshot(userPostsQuery, (snapshot) => {
-                        const newDataArray = [];
-                        snapshot.forEach((doc) => {
-                            const data = doc.data();
-                            newDataArray.push(data);
-                        });
-                        setUserPosts(newDataArray)
-                    })
-                    return unsubscribe
                 }
-
-
-                const getUserFolders = async () => {
-                    const userProfileId = userInfo.id
-                    const userFoldersQuery = query(collection(db, "folders"), where('userId', '==', userProfileId))
-
-                    const unsub = onSnapshot(userFoldersQuery, (snapshot) => {
-                        const newDataArray = [];
-                        snapshot.forEach((doc) => {
-                            const data = doc.data();
-                            newDataArray.push(data);
-                        });
-                        setUserFolders(newDataArray)
-                    })
-                    return unsub
-                }
-
-
-
             }
 
+
+
+
+            const getBasicInfo = async () => {
+                onSnapshot(userQuery, async (snapshot) => {
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        setUserInfo(data)
+
+                    });
+                })
+            }
+
+
+
+            const getUserPosts = async () => {
+                const userProfileId = userInfo.id
+                const userPostsQuery = query(collection(db, "posts"), where('authorId', '==', userProfileId))
+                const unsubscribe = onSnapshot(userPostsQuery, (snapshot) => {
+                    const newDataArray = [];
+
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        newDataArray.push(data);
+                    });
+                    setUserPosts(newDataArray)
+                })
+                return unsubscribe
+            }
+
+
+            const getUserFolders = async () => {
+                const userProfileId = userInfo.id
+                const userFoldersQuery = query(collection(db, "folders"), where('userId', '==', userProfileId))
+
+                const unsub = onSnapshot(userFoldersQuery, (snapshot) => {
+                    const newDataArray = [];
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        newDataArray.push(data);
+                    });
+                    setUserFolders(newDataArray)
+                })
+                return unsub
+            }
 
             try {
 
@@ -164,11 +211,11 @@ export default function Page({ params }) {
                 if (error.code === "failed-precondition") {
                     toast.error("Poor internet connection")
                 }
-                // else if (error.code === "auth/network-request-failed" || "unavailable") {
-                //     toast.error("There appears to be a problem with your connection", {
-                //         position: "top-center"
-                //     })
-                // }
+                else if (error.code === "auth/network-request-failed") {
+                    toast.error("There appears to be a problem with your connection", {
+                        position: "top-center"
+                    })
+                }
                 else if (error.message.includes('Backend didn\'t respond' || "[code=unavailable]")) {
                     toast.error("There appears to be a problem with your connection", {
                         position: "top-center"
@@ -229,7 +276,7 @@ export default function Page({ params }) {
                     <div className={currentSection === "Profile" ? "" : `${styles.pagetitle}`}>
                         <h1>Profile</h1>
                         {
-                            !loadingProfile && userInfo && currentSection != "Profile" &&
+                            !loadingProfile && userInfo && userInfo !== "Doesn't Exist" && currentSection != "Profile" &&
                             <Image
                                 src={userInfo.profilePicture}
                                 width={45}
@@ -253,10 +300,27 @@ export default function Page({ params }) {
                 }
 
 
+
+
+
+
+
+
+                {/* ///////////////////////////////////////////////////////////////////////////
+                            ///////////////////////////////////////////////////////////////////////////
+                            ///////////////////////////////////////////////////////////////////////////
+                            ///////////////////  PROFILE SECTION - USER INFORMATION   ////////////////
+                            ///////////////////////////////////////////////////////////////////////////
+                            ///////////////////////////////////////////////////////////////////////////
+                            ////////////////////////////////////////////////////////////////////////// */}
                 {
                     !loadingProfile && userInfo && userInfo !== "Doesn't Exist" && currentSection === "Profile" &&
 
                     <section className={styles.profile}>
+
+                        {/* ///////////////////////////////////////////////////////////////////////////
+                            ///////////////////               USER DETAILS            ////////////////
+                            ////////////////////////////////////////////////////////////////////////// */}
                         <section className={styles.userinfo}>
                             <div className={styles.main}>
                                 <Image
@@ -356,7 +420,9 @@ export default function Page({ params }) {
                         </section>
 
 
-
+                        {/* ///////////////////////////////////////////////////////////////////////////
+                            ///////////////////           USER PINNED POSTS           ////////////////
+                            ////////////////////////////////////////////////////////////////////////// */}
                         <section className={styles.pinned}>
                             <h5>PINNED POSTS <FontAwesomeIcon icon={faThumbTack} /> </h5>
                             {
@@ -370,7 +436,7 @@ export default function Page({ params }) {
                                 </section>
                             }
                             {
-                                !userInfo.pinnedPosts || userInfo.pinnedPosts.length == 0 &&
+                                (!userInfo.pinnedPosts || userInfo.pinnedPosts.length == 0) &&
                                 <div className='infobox'>
                                     <h5>{userInfo.name} hasn&apos;t pinned any post</h5>
                                 </div>
@@ -386,6 +452,21 @@ export default function Page({ params }) {
 
 
 
+
+
+
+
+
+
+
+
+                {/* ///////////////////////////////////////////////////////////////////////////
+                            ///////////////////////////////////////////////////////////////////////////
+                            ///////////////////////////////////////////////////////////////////////////
+                            ///////////////////     PROFILE SECTION - USER POSTS      ////////////////
+                            ///////////////////////////////////////////////////////////////////////////
+                            ///////////////////////////////////////////////////////////////////////////
+                            ////////////////////////////////////////////////////////////////////////// */}
                 {
 
                     !loadingProfile && userPosts && currentSection === "Posts" &&
@@ -393,18 +474,42 @@ export default function Page({ params }) {
                         {
                             userPosts.length < 1 &&
                             <div className="infobox">
-                                <h2>{userInfo.name} hasn&apos;t created any posts</h2>
+                                <h5>{userInfo.name} hasn&apos;t made any posts.</h5>
                             </div>
                         }
                         {
                             userPosts.length > 0 &&
-                            <section className={styles.posts}>
-                                {
-                                    userPosts.map((post, index) => {
-                                        return <SmallPostCard post={post} key={index} />
-                                    })
-                                }
-                            </section>
+                            <>
+
+                                <article ref={wrapperRef} >
+                                    <h1>
+                                        <span className={styles.sortmenu} onClick={showSortOptions}>
+                                            Sort By <FontAwesomeIcon icon={sortOptionsOpen ? faCircleChevronUp : faCircleChevronDown} shake />
+                                        </span>
+                                        <ul className={sortmenuclasses()}>
+                                            {
+                                                sortOptions.map((option, index) => (
+                                                    <li
+                                                        className='option'
+                                                        onClick={() => sort(option)}
+                                                        key={index}
+                                                    >
+                                                        {option}
+                                                    </li>
+                                                ))
+                                            }
+                                        </ul>
+                                    </h1>
+                                </article>
+
+                                <section className={styles.posts}>
+                                    {
+                                        sortedPosts?.map((post, index) => {
+                                            return <SmallPostCard post={post} key={index} />
+                                        })
+                                    }
+                                </section>
+                            </>
                         }
                     </>
 
@@ -413,6 +518,20 @@ export default function Page({ params }) {
 
 
 
+
+
+
+
+
+
+                {/* ///////////////////////////////////////////////////////////////////////////
+                            ///////////////////////////////////////////////////////////////////////////
+                            ///////////////////////////////////////////////////////////////////////////
+                            ///////////////////     PROFILE SECTION - USER FOLDERS     ////////////////
+                            ///////////////////////////////////////////////////////////////////////////
+                            ///////////////////////////////////////////////////////////////////////////
+                            ////////////////////////////////////////////////////////////////////////// */}
+
                 {
 
                     !loadingProfile && userFolders && currentSection === "Folders" &&
@@ -420,7 +539,7 @@ export default function Page({ params }) {
                         {
                             userFolders.length < 1 &&
                             <div className="infobox">
-                                <h2>{userInfo.name} hasn&apos;t created any folders</h2>
+                                <h5>{userInfo.name} hasn&apos;t created any folders.</h5>
                             </div>
                         }
                         {

@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { db, auth, storage } from '@/utils/firebase';
 import { updateProfile } from "firebase/auth";
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { getMetadata, getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { getMetadata, getDownloadURL, ref, uploadBytes, deleteObject } from "firebase/storage";
 import { doc, collection, updateDoc, getDoc, setDoc, getDocs, query, where, writeBatch } from 'firebase/firestore';
 import { toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

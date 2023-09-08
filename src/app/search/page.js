@@ -20,8 +20,9 @@ const Search = () => {
 
   const [searchInput, setSearchInput] = useState('');
   const [searching, setSearching] = useState(false);
-  const [searchResult, setSearchResult] = useState([]);
+  const [searchResult, setSearchResult] = useState(null);
   const searchParameter = searchParams.get('q')
+  const categoryParameter = searchParams.get('category')
   const [whichResultType, setwhichResultType] = useState("Studies");
   const [recentSearches, setRecentSearches] = useState([]);
 
@@ -65,7 +66,7 @@ const Search = () => {
 
         setSearching(true)
         addSearch(queryText);
-        const postsCollection = collection(db, 'posts');
+
         const whichPost = () => {
           if (whichResultType === 'Studies') { return 'Case Studies' }
           else if (whichResultType === 'Articles') { return 'Articles' }
@@ -73,6 +74,7 @@ const Search = () => {
           else 'Case Studies'
         }
 
+        const postsCollection = collection(db, 'posts');
         const authorQuery = query(postsCollection, where('postType', '==', whichPost()), where('authorName', '>=', queryText), where('authorName', '<=', queryText + '\uf8ff'), orderBy('authorName'));
         const authorResults = await getDocs(authorQuery);
 
@@ -132,7 +134,7 @@ const Search = () => {
 
         /////////////////////////////////////////////////
         //////   partial match + case insensitive search
-     
+
 
         const partialandCITitleQuery = query(postsCollection, where('postType', '==', whichPost()), where('titleForSearch', 'array-contains-any', caseInsensitiveQueryText));
         const partialandCITitleResults = await getDocs(partialandCITitleQuery);
@@ -329,16 +331,16 @@ const Search = () => {
         {/* ///////////////////////////////////////////////////////////// */}
 
 
+
         {
           searchParameter !== null &&
           <header className={styles.pageheader}>
             <h1>Search</h1>
             <WhoseandWhichpost variations={resultypevariations} currentwhosePost={whichResultType} setCurrentWhosePost={setwhichResultType} />
-            {searchResult.length < 1 && <h3>No Results for <em>{searchParameter}</em> in {whichResultType}</h3>}
-            {searchResult.length > 0 && <h3>Results for <em>{searchParameter}</em> in {whichResultType}</h3>}
+            {!searching && searchResult && searchResult.length < 1 && <h3>No results for <em>{searchParameter}</em> in {whichResultType}</h3>}
+            {!searching && searchResult && searchResult.length > 0 && <h3><em>{searchResult.length}</em> results for <em>{searchParameter}</em> in {whichResultType}</h3>}
           </header>
         }
-
 
 
 
@@ -355,27 +357,34 @@ const Search = () => {
 
 
 
+
         {/* ///////////////////////////////////////////////////////////// */}
         {/* ///////////       DISPLAY SEARCH RESULTS       ////////////// */}
         {/* ///////////////////////////////////////////////////////////// */}
-        {!searching && !(searchParameter === null || '') && (
-          <section className={styles.resultspage}>
-            <div className={styles.resultcontainer}>
-              {searchResult.map((result, index) => {
+        {
+          searchResult &&
+          <>
+            {!searching && !(searchParameter === null || '') && (
+              <section className={styles.resultspage}>
+                <div className={styles.resultcontainer}>
+                  {searchResult.map((result, index) => {
 
 
-                if (whichResultType === 'Articles') {
-                  return <ArticleCard key={index} post={result} />
-                } else if (whichResultType === 'Studies') {
-                  return <CaseStudyCard key={index} post={result} />
-                } else if (whichResultType === 'Photos') {
-                  return <PhotoCard key={index} post={result} />
-                }
-              })}
-            </div>
+                    if (whichResultType === 'Articles') {
+                      return <ArticleCard key={index} post={result} />
+                    } else if (whichResultType === 'Studies') {
+                      return <CaseStudyCard key={index} post={result} />
+                    } else if (whichResultType === 'Photos') {
+                      return <PhotoCard key={index} post={result} />
+                    }
+                  })}
+                </div>
 
-          </section>
-        )}
+              </section>
+            )}
+          </>
+        }
+
 
 
       </main>

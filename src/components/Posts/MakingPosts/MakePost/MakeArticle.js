@@ -222,7 +222,7 @@ const MakeArticle = ({ postToEditId }) => {
 
 
 
-  return (  
+  return (
     <>
 
       {
@@ -235,7 +235,7 @@ const MakeArticle = ({ postToEditId }) => {
         <article className='ImageUploader'>
           <input type="file" onChange={handleImageUpload} />
           {!selectedImage && !coverImgURL &&
-            <div className={styles.imagerules}>
+            <div className='rulesdiv'>
               <h6>1. Try as much as possible to ensure your image is in landscape form</h6>
               <h6>2. If you&apos;re uploading an image you&apos;ve previously uploaded in another post, make sure to change its name before uploading.</h6>
             </div>
@@ -303,7 +303,7 @@ const MakeArticle = ({ postToEditId }) => {
         </form>
 
         {/* TinyMCE RTE */}
-        <Edit editorRef={editorRef} editorContent={editorContent} setContent={setArticleContent} type={"Case Studies"}/>
+        <Edit editorRef={editorRef} editorContent={editorContent} setContent={setArticleContent} type={"Case Studies"} />
 
 
         <button className={styles.submitbutton} form='Article' type="submit">Post your Article 📒</button>

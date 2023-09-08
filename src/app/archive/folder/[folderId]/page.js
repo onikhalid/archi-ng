@@ -60,7 +60,7 @@ export default function Page({ params }) {
                 });
                 return unsub
             } catch (error) {
-                if (error.code === 'FirestoreError.ClientOffline') {
+                if (error.code === 'FirestoreError.ClientOffline' || "auth/network-request-failed" || "unavailable") {
                     alert('You are offline. Please connect to the internet to access this data.');
                 } else {
                     console.log(error)
@@ -120,9 +120,7 @@ export default function Page({ params }) {
                     {
                         /* // allow folder owner to add bookmark to folder from this page*/
                         user && folderOwnerId === user.uid &&
-                        <AddBookmarkFromFolder
-                            userId={folderOwnerId} folderId={folderId}
-                        />
+                        <AddBookmarkFromFolder userId={folderOwnerId} folderId={folderId}/>
                     }
                 </header>
 

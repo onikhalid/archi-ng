@@ -13,6 +13,11 @@ import { toast } from 'react-toastify';
 
 import { faNewspaper, faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { extractImages, extractImageUrl } from '@/functions/Delete';
+
+
+
+
 
 const MakeCaseStudy = ({ postToEditId }) => {
   const router = useRouter()
@@ -135,6 +140,10 @@ const MakeCaseStudy = ({ postToEditId }) => {
     }
 
 
+const postImages = await extractImages(caseContent)
+const postImagesURLs = await extractImageUrl(postImages) || []
+
+
     const postData = {
       architect: data.Architect,
       authorId: user.uid,
@@ -144,7 +153,7 @@ const MakeCaseStudy = ({ postToEditId }) => {
       coverImageURL: coverImageDownloadURL,
       createdAt: new Date(),
       location: data.Location.split(",").map(item => item.trim()),
-      otherImages: galleryImagesURL || [],
+      allImages: [coverImageDownloadURL, ...postImagesURLs, ...galleryImagesURL],
       postContent: caseContent,
       postId: postToEditId ? postToEditId : user.uid,
       postType: 'Case Studies',
@@ -282,7 +291,7 @@ const MakeCaseStudy = ({ postToEditId }) => {
       await deleteObject(previousImageRef)
     }
 
-    const imageRef = ref(storage, `cover_images/${user.uid}/Articles/${imageFile.name}`);
+    const imageRef = ref(storage, `cover_images/${user.uid}/Case Studies/${imageFile.name}`);
     const snapshot = await uploadBytes(imageRef, imageFile)
     const downloadURL = await getDownloadURL(snapshot.ref);
     if (postToEditId) {
@@ -405,7 +414,7 @@ const MakeCaseStudy = ({ postToEditId }) => {
 
           <input type="file" onChange={handleCoverImageFileChange} />
           {!selectedCoverImage && !coverImgURL &&
-            <div className={styles.imagerules}>
+            <div className='rulesdiv'>
               <h6>1. Try as much as possible to ensure your image is in landscape form</h6>
               <h6>2. If you&apos;re uploading an image you&apos;ve previously uploaded in another post, make sure to change its name before uploading.</h6>
             </div>
@@ -498,7 +507,7 @@ const MakeCaseStudy = ({ postToEditId }) => {
 
         <section className={styles.galleryimages}>
           <h3>Other Images</h3>
-          <div className={styles.imagerules}>
+          <div className='rulesdiv'>
             <h6>1. You can select multiple images at once, or select one by one. Once again, make sure your images are high resolution images but not too big in file sizes.</h6>
             <h6>2. It&apos;s best to properly name each image to avoid conflicts. Also if you&apos;re uploading a copy of the cover image here, duplicate and change its name before uploading.</h6>
             <h6>3. If you&apos;re uploading an image you&apos;ve previously uploaded in another post, make sure to change its name before uploading.</h6>

@@ -53,7 +53,6 @@ export default function Page({ params }) {
     const [lightHouseOpen, setLightHouseOpen] = useState(false);
 
 
-
     const gallerySlides = galleryImages.map((photo) => {
         const width = 4000;
         const height = 2500;
@@ -115,8 +114,10 @@ export default function Page({ params }) {
                     if (user) {
                         if (data) {
                             await updateDoc(postDocRef, { reads: arrayUnion(user.uid) })
-                            setGalleryImages(data.otherImages)
                         }
+                    }
+                    if (data) {
+                        setGalleryImages(data.allImages)
                     }
                 })
 
@@ -129,8 +130,21 @@ export default function Page({ params }) {
                         autoClose: 5000
                     })
                 }
-                if (error.code === "client-offline") {
+                if (error.code == "client-offline") {
                     toast.error("Seems like you are offline, connect to the internet and try again")
+                }
+                if (error.code === "failed-precondition") {
+                    toast.error("Poor internet connection")
+                }
+                else if (error.message.includes('Backend didn\'t respond' || "[code=unavailable]")) {
+                    toast.error("There appears to be a problem with your connection", {
+                        position: "top-center"
+                    })
+                }
+                  else if (error.code === "auth/network-request-failed" || "unavailable") {
+                    toast.error("There appears to be a problem with your connection", {
+                        position: "top-center"
+                    })
                 }
             }
         }
@@ -226,6 +240,10 @@ export default function Page({ params }) {
         }
     }
 
+    const delPost = async () => {
+        await deletePost(postData.postId, postData.postContent, postData.coverImageURL)
+        router.push('/')
+    }
 
 
 
@@ -267,7 +285,7 @@ export default function Page({ params }) {
                                 user?.uid === postData.authorId &&
                                 <div className={styles.settings}>
                                     <Link title="Edit Post" href={`/post?edit=${postData.postId}&type=${postData.postType}`}><FontAwesomeIcon icon={faPenToSquare} /></Link>
-                                    <span title="Delete Post" onClick={() => deletePost(postData.postId, postData.postContent, postData.coverImageURL, "/")}> <FontAwesomeIcon icon={faTrashAlt} /> </span>
+                                    <span title="Delete Post" onClick={delPost}> <FontAwesomeIcon icon={faTrashAlt} /> </span>
                                 </div>
                             }
                         </header>
@@ -377,9 +395,9 @@ export default function Page({ params }) {
                                 }
                                 {
                                     gallerySlides.length > 5 &&
-                                        <button className={styles.previewmore} onClick={() => setLightHouseOpen(true)} title="open gallery">
-                                            +{gallerySlides.length - 5}
-                                        </button>
+                                    <button className={styles.previewmore} onClick={() => setLightHouseOpen(true)} title="open gallery">
+                                        +{gallerySlides.length - 5}
+                                    </button>
                                 }
                             </div>
 
@@ -428,7 +446,8 @@ export default function Page({ params }) {
                                     })
                                 }
 
-                                {(!postData.comments || postData.comments.length < 1) && <h6>No remarks yet, Be the first to post a remark</h6>
+                                {(!postData.comments || postData.comments.length < 1) &&
+                                    <h6>No remarks yet, Be the first to post a remark</h6>
                                 }
                             </div>
                         </section>

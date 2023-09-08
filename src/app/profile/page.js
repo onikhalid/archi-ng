@@ -56,9 +56,9 @@ export default function Profile() {
       <title>Profile | Archi NG</title>
       <main className="content-container">
         <div className="infobox">
-          <h2>
+          <h3>
             loading profile...
-          </h2>
+          </h3>
         </div>
 
       </main>

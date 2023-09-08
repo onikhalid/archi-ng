@@ -107,7 +107,7 @@ const Menu = ({ menuOpen, setMenuOpen, menuclass, setMenuClass }) => {
                                 {buildingArray.map((type, index) => {
                                     return (
                                         <li key={index} onClick={closemenu}>
-                                            <Link href={`/search?q=${type}`}>
+                                            <Link href={`/search?q=${type}&category=Studies`}>
                                                 {type}
                                             </Link>
                                         </li>
@@ -121,7 +121,7 @@ const Menu = ({ menuOpen, setMenuOpen, menuclass, setMenuClass }) => {
                                 {articlesArray.map((type, index) => {
                                     return (
                                         <li key={index} onClick={closemenu}>
-                                            <Link href={`/search?q=${type}`}>
+                                            <Link href={`/search?q=${type}&category=Articles`}>
                                                 {type}
                                             </Link>
                                         </li>
