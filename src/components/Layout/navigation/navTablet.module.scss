@@ -34,6 +34,7 @@
     justify-content: space-between;
     gap: 5vh;
     --after: 5%; 
+    margin-left: 1rem;
 }
 
 // individual links styles
@@ -78,6 +79,10 @@
 .settings {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    // align-items: center;
     gap: 2rem;
+
+    span{
+        margin-left: 1rem;
+    }
 }

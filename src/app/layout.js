@@ -5,7 +5,7 @@ config.autoAddCss = false;
 import "yet-another-react-lightbox/plugins/captions.css";
 import "yet-another-react-lightbox/styles.css";
 
-import { ThemeProvider } from '@/utils/ContextandProviders/Providers'
+import { ThemeProvider, UserProvider } from '@/utils/ContextandProviders/Providers'
 import { MobileNavProvider } from '@/utils/ContextandProviders/Providers';
 
 import Body from '@/components/Layout/html/body';
@@ -33,24 +33,26 @@ export default function RootLayout({ children }) {
 
 
   return (
-    <ThemeProvider>
-      <MobileNavProvider>
-        <html className={poppins.className} lang="en">
-          <head>
-            <link rel='shortcut icon' href='/favicon.ico' />
-            <link
-              rel="stylesheet"
-              href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css"
-            />
-            <title> Archi NG</title>
-            <meta name="description" content="{metadata.description}" />
-          </head>
-          <Body>
-            {children}
-          </Body>
-        </html>
-      </MobileNavProvider>
-    </ThemeProvider>
+    <UserProvider>
+      <ThemeProvider>
+        <MobileNavProvider>
+          <html className={poppins.className} lang="en">
+            <head>
+              <link rel='shortcut icon' href='/favicon.ico' />
+              <link
+                rel="stylesheet"
+                href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css"
+              />
+              <title> Archi NG</title>
+              <meta name="description" content="{metadata.description}" />
+            </head>
+            <Body>
+              {children}
+            </Body>
+          </html>
+        </MobileNavProvider>
+      </ThemeProvider>
+    </UserProvider>
 
   )
 }

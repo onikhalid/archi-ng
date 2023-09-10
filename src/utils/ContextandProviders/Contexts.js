@@ -13,3 +13,9 @@ export const MobileNavContext = createContext({
   toggleTheme: () => { },
 });
 
+
+export const UserContext = createContext({
+  user: {},
+  toggleTheme: () => { },
+});
+

@@ -69,18 +69,20 @@ const Menu = ({ menuOpen, setMenuOpen, menuclass, setMenuClass }) => {
 
                             {
                                 user ?
-                                    <div className={styles.user}>
+                                    <Link href={`/profile?id=${user?.uid}`} className={styles.user} onClick={closemenu}>
                                         <h6>{user?.displayName}</h6>
                                         {
                                             !loading && user &&
+
                                             <Image
                                                 src={user?.photoURL || logo}
                                                 alt={`picture - ${user?.displayName}`}
                                                 width={40}
                                                 height={40}
                                             />
+
                                         }
-                                    </div>
+                                    </Link>
                                     :
 
                                     <Button name='Sign in' type='quinta' link='/auth' />

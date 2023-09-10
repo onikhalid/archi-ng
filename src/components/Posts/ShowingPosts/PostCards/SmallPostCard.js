@@ -56,6 +56,8 @@ export const SmallPostCard = ({ post, id }) => {
             return 'article'
         } else if (postData?.postType === 'Case Studies') {
             return 'case-study'
+        } else if (postData?.postType === 'Discussions') {
+            return 'discuss'
         }
         else if (postData?.postType === 'Photography') {
             return 'photo'

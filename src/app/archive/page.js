@@ -158,7 +158,7 @@ const Archive = () => {
                       {...register("Name", { required: true })} />
                     {errors.Name && <span>This field is required</span>}
                   </div>
-                  <button form="createfolder" type="submit" className={styles.createFolderButton}>Create Folder</button>
+                  <button form="createfolder" type="submit" className='capsulebutton'>Create Folder</button>
                 </form>
 
 

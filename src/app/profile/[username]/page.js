@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { collection, getDocs, getDoc, doc, query, where, onSnapshot } from "firebase/firestore";
 import { db, auth } from "@/utils/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { useState, useEffect, useLayoutEffect, useRef } from "react";
+import { useState, useEffect, useLayoutEffect, useRef, useContext } from "react";
 import { useWindowWidth } from '@/utils/Hooks/ResponsiveHook';
 import Image from 'next/image';
 import Button from '@/components/Button/button';
@@ -23,6 +23,7 @@ import { FollowersFollowingandLikesList } from '@/components/Profile/Followers,F
 import Link from 'next/link';
 import { faBehance, faInstagram, faTwitter } from '@fortawesome/free-brands-svg-icons';
 import { toast } from 'react-toastify';
+import { UserContext } from '@/utils/ContextandProviders/Contexts';
 
 
 
@@ -38,6 +39,7 @@ export default function Page({ params }) {
     const [userPosts, setUserPosts] = useState(null);
     const [userFolders, setUserFolders] = useState(null);
     const [userInfo, setUserInfo] = useState(null);
+    const { uuser, setUser } = useContext(UserContext);
 
 
     const sections = [
@@ -121,6 +123,7 @@ export default function Page({ params }) {
 
 
         const checkUserExists = async () => {
+
             const userDocSnap = await getDocs(userQuery)
             if (userDocSnap.docs.length < 1) {
                 setUserInfo("Doesn't Exist")
@@ -158,13 +161,19 @@ export default function Page({ params }) {
 
 
             const getBasicInfo = async () => {
-                onSnapshot(userQuery, async (snapshot) => {
-                    snapshot.forEach((doc) => {
-                        const data = doc.data();
-                        setUserInfo(data)
+                if (uuser && uuser.username == username) {
+                    setUserInfo(uuser)
+                }
+                else {
+                    onSnapshot(userQuery, async (snapshot) => {
+                        snapshot.forEach((doc) => {
+                            const data = doc.data();
+                            setUserInfo(data)
 
-                    });
-                })
+                        });
+                    })
+                }
+
             }
 
 
@@ -325,6 +334,7 @@ export default function Page({ params }) {
                             <div className={styles.main}>
                                 <Image
                                     src={userInfo.profilePicture}
+                                    className={styles.profilepicture}
                                     width={150}
                                     height={150}
                                     alt={`${userInfo.name} photo`}

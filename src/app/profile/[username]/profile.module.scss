@@ -41,9 +41,19 @@
         gap: 1rem;
         flex: 1.2;
         text-align: center;
-        padding-right: 2.5rem;
-        border-right: solid 2px var(--main-text-clr);
-
+        
+        
+        @media (min-width: 1020px) {
+            border-right: solid 2px var(--main-text-clr);
+            padding-right: 2.5rem;
+            border-bottom: none;
+        }
+        
+        @media (max-width: 1019px) {
+            border-bottom: solid 2px var(--main-text-clr);
+            padding-bottom: 2.5rem;
+            border-right: none;
+        }
 
         p {
             font-family: var(--text-poppins);
@@ -86,7 +96,7 @@
             }
         }
 
-        img {
+        img.profilepicture {
             border-radius: 150px;
             margin-bottom: 1rem;
             padding: 0.25rem;

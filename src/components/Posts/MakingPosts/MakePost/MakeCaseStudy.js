@@ -1,6 +1,7 @@
 import styles from './MakeCaseStudy.module.scss'
 import Edit from "../TextEditor/Text"
 import { useRef, useState, useContext, useEffect } from "react";
+import { UserContext } from '@/utils/ContextandProviders/Contexts';
 import { useRouter } from 'next/navigation';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useForm } from "react-hook-form";
@@ -21,6 +22,8 @@ import { extractImages, extractImageUrl } from '@/functions/Delete';
 
 const MakeCaseStudy = ({ postToEditId }) => {
   const router = useRouter()
+  // const { user, setUser } = useContext(UserContext);
+
   const editorRef = useRef(null);
   const [user, loading] = useAuthState(auth)
   const [caseContent, setCaseContent] = useState('') //tiny-mce content
@@ -31,7 +34,6 @@ const MakeCaseStudy = ({ postToEditId }) => {
 
   const [savingPost, setSavingPost] = useState(false)
   const { register, handleSubmit, formState: { errors }, setValue } = useForm();
-
 
 
   // Initial Fields Values, handle change
@@ -104,16 +106,14 @@ const MakeCaseStudy = ({ postToEditId }) => {
 
     let galleryImagesURL = []
 
-
     if (postToEditId) {
       let deletedImages = [];
-
+      
       //if new image ifiles have been selected
       if (selectedGalleryImageFiles.length > 0) {
         //if there's a post to be edited and the user is adding new images, 
         //upload the new/selected ones and add their urls to the original ones
 
-      
         const uploadedGalleryImagesURL = await uploadGalleryImages()
         galleryImagesURL = [...updatedOriginalGalleryURLs, ...uploadedGalleryImagesURL]
         deletedImages = originalGalleryURLs.filter(item => !galleryImagesURL.includes(item));
@@ -122,9 +122,9 @@ const MakeCaseStudy = ({ postToEditId }) => {
         galleryImagesURL = updatedOriginalGalleryURLs
         deletedImages = originalGalleryURLs.filter(item => !galleryImagesURL.includes(item));
       }
-
+      
       deletedImages.forEach(async (image) => {
-        //delete previous image from firebase
+        //delete deleted gallery images from firebase
         const startIndex = image.indexOf('/o/') + 3;
         const endIndex = image.indexOf('?alt=media');
         const encodedPath = image.substring(startIndex, endIndex);
@@ -140,8 +140,8 @@ const MakeCaseStudy = ({ postToEditId }) => {
     }
 
 
-const postImages = await extractImages(caseContent)
-const postImagesURLs = await extractImageUrl(postImages) || []
+    const postImages = await extractImages(caseContent)
+    const postImagesURLs = await extractImageUrl(postImages) || []
 
 
     const postData = {
@@ -178,8 +178,8 @@ const postImagesURLs = await extractImageUrl(postImages) || []
         const postDocRef = doc(db, `bookmarks/${bookmark.bookmarkId}`)
 
         batch.update(postDocRef, {
-          postTitle: data.Title,
-          postCoverPhoto: coverImageDownloadURL
+          title: data.Title,
+          coverImageURL: coverImageDownloadURL
         })
       })
       await batch.commit();
@@ -410,7 +410,7 @@ const postImagesURLs = await extractImageUrl(postImages) || []
     <>
       <div className={styles.makecase}>
         <article>
-        <h3>Cover Image</h3>
+          <h3>Cover Image</h3>
 
           <input type="file" onChange={handleCoverImageFileChange} />
           {!selectedCoverImage && !coverImgURL &&
@@ -502,7 +502,7 @@ const postImagesURLs = await extractImageUrl(postImages) || []
         </form>
 
         {/* TinyMCE RTE */}
-        <Edit editorRef={editorRef} editorContent={editorContent} setContent={setCaseContent} type={"Case Studies"}/>
+        <Edit editorRef={editorRef} editorContent={editorContent} setContent={setCaseContent} type={"Case Studies"} />
 
 
         <section className={styles.galleryimages}>

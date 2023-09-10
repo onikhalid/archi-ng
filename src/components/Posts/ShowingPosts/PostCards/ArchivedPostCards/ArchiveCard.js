@@ -54,6 +54,8 @@ export const BookmarkCard = ({ post }) => {
             return 'article'
         } else if (postType === 'Case Studies') {
             return 'case-study'
+        }else if (postType === 'Discussions') {
+            return 'discuss'
         }
         else if (postType === 'Photography') {
             return 'photo'

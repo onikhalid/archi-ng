@@ -37,17 +37,17 @@ const TabletNav = () => {
       icon: <FontAwesomeIcon icon={faMagnifyingGlass} />
     },
     {
+      path: "/discuss",
+      name: "Discuss",
+      icon: <FontAwesomeIcon icon={faComments} />
+    },
+    {
       path: "/archive",
       name: "Archive",
       icon: <FontAwesomeIcon icon={faFolder} />
-    },
-    {
-      path: "/profile",
-      name: "Profile",
-      icon: <FontAwesomeIcon icon={faUser} />
-    },
-  ];
+    }
 
+  ];
 
 
   const logOut = () => {
@@ -91,8 +91,9 @@ const TabletNav = () => {
             <Button name='Sign in' type='primary' link='/auth' />
           }
 
-          {user && <span onClick={logOut} className={styles.settingslink}> <FontAwesomeIcon icon={faRightFromBracket} /> Logout</span>}
+          {user && <span onClick={() => router.push('/profile')} className={styles.settingslink}> <FontAwesomeIcon icon={faUser} /> Profile</span>}
           <span onClick={() => router.push('/settings')} className={styles.settingslink}> <FontAwesomeIcon icon={faGear} /> Settings</span>
+          {user && <span onClick={logOut} className={styles.settingslink}> <FontAwesomeIcon icon={faRightFromBracket} /> Logout</span>}
         </div>
       </div>
     </aside>

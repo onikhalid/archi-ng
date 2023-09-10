@@ -574,6 +574,7 @@
            border-radius: 50px;
            border: solid 1px var(--accent);
            padding: 0 !important;
+           
          }
        }
 
@@ -658,7 +659,24 @@
    }
  }
 
-
+ .capsulebutton{
+  appearance: none;
+  font-family: var(--text-poppins);
+  background-color: transparent;
+  color: var(--main-text-clr);
+  padding: .25rem .7rem;
+  border: solid 2px var(--main-text-clr);
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all ease-in-out 250ms;
+  
+  &:hover{
+      border-radius: 5px;
+      color: var(--background);
+      background-color: var(--accent);
+      border: solid 2px transparent;
+  }
+}
 
 
 

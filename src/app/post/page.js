@@ -11,12 +11,13 @@ import WhoseandWhichpostH1 from '@/components/Posts/ShowingPosts/Whosepost/whose
 import MakeArticle from '@/components/Posts/MakingPosts/MakePost/MakeArticle';
 import MakeCaseStudy from '@/components/Posts/MakingPosts/MakePost/MakeCaseStudy';
 import MakePhoto from '@/components/Posts/MakingPosts/MakePost/MakePhoto';
+import StartDiscussion from '@/components/Posts/MakingPosts/MakePost/StartDiscussion';
 import { doc, getDoc } from 'firebase/firestore';
 
 
 export default function Home() {
   const [user, loading] = useAuthState(auth);
-  const [currentPostToMake, setCurrentPostToMake] = useState("Article");
+  const [currentPostToMake, setCurrentPostToMake] = useState("an article");
   const router = useRouter()
   const searchParams = useSearchParams()
   const postToEdit = searchParams.get('edit')
@@ -30,15 +31,19 @@ export default function Home() {
   const variation = [
     {
       number: 1,
-      name: "an article",
+      name: "a photo",
     },
     {
       number: 2,
-      name: "case study",
+      name: "an article",
     },
     {
       number: 3,
-      name: "a photo",
+      name: "a case study",
+    },
+    {
+      number: 4,
+      name: "a discuss topic",
     }
   ];
 
@@ -75,7 +80,7 @@ export default function Home() {
       else if (!postToEdit || !postTypeToEdit) {
         return
       }
-      else if ((postTypeToEdit !== "Case Studies") && (postTypeToEdit !== "Articles")) {
+      else if ((postTypeToEdit !== "Case Studies") && (postTypeToEdit !== "Articles") && (postTypeToEdit !== "Discussions")) {
         setIsWrongFormat(true)
         return
       }
@@ -104,7 +109,7 @@ export default function Home() {
   ////////////////////////////////////////////////////////////
   /////////                PAGE TITLE              ///////////
   let pageTitle
-  if (currentPostToMake == "case study") {
+  if (currentPostToMake == "a case study") {
     if ((postToEdit || postTypeToEdit) === null) {
       pageTitle = `Make Post: Case Study | Archi NG`
     } else pageTitle = `Edit Post: ${postTypeToEdit} | Archi NG`
@@ -119,6 +124,9 @@ export default function Home() {
     if ((postToEdit || postTypeToEdit) === null) {
       pageTitle = `Make Post: Photo | Archi NG`
     } else pageTitle = `Edit Post: ${postTypeToEdit} | Archi NG`
+
+  } else if (currentPostToMake == "a discuss topic") {
+    pageTitle = `Make Post: Start Discussion | Archi NG`
 
   } else pageTitle = "Loading Make Post.."
 
@@ -137,7 +145,7 @@ export default function Home() {
       <title>{pageTitle}</title>
 
       {
-        loading && <h1> Loading...</h1>
+        loading && <h3> Loading...</h3>
       }
       {
         !loading && !user && router.push('/auth?redirect=home')
@@ -176,8 +184,10 @@ export default function Home() {
             {/* /////////     EDIT POST HEADER     ////////// */}
             {/* ///////////////////////////////////////////// */}
             {(postToEdit || postTypeToEdit) !== null && <>
-              <h4>Edit {userHasPermToEditPost ? "your" : "someone else's 🙄?"}</h4>
-              <h1>{postTypeToEdit === 'Case Studies' ? 'Case Study' : 'Article'}</h1>
+              <h4>Edit {userHasPermToEditPost && userHasPermToEditPost == 'no' ? "someone else's 🙄?" : "your"}</h4>
+              {postTypeToEdit === 'Case Studies' && <h1>Case Study</h1>}
+              {postTypeToEdit === 'Articles' && <h1>Article</h1>}
+              {postTypeToEdit === 'Discussions' && <h1>Discussion</h1> }
             </>
             }
           </header>
@@ -189,15 +199,18 @@ export default function Home() {
           {/* //////////////////////////////////// */}
           {/* /////////   MAKE NEW POST  ///////// */}
           {/* //////////////////////////////////// */}
-          {(currentPostToMake === "an article" && (postTypeToEdit === null)) && <MakeArticle />}
-          {(currentPostToMake === "case study" && (postTypeToEdit === null)) && <MakeCaseStudy />}
           {(currentPostToMake === "a photo" && (postTypeToEdit === null)) && <MakePhoto />}
+          {(currentPostToMake === "an article" && (postTypeToEdit === null)) && <MakeArticle />}
+          {(currentPostToMake === "a case study" && (postTypeToEdit === null)) && <MakeCaseStudy />}
+          {(currentPostToMake === "a discuss topic" && (postTypeToEdit === null)) && <StartDiscussion />}
 
           {/* //////////////////////////////////// */}
           {/* ///////////   EDIT POST   ////////// */}
           {/* //////////////////////////////////// */}
-          {userHasPermToEditPost == 'yes' && postTypeToEdit === "Articles" && <MakeArticle postToEditId={postToEdit} />}
-          {userHasPermToEditPost == 'yes' && postTypeToEdit === "Case Studies" && <MakeCaseStudy postToEditId={postToEdit} />}
+          {userHasPermToEditPost == 'yes' && postTypeToEdit === "Articles" && <MakeArticle postToEditId={postToEdit} setIsWrongFormat={setIsWrongFormat}/>}
+          {userHasPermToEditPost == 'yes' && postTypeToEdit === "Case Studies" && <MakeCaseStudy postToEditId={postToEdit} setIsWrongFormat={setIsWrongFormat}/>}
+          {userHasPermToEditPost == 'yes' && postTypeToEdit === "Discussions" && <StartDiscussion postToEditId={postToEdit} setIsWrongFormat={setIsWrongFormat}/>}
+          {userHasPermToEditPost == 'yes' && postTypeToEdit === "Photography" && <MakePhoto postToEditId={postToEdit} setIsWrongFormat={setIsWrongFormat}/>}
 
 
 
@@ -207,9 +220,9 @@ export default function Home() {
           {/* //////////////////////////////////////////// */}
           {userHasPermToEditPost == 'no' &&
             <div className='infobox'>
-              <h2>
+              <h3>
                 How did you get here? 😯, this is not your post you can&apos;t edit it
-              </h2>
+              </h3>
             </div>
           }
 
@@ -219,7 +232,7 @@ export default function Home() {
       {
         isWrongFormat &&
         <div className='infobox'>
-          <h2>Wrong post id or post type, double check the url and reload the page</h2>
+          <h3>Wrong post id or post type, double check the url and reload the page</h3>
         </div>
       }
     </>

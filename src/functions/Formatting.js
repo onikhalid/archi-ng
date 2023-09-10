@@ -19,12 +19,12 @@ export const formatDate = (serverTimestamp) => {
     };
 
     const date = serverTimestamp.toDate();
-    const day = date.getDate();
+     const day = date.getDate();
     const month = months[date.getMonth()];
     const year = date.getFullYear();
     const hours = date.getHours();
     const minutes = date.getMinutes();
     const ampm = hours >= 12 ? 'pm' : 'am';
 
-    return `${day}${getOrdinalSuffix(day)} ${month} ${year} - ${formatTime(hours, minutes)}${ampm}`;
+    return `${day} ${month} ${year} - ${formatTime(hours, minutes)}${ampm}`;
 };

@@ -32,7 +32,7 @@ const ArticleCard = ({ post }) => {
 
 
     const avatar = post.authorAvatar
-    const tags = post?.tags.slice(0, 3)
+    const tags = post.tags?.slice(0, 3)
     const postTime = post.createdAt;
     const serverDate = postTime.toDate();
     const currentDate = new Date();
@@ -101,7 +101,7 @@ const ArticleCard = ({ post }) => {
     return (
         <article className={styles.postcard}>
             <section className={styles.postimage}>
-                <img src={post.coverImageURL} alt={'case study cover image'} />
+                <img src={post.coverImageURL} alt={'article cover image'} />
             </section>
 
             <div className={styles.mainInfo}>
@@ -139,7 +139,7 @@ const ArticleCard = ({ post }) => {
                 <section className={styles.bottomsection}>
                     <div className={styles.postags}>
                         {
-                            tags.map((tag, index) => {
+                            tags?.map((tag, index) => {
                                 return (
                                     <Link title='Explore tag' key={index} href={`/search?q=${tag}`}><em>{tag.toUpperCase()},</em></Link>
                                 )

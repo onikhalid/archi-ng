@@ -13,7 +13,7 @@ import { toast } from 'react-toastify';
 
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMagnifyingGlass, faHouse, faUser, faFolder, faRightFromBracket, faGear } from "@fortawesome/free-solid-svg-icons";
+import { faMagnifyingGlass, faHouse, faUser, faFolder, faRightFromBracket, faGear, faFaceSmile, faComments } from "@fortawesome/free-solid-svg-icons";
 
 const DesktopNav = () => {
   const [user, loading] = useAuthState(auth);
@@ -35,15 +35,16 @@ const DesktopNav = () => {
       icon: <FontAwesomeIcon icon={faMagnifyingGlass} />
     },
     {
+      path: "/discuss",
+      name: "Discuss",
+      icon: <FontAwesomeIcon icon={faComments} />
+    },
+    {
       path: "/archive",
       name: "Archive",
       icon: <FontAwesomeIcon icon={faFolder} />
-    },
-    {
-      path: "/profile",
-      name: "Profile",
-      icon: <FontAwesomeIcon icon={faUser} />
-    },
+    }
+
   ];
 
 
@@ -72,7 +73,7 @@ const DesktopNav = () => {
               <Link
                 href={link.path}
                 key={link.path}
-                className={currentPath === link.path ? `${styles.navlink} ${styles.active}` : styles.navlink} >
+                className={(currentPath === link.path )? `${styles.navlink} ${styles.active}` : styles.navlink} >
                 {link.icon} {link.name}
               </Link>
             ))
@@ -85,9 +86,13 @@ const DesktopNav = () => {
             :
             <Button name='Sign in' type='primary' link='/auth' />
           }
-
-          {user && <span onClick={logOut} className={styles.settingslink}> <FontAwesomeIcon icon={faRightFromBracket} /> Logout</span>}
-          <span onClick={() => router.push('/settings')} className={styles.settingslink}> <FontAwesomeIcon icon={faGear} /> Settings</span>
+          {
+            user && <>
+              <span onClick={() => router.push('/profile')} className={styles.settingslink}> <FontAwesomeIcon icon={faUser} /> Profile</span>
+              <span onClick={logOut} className={styles.settingslink}> <FontAwesomeIcon icon={faRightFromBracket} /> Logout</span>
+              <span onClick={() => router.push('/settings')} className={styles.settingslink}> <FontAwesomeIcon icon={faGear} /> Settings</span>
+            </>
+          }
         </div>
       </div>
 

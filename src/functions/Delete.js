@@ -18,7 +18,6 @@ export const extractImages = async (content) => {
 
 //2 extrat url
 export const extractImageUrl = async (image) => {
-    console.log(image);
     const srcRegex = /src="([^"]+)"/g;
     const matches = [];
     let match;

@@ -110,14 +110,20 @@ export default function Page({ params }) {
 
                 onSnapshot(postDocRef, async (snapshot) => {
                     const data = snapshot.data()
-                    setPostData(data)
-                    if (user) {
-                        if (data) {
-                            await updateDoc(postDocRef, { reads: arrayUnion(user.uid) })
-                        }
-                    }
+
+
                     if (data) {
                         setGalleryImages(data.allImages)
+
+                        if (data.postType === "Case Studies") {
+                            setPostData(data)
+                        } else { setPostData("exists but not an article") }
+
+                           
+                        if (user) {
+                            await updateDoc(postDocRef, { reads: arrayUnion(user.uid) })
+                        }
+
                     }
                 })
 
@@ -141,7 +147,7 @@ export default function Page({ params }) {
                         position: "top-center"
                     })
                 }
-                  else if (error.code === "auth/network-request-failed" || "unavailable") {
+                else if (error.code === "auth/network-request-failed" || "unavailable") {
                     toast.error("There appears to be a problem with your connection", {
                         position: "top-center"
                     })

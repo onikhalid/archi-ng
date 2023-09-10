@@ -68,7 +68,24 @@ const Search = () => {
         addSearch(queryText);
 
         const whichPost = () => {
-          if (whichResultType === 'Studies') { return 'Case Studies' }
+          if (categoryParameter) {
+            if (categoryParameter !== '' && categoryParameter.trim() !== '') {
+              setwhichResultType(categoryParameter)
+            }
+            if (categoryParameter === 'Articles') {
+              return 'Articles'
+            }
+            else if (categoryParameter === 'Studies') {
+              return 'Case Studies'
+            }
+           
+            else if (categoryParameter === 'Photos') {
+              return 'Photography'
+            }
+
+          }
+
+          else if (whichResultType === 'Studies') { return 'Case Studies' }
           else if (whichResultType === 'Articles') { return 'Articles' }
           else if (whichResultType === 'Photos') { return 'Photography' }
           else 'Case Studies'
@@ -336,7 +353,9 @@ const Search = () => {
           searchParameter !== null &&
           <header className={styles.pageheader}>
             <h1>Search</h1>
-            <WhoseandWhichpost variations={resultypevariations} currentwhosePost={whichResultType} setCurrentWhosePost={setwhichResultType} />
+            {
+              !categoryParameter && <WhoseandWhichpost variations={resultypevariations} currentwhosePost={whichResultType} setCurrentWhosePost={setwhichResultType} />
+            }
             {!searching && searchResult && searchResult.length < 1 && <h3>No results for <em>{searchParameter}</em> in {whichResultType}</h3>}
             {!searching && searchResult && searchResult.length > 0 && <h3><em>{searchResult.length}</em> results for <em>{searchParameter}</em> in {whichResultType}</h3>}
           </header>
@@ -368,7 +387,6 @@ const Search = () => {
               <section className={styles.resultspage}>
                 <div className={styles.resultcontainer}>
                   {searchResult.map((result, index) => {
-
 
                     if (whichResultType === 'Articles') {
                       return <ArticleCard key={index} post={result} />

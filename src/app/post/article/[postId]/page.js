@@ -46,11 +46,21 @@ export default function Page({ params }) {
 
                 onSnapshot(postDocRef, async (snapshot) => {
                     const data = snapshot.data()
-                    setPostData(data)
-                    if (user) {
-                        if (data) {
+
+                    if (data) {
+                        if (data.postType === "Articles") {
+                            setPostData(data)
+
+                        } else {
+                            setPostData("exists but not an article")
+                        }
+
+
+
+                        if (user) {
                             await updateDoc(postDocRef, { reads: arrayUnion(user.uid) })
                         }
+
                     }
 
                 })
@@ -158,7 +168,10 @@ export default function Page({ params }) {
 
 
 
-
+    const delpost = () => {
+        deletePost(postData.postId, postData.postContent, postData.coverImageURL)
+        router.push('/')
+    }
 
 
 
@@ -176,7 +189,7 @@ export default function Page({ params }) {
 
                 {(!loadingpost && !postData) &&
                     <div className='infobox'>
-                        <h2>Bad internet connection or Post doesn&apos;t exist</h2>
+                        <h3>Bad internet connection or Post doesn&apos;t exist</h3>
                     </div>
                 }
                 {loadingpost &&
@@ -201,7 +214,7 @@ export default function Page({ params }) {
                                 user?.uid === postData.authorId &&
                                 <div className={styles.settings}>
                                     <Link title="Edit Post" href={`/post?edit=${postData.postId}&type=${postData.postType}`}><FontAwesomeIcon icon={faPenToSquare} /></Link>
-                                    <span title="Delete Post" onClick={() => deletePost(postData.postId, postData.postContent, postData.coverImageURL)}> <FontAwesomeIcon icon={faTrashAlt} /> </span>
+                                    <span title="Delete Post" onClick={delpost}> <FontAwesomeIcon icon={faTrashAlt} /> </span>
                                 </div>
                             }
                         </header>

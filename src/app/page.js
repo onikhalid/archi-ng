@@ -14,6 +14,7 @@ import CaseStudyCard from '@/components/Posts/ShowingPosts/PostCards/Case Study'
 import PhotoCard from '@/components/Posts/ShowingPosts/PostCards/Photo';
 import Button from '@/components/Button/button';
 import { toast } from 'react-toastify';
+import DiscussCard from '@/components/Posts/ShowingPosts/PostCards/DiscussionCard';
 
 
 
@@ -42,6 +43,10 @@ export default function Home() {
     {
       number: 3,
       name: "Photography",
+    },
+    {
+      number: 4,
+      name: "Discussions",
     }
   ];
 
@@ -136,16 +141,16 @@ export default function Home() {
       setLoadingPosts(true)
       await GetFollowedUsersIds()
       
-      const getQuery = () => {
+      const getQuery = async() => {
         if (currentwhosePost === "Feed") {
-          return query(postsCollectionRef, where('postType', '==', currentPost), orderBy("createdAt", 'desc'), limit(postsPerFetch))
+          return query(postsCollectionRef, where('postType', '==', currentPost), orderBy("createdAt"), limit(postsPerFetch))
         }
         // when user is signed in but doesn't follow anyone/ their followees😅 haven't posted anything
         else if (user && followedUserIds?.length < 1 && (currentwhosePost === "Following")) {
           setLoadingPosts(false)
           return null
         }
-        else if (user && (currentwhosePost === "Following")) {
+        else if (user && followedUserIds?.length > 0 && (currentwhosePost === "Following")) {
           return query(postsCollectionRef, where('postType', '==', currentPost), where('authorId', 'in', followedUserIds), orderBy("createdAt", 'desc'), limit(postsPerFetch));
         }
         // when user isn't signed in and wants to see posts from their imaginary followed user
@@ -155,8 +160,9 @@ export default function Home() {
       }
 
 
-      const q = getQuery();
+      const q = await getQuery();
       if (q == null) {
+        console.log(q)
         setAllPosts([])
         return
       }
@@ -226,7 +232,7 @@ export default function Home() {
 
           const getQuery = () => {
             if (currentwhosePost === "Feed") {
-              return query(postsCollectionRef, where('postType', '==', currentPost), orderBy("createdAt", "desc"), limit(postsPerFetch), startAfter(fetchedPosts))
+              return query(postsCollectionRef, where('postType', '==', currentPost), orderBy("createdAt"), limit(postsPerFetch), startAfter(fetchedPosts))
             }
 
             // when user is signed in but doesn't follow anyone
@@ -281,8 +287,6 @@ export default function Home() {
       window.removeEventListener('scroll', loadMorePosts)
     };
   }, [loadingPosts, fetchedPosts, user, currentPost, currentwhosePost, allPosts]);
-
-
 
 
 
@@ -358,7 +362,9 @@ export default function Home() {
                   return <ArticleCard key={index} post={post} />
                 } else if (currentPost === 'Case Studies') {
                   return <CaseStudyCard key={index} post={post} />
-                } else {
+                } else if (currentPost === 'Discussions') {
+                  return <DiscussCard key={index} post={post} />
+                }else {
                   return <PhotoCard key={index} post={post} />
                 }
               })}
