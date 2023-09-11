@@ -12,7 +12,7 @@ import { ThemeContext } from '@/utils/ContextandProviders/Contexts';
 import Button from '@/components/Button/button';
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMagnifyingGlass, faHouse, faUser, faFolder, faRightFromBracket, faGear, faPenToSquare, faCaretRight, faCaretLeft } from "@fortawesome/free-solid-svg-icons";
+import { faMagnifyingGlass, faHouse, faUser, faFolder, faRightFromBracket, faGear, faPenToSquare, faCaretRight, faCaretLeft, faComments } from "@fortawesome/free-solid-svg-icons";
 
 
 

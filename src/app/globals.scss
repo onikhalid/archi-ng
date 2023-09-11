@@ -434,11 +434,15 @@
    h3 {
      max-width: 20ch;
      line-height: 1.25;
-   }
+    }
 
    h4 {
      max-width: 30ch;
      font-family: var(--text-poppins) !important;
+   }
+
+   small{
+    max-width: 40ch;
    }
  }
 

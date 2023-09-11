@@ -166,6 +166,9 @@ const MakeCaseStudy = ({ postToEditId }) => {
 
 
     const postCollectionRef = collection(db, "posts");
+    ///////////////////
+    //  edited post  //
+    ///////////////////
     if (postToEditId) {
       await updateDoc(doc(postCollectionRef, postToEditId), postData);
 
@@ -184,6 +187,11 @@ const MakeCaseStudy = ({ postToEditId }) => {
       })
       await batch.commit();
     }
+
+    
+    ///////////////////
+    //   new post   //
+    ///////////////////
     else {
       const newPostRef = await addDoc(postCollectionRef, postData);
       const postId = newPostRef.id

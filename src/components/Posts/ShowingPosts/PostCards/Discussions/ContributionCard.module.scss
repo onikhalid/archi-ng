@@ -1,0 +1,38 @@
+.contributioncard {
+    padding: 0.5rem;
+    border-radius: 10px;
+    transition: all ease-in-out 350ms;
+    width: 100%;
+    border: solid 1px transparent;
+
+
+    .up {
+        display: flex;
+
+        a {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            h6{
+                // font-size: 0.9rem;
+                font-weight: 600;
+            }
+
+            img {
+                border-radius: 50px;
+            }
+
+        }
+    }
+
+    .down {
+        display: flex;
+        margin-left: calc(25px + 0.35rem);
+    }
+
+
+    &:hover {
+        background-color: var(--glass);
+        border: solid 1px var(--main-text-clr);
+    }
+}

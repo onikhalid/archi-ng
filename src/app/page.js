@@ -14,7 +14,7 @@ import CaseStudyCard from '@/components/Posts/ShowingPosts/PostCards/Case Study'
 import PhotoCard from '@/components/Posts/ShowingPosts/PostCards/Photo';
 import Button from '@/components/Button/button';
 import { toast } from 'react-toastify';
-import DiscussCard from '@/components/Posts/ShowingPosts/PostCards/DiscussionCard';
+import DiscussCard from '@/components/Posts/ShowingPosts/PostCards/Discussions/DiscussionCard';
 
 
 

@@ -9,7 +9,7 @@ import { collection, limit, onSnapshot, orderBy, query, where } from "firebase/f
 
 import { toast } from "react-toastify";
 import WhoseandWhichpost from "@/components/Posts/ShowingPosts/Whosepost/whosepost";
-import DiscussCard from "@/components/Posts/ShowingPosts/PostCards/DiscussionCard";
+import DiscussCard from "@/components/Posts/ShowingPosts/PostCards/Discussions/DiscussionCard";
 import PostSkeleton from '@/components/Posts/ShowingPosts/PostCards/Skeleton/PostSkeleton';
 
 

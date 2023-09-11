@@ -1,7 +1,7 @@
 "use client"
 
 import styles from './discusspage.module.scss'
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useContext, useEffect, useLayoutEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from 'next/navigation';
 import { useWindowWidth } from "@/utils/Hooks/ResponsiveHook";
@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 
 import { auth, db } from "@/utils/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { collection, getDocs, doc, query, where, onSnapshot, updateDoc, arrayUnion, addDoc } from "firebase/firestore";
+import { collection, getDocs, doc, query, where, onSnapshot, updateDoc, arrayUnion, addDoc, orderBy } from "firebase/firestore";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBookmark, faComment, faEye, faHeart, faPenToSquare, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
@@ -22,7 +22,8 @@ import { addLike, removeLike } from "@/functions/Likes";
 import { addBookmark, deleteBookmark } from "@/functions/Bookmark";
 import { deletePost } from "@/functions/Delete";
 import { formatDate } from "@/functions/Formatting";
-
+import ContributionCard from '@/components/Posts/ShowingPosts/PostCards/Discussions/ContributionCard';
+import { UserContext } from '@/utils/ContextandProviders/Contexts';
 
 
 
@@ -31,7 +32,9 @@ export default function Page({ params }) {
   const router = useRouter()
   const width = useWindowWidth()
   const [user, loading] = useAuthState(auth);
+  const { userData, setUserData } = useContext(UserContext);
   const [postData, setPostData] = useState(null)
+  const [contributions, setContributions] = useState(null)
   const [loadingpost, setloadingpost] = useState(true);
   const { register, handleSubmit, formState: { errors }, setValue } = useForm();
 
@@ -48,11 +51,49 @@ export default function Page({ params }) {
           const data = snapshot.data()
           if (data === undefined) {
             setPostData("Doesn't Exists")
-            
+
           } else {
             setPostData(data)
-            
+
           }
+        })
+
+
+
+      }
+
+      catch (error) {
+        if (error.code === "unavailable") {
+          toast.error("Refresh the page, an errror occured while fetching data", {
+            position: "top-center",
+            autoClose: 5000
+          })
+        }
+        if (error.code === "client-offline") {
+          toast.error("Seems like you are offline, connect to the internet and try again")
+        }
+        if (error.code === 3) {
+          toast.error("Seems like you are offline, connect to the internet and try again")
+        }
+      }
+    }
+
+
+
+    const getContributions = async () => {
+      try {
+        const contributionsCollectionRef = collection(db, "contributions");
+        const contributionsDocsRef = query(contributionsCollectionRef, where('postId', '==', postId), where('parentContributionId', '==', null), orderBy('createdAt'));
+
+
+        onSnapshot(contributionsDocsRef, async (snapshot) => {
+          const data = []
+          snapshot.docs.forEach(contribute => {
+            data.push(contribute.data())
+          });
+
+          setContributions(data)
+
         })
 
       }
@@ -74,6 +115,7 @@ export default function Page({ params }) {
     }
 
     getPost()
+    getContributions()
 
 
     setloadingpost(false)
@@ -86,21 +128,7 @@ export default function Page({ params }) {
 
 
 
-  // const likeUnlike = () => {
-  //   if (!user) {
-  //     toast.error("Login to like posts", {
-  //       position: "top-center",
-  //       autoClose: 4000
-  //     })
-  //     return
-  //   } else {
-  //     if (postData.likes?.includes(user.uid)) {
-  //       removeLike(postId, user.uid)
-  //     } else {
-  //       addLike(postId, user.uid)
-  //     }
-  //   }
-  // }
+
 
   const saveUnsave = () => {
     if (!user) {
@@ -136,26 +164,32 @@ export default function Page({ params }) {
       return
     }
     else {
-      const newComment = {
+      const newContribution = {
         authorName: user.displayName,
         authorPhoto: user.photoURL,
         authorId: user.uid,
+        authorUsername: userData.username,
         createdAt: new Date(),
-        text: data.Comment,
+        text: data.Contribution,
         postId: postId,
+        parentContributionId: null
       }
 
-      const postDocRef = doc(db, `posts/${postId}`)
-      const newPostRef = await addDoc(postCollectionRef, postData);
+      const contributionsCollectionRef = collection(db, `contributions`)
+      const newPostRef = await addDoc(contributionsCollectionRef, newContribution);
+      const contributeId = newPostRef.id
+      await updateDoc(doc(contributionsCollectionRef, newPostRef.id), {
+        contributeId: contributeId
+      });
 
-      setValue("Comment", "")
+      setValue("Contribution", "")
     }
   }
 
 
 
 
-  const pageTitle = postData && `${postData.title} - case study by ${postData.authorName} | Archi NG`
+  const pageTitle = postData && `${postData.title} - Discussion started by ${postData.authorName} | Archi NG`
 
 
 
@@ -175,20 +209,16 @@ export default function Page({ params }) {
 
       <div className={styles.casestudy}>
 
-        {(!loadingpost && ! postData || postData == "Doesn't Exists") &&
+        {(!loadingpost && !postData || postData == "Doesn't Exists") &&
           <div className='infobox'>
             <h3>Poor internet connection or Post doesn&apos;t exist</h3>
             <small>Wait a while, this error might automatically be rectified. If nothing happens after 10 seconds, Check your internet connection and try again</small>
           </div>
         }
-        {/* {(!loadingpost && postData == "Doesn't Exists") &&
-          <div className='infobox'>
-            <h3> Post doesn&apos;t exist</h3>
-          </div>
-        } */}
+
         {loadingpost &&
           <div className='infobox'>
-            <h2>Loading...</h2>
+            <h3>Loading...</h3>
           </div>
         }
 
@@ -200,118 +230,97 @@ export default function Page({ params }) {
           !loadingpost && postData && postData !== "Doesn't Exists" &&
           <div className={`content-container ${styles.container}`}>
             <header >
-              <div className={styles.title}>
-                <h2>{postData.title}</h2>
-                {width > 719 && <span> Article by {postData.authorName}, <em>{formatDate(postData.createdAt)}</em></span>}
-              </div>
-              {
-                user?.uid === postData.authorId &&
-                <div className={styles.settings}>
-                  <Link title="Edit Post" href={`/post?edit=${postData.postId}&type=${postData.postType}`}><FontAwesomeIcon icon={faPenToSquare} /></Link>
-                  <span title="Delete Post" onClick={() => deletePost(postData.postId, postData.postContent, postData.coverImageURL)}> <FontAwesomeIcon icon={faTrashAlt} /> </span>
+              <section className={styles.title}>
+                <h3>{postData.title}</h3>
+                <small> Discussion started on <em>{formatDate(postData.createdAt)}</em>
+                  <Link href={`/profile?id=${postData.authorId}`} title="visit author's profile" className={styles.authorinfo}>
+                    <img src={postData.authorAvatar} alt={'author image'} /> {postData.authorName}
+                  </Link>
+                </small>
+              </section>
+
+
+
+
+              <section className={styles.postinfo}>
+                {
+                  user?.uid === postData.authorId &&
+                  <div className={styles.settings}>
+                    <Link title="Edit Post" href={`/post?edit=${postData.postId}&type=${postData.postType}`}><FontAwesomeIcon icon={faPenToSquare} /></Link>
+                    <span title="Delete Post" onClick={() => deletePost(postData.postId, postData.postContent, postData.coverImageURL)}> <FontAwesomeIcon icon={faTrashAlt} /> </span>
+                  </div>
+                }
+
+
+                <div className={styles.poststats}>
+                  <article className={postData.bookmarks?.includes(user?.uid) ? `${styles.bookmarkedstat}` : `${styles.stat}`} title='bookmark discussion'>
+                    <h5>{postData.bookmarks ? postData.bookmarks.length : 0}</h5>
+                    <span onClick={saveUnsave}>
+                      <FontAwesomeIcon icon={faBookmark} />
+                    </span>
+                  </article>
+
+                  <article className={styles.comment} title='contributions'>
+                    <h5>{postData.comments ? postData.comments.length : 0} </h5>
+                    <FontAwesomeIcon icon={faComment} />
+                  </article>
+
+                  <article className={styles.comment} title='contibutors'>
+                    <h5>{postData.comments ? postData.comments.length : 0} </h5>
+                    <FontAwesomeIcon icon={faComment} />
+                  </article>
                 </div>
-              }
+
+
+              </section>
+
+
             </header>
 
 
 
-            <section className={styles.postinfosection}>
-              <div className={styles.coverimage}>
-                <Image
-                  src={postData.coverImageURL}
-                  alt={`case study post cover image`}
-                  height={900}
-                  width={1600}
-                  layout="responsive"
-                  placeholder="empty"
-                />
-              </div>
-
-              <div className={styles.postinfo}>
-                <div className={styles.basicinfo}>
-
-                  <section className={styles.otherinfo}>
-
-                    <Link href={`/profile?id=${postData.authorId}`} title="visit author's profile" className={styles.authorinfo}>
-                      <img src={postData.authorAvatar} alt={'author image'} />
-                      <h6 title={postData.authorName}>{postData.authorName}</h6>
-                    </Link>
-                  </section>
-                </div>
 
 
 
-                {/* //////////////////////////////////////// */}
-                {/* ///////////       STATS         //////// */}
-                {/* //////////////////////////////////////// */}
-                <div className={styles.poststats}>
-                  {/* <article className={postData.likes?.includes(user?.uid) ? ` ${styles.likedstat}` : `${styles.stat}`}>
-                    <span>
-                      <h5>{postData.likes ? postData.likes.length : 0} <span>Likes</span></h5>
-                      <FollowersFollowingandLikesList postId={postId} />
-                    </span>
-
-                    <span onClick={likeUnlike}>
-                      <FontAwesomeIcon icon={faHeart} />
-                    </span>
-                  </article> */}
-
-                  <article className={postData.bookmarks?.includes(user?.uid) ? `${styles.bookmarkedstat}` : `${styles.stat}`}>
-                    <h5>{postData.bookmarks ? postData.bookmarks.length : 0} <span>Saves</span></h5>
-                    <span onClick={saveUnsave}>
-                      <FontAwesomeIcon icon={faBookmark} />
-                    </span>
-
-                  </article>
-
-                  <article className={styles.comment}>
-                    <h5>{postData.comments ? postData.comments.length : 0} <span>Contributions</span></h5>
-                    <Link href={'#contributions'}><FontAwesomeIcon icon={faComment} /></Link>
-                  </article>
 
 
-                </div>
-              </div>
-
+            <section className={styles.allContributions}>
+              {
+                contributions?.map((contribute, index) => {
+                  return <ContributionCard key={index} post={contribute} />
+                })
+              }
             </section>
 
 
 
 
-            <section id="contributions" className={styles.commentsection}>
-              <h2>Contributions</h2>
+            <section id="contributions" className={styles.makeContributionSection}>
 
               {user &&
                 <form id='writecontribution' className={styles.writecomment} onSubmit={handleSubmit(makeNewContribution)}>
 
                   <div className={`inputdiv ${styles.inputdiv}`}>
                     <textarea
-                      id="Comment" name="Comment" type="text"
-                      placeholder="Write a Remark" rows={5}
-                      {...register("Comment", { required: true })} />
-                    {errors.Comment && <span>You can&apos;t submit an empty remark</span>}
+                      id="contribution" name="Contribution" type="text"
+                      placeholder="Contribute to the discussion" rows={4}
+                      {...register("Contribution", { required: true })} />
+                    {errors.Comment && <span>You can&apos;t submit an empty contribution</span>}
                   </div>
 
-                  <div className={styles.writer}>
+                  {/* <div className={styles.writer}> */}
                     <button form="writecontribution" type="submit" className={styles.writecommentButton}>Post Remark</button>
-                    <span><Image src={user.photoURL} alt="user photo" height={28} width={28} /> {user?.displayName}</span>
-                  </div>
+                    <button form="writecontribution" type="submit" className={'capsulebutton'}>Post Remark</button>
+                    {/* <div>Contributing as <span><Image src={user.photoURL} alt="user photo" height={28} width={28} /> {user?.displayName}</span></div> */}
+                  {/* </div> */}
 
 
                 </form>
               }
 
-              <div className={styles.comments}>
-                {(postData.comments && postData.comments.length > 0) &&
-                  [...postData.comments]?.reverse().map((comment, index) => {
-                    return <CommentCard key={index} comment={comment} postId={postData.postId} />
-                  })
-                }
-
-                {(!postData.comments || postData.comments.length < 1) && <h6>No remarks yet, Be the first to post a remark</h6>
-                }
-              </div>
             </section>
+
+
           </div>
         }
       </div>

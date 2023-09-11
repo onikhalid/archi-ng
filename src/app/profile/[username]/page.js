@@ -36,10 +36,10 @@ export default function Page({ params }) {
     const [loadingProfile, setloadingProfile] = useState(true);
     const [currentSection, setCurrentSection] = useState("Profile");
     const [following, setfollowing] = useState(null);
-    const [userPosts, setUserPosts] = useState(null);
-    const [userFolders, setUserFolders] = useState(null);
+    const [userPosts, setUserPosts] = useState([]);
+    const [userFolders, setUserFolders] = useState([]);
     const [userInfo, setUserInfo] = useState(null);
-    const { uuser, setUser } = useContext(UserContext);
+    const { userData, setUserData } = useContext(UserContext);
 
 
     const sections = [
@@ -106,11 +106,36 @@ export default function Page({ params }) {
 
 
 
-    /////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////
-    ///////////////////     GET USERS INORMATION        /////////////////////
-    /////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////
+
+    ///////////////////////////////
+    // handle follow and unfollow
+    const followUnfollow = async () => {
+        if (following === true) {
+            await removeFollow(user.uid, userInfo.id)
+            setfollowing(false)
+        } else {
+            await addFollow(user.uid, userInfo.id)
+            setfollowing(true)
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////     GET USER PROFILE INFORMATION        //////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
     useEffect(() => {
         setloadingProfile(true)
         setSortOptionsOpen(null)
@@ -129,116 +154,101 @@ export default function Page({ params }) {
                 setUserInfo("Doesn't Exist")
                 return
             } else {
-                getUserInfo()
+                await getUserInfo()
             }
         }
 
 
 
+        const getBasicInfo = async () => {
+            if (userData && userData.username === username) {
+                setUserInfo(userData);
+            } else {
+                const unsubscribe = onSnapshot(userQuery, (snapshot) => {
+                    if (!snapshot.empty) {
+                        const data = snapshot.docs[0].data();
+                        setUserInfo(data);
 
-        const getUserInfo = async () => {
+                        if (user && data.followers && data.followers.includes(user.uid)) {
+                            setfollowing(true)
+                        } else {
+                            setfollowing(false)
+                        }
 
-            // check if signed-in user follows proile user on component mountt 
-            const profileUserId = userInfo && userInfo.id
-            if (userInfo) {
-                if (user?.uid == userInfo.id) {
-                    setfollowing(null)
-                } else {
-
-                    const profileUserDocRef = doc(db, `users/${profileUserId}`);
-                    const profileUserDocSnap = await getDoc(profileUserDocRef)
-                    const profileUserData = profileUserDocSnap.data()
-
-                    if (profileUserData.followers && profileUserData.followers.includes(user?.uid)) {
-                        setfollowing(true)
                     } else {
-                        setfollowing(false)
+                        // Handle the case where the document doesn't exist
+                        setUserInfo("Doesn't Exist");
                     }
-                }
+                });
+
+                return unsubscribe;
             }
+        };
 
 
 
+        const getUserPosts = async () => {
+            const userProfileId = userInfo.id;
+            const userPostsQuery = query(collection(db, "posts"), where('authorId', '==', userProfileId));
 
-            const getBasicInfo = async () => {
-                if (uuser && uuser.username == username) {
-                    setUserInfo(uuser)
-                }
-                else {
-                    onSnapshot(userQuery, async (snapshot) => {
-                        snapshot.forEach((doc) => {
-                            const data = doc.data();
-                            setUserInfo(data)
+            const unsubscribe = onSnapshot(userPostsQuery, (snapshot) => {
+                const newDataArray = [];
 
-                        });
-                    })
-                }
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    newDataArray.push(data);
+                });
 
-            }
+                // Update userPosts state after successful retrieval
+                setUserPosts(newDataArray);
+            });
+            return unsubscribe;
+        };
 
+        const getUserFolders = async () => {
+            const userProfileId = userInfo.id;
+            const userFoldersQuery = query(collection(db, "folders"), where('userId', '==', userProfileId));
+            const unsubscribe = onSnapshot(userFoldersQuery, (snapshot) => {
+                const newDataArray = [];
 
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    newDataArray.push(data);
+                });
 
-            const getUserPosts = async () => {
-                const userProfileId = userInfo.id
-                const userPostsQuery = query(collection(db, "posts"), where('authorId', '==', userProfileId))
-                const unsubscribe = onSnapshot(userPostsQuery, (snapshot) => {
-                    const newDataArray = [];
+                // Update userFolders state after successful retrieval
+                setUserFolders(newDataArray);
+            });
+            return unsubscribe;
+        };
 
-                    snapshot.forEach((doc) => {
-                        const data = doc.data();
-                        newDataArray.push(data);
-                    });
-                    setUserPosts(newDataArray)
-                })
-                return unsubscribe
-            }
+        // ...
 
-
-            const getUserFolders = async () => {
-                const userProfileId = userInfo.id
-                const userFoldersQuery = query(collection(db, "folders"), where('userId', '==', userProfileId))
-
-                const unsub = onSnapshot(userFoldersQuery, (snapshot) => {
-                    const newDataArray = [];
-                    snapshot.forEach((doc) => {
-                        const data = doc.data();
-                        newDataArray.push(data);
-                    });
-                    setUserFolders(newDataArray)
-                })
-                return unsub
-            }
-
+        // Call these functions inside your useEffect to fetch and update data
+        const getUserInfo = async () => {
             try {
+                await getBasicInfo();
+                const postsUnsubscribe = await getUserPosts();
+                const foldersUnsubscribe = await getUserFolders();
+                await checkFollow();
 
-                await getBasicInfo()
-                await getUserPosts()
-                await getUserFolders()
-
-
+                // Return the unsubscribe functions to clean up listeners when the component unmounts
+                return () => {
+                    postsUnsubscribe();
+                    foldersUnsubscribe();
+                };
             } catch (error) {
-                if (error.code === "failed-precondition") {
-                    toast.error("Poor internet connection")
-                }
-                else if (error.code === "auth/network-request-failed") {
-                    toast.error("There appears to be a problem with your connection", {
-                        position: "top-center"
-                    })
-                }
-                else if (error.message.includes('Backend didn\'t respond' || "[code=unavailable]")) {
-                    toast.error("There appears to be a problem with your connection", {
-                        position: "top-center"
-                    })
-                }
+                // Handle errors here
             }
-        }
+        };
+
 
 
         checkUserExists()
         setloadingProfile(false)
 
         return () => { }
-    }, [username, user, currentSection]);
+    }, [username, user, currentSection, loadingProfile]);
 
 
 
@@ -247,18 +257,6 @@ export default function Page({ params }) {
 
 
 
-
-    ///////////////////////////////
-    // handle follow and unfollow
-    const followUnfollow = async () => {
-        if (following === true) {
-            await removeFollow(user.uid, userInfo.id)
-            setfollowing(false)
-        } else {
-            await addFollow(user.uid, userInfo.id)
-            setfollowing(true)
-        }
-    }
 
 
 
@@ -341,7 +339,7 @@ export default function Page({ params }) {
                                 />
                                 <div>
                                     <h3>{userInfo.name}</h3>
-                                    {user.uid == userInfo.id && width < 720 && <Link href={'/settings'}><FontAwesomeIcon icon={faGear} /></Link>}
+                                    {user && user.uid == userInfo.id && width < 720 && <Link href={'/settings'}><FontAwesomeIcon icon={faGear} /></Link>}
 
                                 </div>
                                 <h6 className={styles.username}>@{userInfo.username}</h6>
@@ -479,7 +477,7 @@ export default function Page({ params }) {
                             ////////////////////////////////////////////////////////////////////////// */}
                 {
 
-                    !loadingProfile && userPosts && currentSection === "Posts" &&
+                    !loadingProfile && userPosts && userInfo !== "Doesn't Exist" && currentSection === "Posts" &&
                     <>
                         {
                             userPosts.length < 1 &&
@@ -544,7 +542,7 @@ export default function Page({ params }) {
 
                 {
 
-                    !loadingProfile && userFolders && currentSection === "Folders" &&
+                    !loadingProfile && userFolders && userInfo !== "Doesn't Exist" &&  currentSection === "Folders" &&
                     <>
                         {
                             userFolders.length < 1 &&

@@ -69,7 +69,7 @@ export const MobileNavProvider = ({ children }) => {
 
 export const UserProvider = ({ children }) => {
   const [authenticatedUser, loadingauthenticatedUser] = useAuthState(auth);
-  const [user, setUser] = useState({});
+  const [userData, setUserData] = useState({});
 
 
   useEffect(() => {
@@ -78,12 +78,11 @@ export const UserProvider = ({ children }) => {
         if (authenticatedUser) {
           const userDocRef = doc(db, `users/${authenticatedUser.uid}`)
           onSnapshot(userDocRef, (snapshot) => {
-            console.log(snapshot.data())
-            setUser(snapshot.data())
+            setUserData(snapshot.data())
           })
         }
         else {
-          setUser(null)
+          setUserData(null)
         }
       }
     }
@@ -97,7 +96,7 @@ export const UserProvider = ({ children }) => {
 
 
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ userData, setUserData }}>
       {children}
     </UserContext.Provider>
   );

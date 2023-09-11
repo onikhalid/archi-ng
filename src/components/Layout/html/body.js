@@ -9,6 +9,8 @@ import Button from "@/components/Button/button";
 import { ToastContainer } from 'react-toastify';
 import { ProgressBar } from "@/components/Layout/navigation/progressbar"
 import { useWindowWidth } from "@/utils/Hooks/ResponsiveHook";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCaretUp, faCat } from "@fortawesome/free-solid-svg-icons";
 
 
 const Body = ({ children }) => {
@@ -84,18 +86,19 @@ const Body = ({ children }) => {
     <body data-theme={theme} className={styles.body}>
       <ToastContainer limit={3} />
       <ProgressBar />
-      <button className={isVisible ? `${styles.topbtn}` : `${styles.topbtn} ${styles.hidden}`} onClick={scrollToTop}>back to top</button>
+      <button className={isVisible ? `${styles.topbtn}` : `${styles.topbtn} ${styles.hidden}`} onClick={scrollToTop}><FontAwesomeIcon icon={faCaretUp}/></button>
 
       <div className={styles.container}>
-        <div className={styles.sidebarandnav} style={{ '--sidebar-width': `${sidebarWidth}px` }}>
+        <section className={styles.sidebarandnav} style={{ '--sidebar-width': `${sidebarWidth}px` }}>
           <Navigation />
-        </div>
-        <div className={styles.content} style={{ '--sidebar-width': `${sidebarWidth}px` }}>
+        </section>
+
+        <section className={styles.content} style={{ '--sidebar-width': `${sidebarWidth}px` }}>
           <AppBar />
           <Suspense fallback={<p>Loading...</p>}>
             {children}
           </Suspense>
-        </div>
+        </section>
       </div>
     </body>
   )

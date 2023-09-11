@@ -4,7 +4,7 @@ import Link from "next/link"
 import Image from 'next/image';
 import { usePathname } from 'next/navigation'
 import { useContext } from 'react';
-import { ThemeContext } from '@/utils/ContextandProviders/Contexts';
+import { ThemeContext, UserContext } from '@/utils/ContextandProviders/Contexts';
 import { useRouter } from 'next/navigation';
 import Button from '@/components/Button/button';
 import { auth } from '@/utils/firebase';
@@ -18,6 +18,8 @@ import { faMagnifyingGlass, faHouse, faUser, faFolder, faRightFromBracket, faGea
 const DesktopNav = () => {
   const [user, loading] = useAuthState(auth);
   const { theme, toggleTheme } = useContext(ThemeContext);
+  const { userData, setUserData } = useContext(UserContext);
+
   const logo = theme === 'light' ? "/assets/logo/logo-dark.svg" : "/assets/logo/logo-light.svg"
   const currentPath = usePathname()
   const router = useRouter()
@@ -88,7 +90,7 @@ const DesktopNav = () => {
           }
           {
             user && <>
-              <span onClick={() => router.push('/profile')} className={styles.settingslink}> <FontAwesomeIcon icon={faUser} /> Profile</span>
+              <span onClick={() => router.push(`/profile/${userData.username}`)} className={styles.settingslink}> <FontAwesomeIcon icon={faUser}/> Profile</span>
               <span onClick={logOut} className={styles.settingslink}> <FontAwesomeIcon icon={faRightFromBracket} /> Logout</span>
               <span onClick={() => router.push('/settings')} className={styles.settingslink}> <FontAwesomeIcon icon={faGear} /> Settings</span>
             </>
