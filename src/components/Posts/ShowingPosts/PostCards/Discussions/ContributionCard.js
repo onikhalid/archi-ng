@@ -21,7 +21,7 @@ const ContributionCard = ({ post, clickable, setShowThreads }) => {
     const [replies, setReplies] = useState([]);
     const width = useWindowWidth()
     const [user, loading] = useAuthState(auth);
-const delButtonRef = useRef(null)
+    const delButtonRef = useRef(null)
 
     const showReplies = (e) => {
         if (delButtonRef.current && !delButtonRef.current.contains(e.target)) {
@@ -32,7 +32,16 @@ const delButtonRef = useRef(null)
             } else {
                 return
             }
-          }
+        }
+        else if (!delButtonRef.current) {
+            if (clickable) {
+                setThread(contributeId)
+                setThreadParent(post)
+                setShowThreads(true)
+            } else {
+                return
+            }
+        }
 
     }
 
@@ -80,7 +89,7 @@ const delButtonRef = useRef(null)
             await batch.commit();
             deleteDoc(docRef)
             if (contributeId === thread) {
-                
+
                 setThread(null)
             }
 
@@ -96,7 +105,7 @@ const delButtonRef = useRef(null)
 
 
     return (
-        <article className={styles.contributioncard} onClick={(e) => showReplies(e) } style={clickable && { 'cursor': `pointer` }}>
+        <article className={styles.contributioncard} onClick={(e) => showReplies(e)} style={clickable && { 'cursor': `pointer` }}>
             <section className={styles.up}>
                 <Link href={`/profile/${authorUsername}`} title="visit user profile">
                     <Image src={authorPhoto} width={20} height={20} alt={`${authorName}'s photo`} />
