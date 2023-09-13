@@ -78,7 +78,7 @@ const MobileNav = () => {
     return () => {
 
     };
-  }, [currentPath]);
+  }, [currentPath, toggleHidden]);
   
   
 

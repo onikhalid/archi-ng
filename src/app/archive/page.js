@@ -99,7 +99,7 @@ const Archive = () => {
       }
     }
     return () => { }
-  }, [archiveType, user]);
+  }, [archiveType, user, loading]);
 
 
 

@@ -52,25 +52,6 @@ const Discuss = () => {
     console.log(searchTerm)
   };
 
-  // useEffect(() => {
-  //   if (discussionSearchTerm !== '') {
-  //     // Use the filter function to filter the allDiscussions array
-  //     const filtered = allDiscussions.filter((discussion) => {
-  //       // Check if either authorName or title contains the discussionSearchTerm
-  //       return (
-  //         discussion.authorName.toLowerCase().includes(discussionSearchTerm.toLowerCase()) ||
-  //         discussion.title.toLowerCase().includes(discussionSearchTerm.toLowerCase())
-  //       );
-  //     });
-
-  //     // Set the filtered results to the state
-  //     setFilteredDiscussions(filtered);
-  //   } else {
-  //     // If the search term is empty, reset to the original array
-  //     setFilteredDiscussions(allDiscussions);
-  //   }
-  // }, [discussionSearchTerm, allDiscussions]);
-
   useEffect(() => {
 
     if (discussionSearchTerm.trim() !== '') {

@@ -81,7 +81,7 @@ const Body = ({ children }) => {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [lastScrollY, width, hidden, toggleHidden]);
+  }, [lastScrollY, width, hidden, toggleHidden, currentPath]);
 
   const scrollToTop = () => {
     document.body.scrollTo({ top: 0, behavior: "smooth" });

@@ -248,7 +248,7 @@ export default function Page({ params }) {
         setloadingProfile(false)
 
         return () => { }
-    }, [username, user, currentSection, loadingProfile]);
+    }, [username, user, currentSection, loadingProfile  ]);
 
 
 

@@ -419,7 +419,7 @@ const Settings = () => {
                       <div className="rulesdiv">
                         {
                           user.providerData[0].providerId === "google.com" && <>
-                          <h6>1. There's no password to change as you previously signed up/in with Google</h6>
+                          <h6>1. There&apos;s no password to change as you previously signed up/in with Google</h6>
                           <h6>2. If you want to use a password with your account, access the authenticated page and do these</h6>
                           <h6>Try signing up llike a new user using your current email, choose your password</h6>
                           <h6>...and viola!</h6>
