@@ -19,3 +19,10 @@ export const UserContext = createContext({
   toggleTheme: () => { },
 });
 
+export const ThreadContext = createContext({
+  threadId: null,
+  setThreadId: () => { },
+  threadPost: {},
+  setThreadPost: {},
+});
+

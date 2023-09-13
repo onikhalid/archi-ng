@@ -232,6 +232,8 @@ const createOrUpdateProfile = async (data) => {
   });
 
 
+
+
   /////  FOLDERS
   const allUsersFoldersQuery = query(collection(db, 'folders'), where('userId', '==', user?.uid));
   const allUsersFoldersSnap = await getDocs(allUsersFoldersQuery)
@@ -242,6 +244,22 @@ const createOrUpdateProfile = async (data) => {
     batch.update(folderDocRef, {
       folderOwnerName: data.Name,
       folderOwnerAvatar: selectedImage ? newImageURL : pictureURL
+    })
+  });
+  
+
+
+  /////  CONTRIBUTIONS
+  const allUsersContributionsQuery = query(collection(db, 'contributions'), where('authorId', '==', user?.uid));
+  const allUsersContributionSnap = await getDocs(allUsersContributionsQuery)
+
+  allUsersContributionSnap.docs.forEach(async (allContributions) => {
+    const contribution = allContributions.data();
+    const contributionDocRef = doc(db, `contributions/${contribution.contributeId}`)
+
+    batch.update(contributionDocRef, {
+      authorName: data.Name,
+      authorAvatar: selectedImage ? newImageURL : pictureURL
     })
   });
 

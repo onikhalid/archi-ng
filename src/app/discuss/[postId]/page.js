@@ -1,10 +1,12 @@
 "use client"
 
 import styles from './discusspage.module.scss'
-import { useContext, useEffect, useLayoutEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useRouter } from 'next/navigation';
+import { useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { UserContext } from '@/utils/ContextandProviders/Contexts';
 import { useWindowWidth } from "@/utils/Hooks/ResponsiveHook";
+
+import { useRouter } from 'next/navigation';
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from 'react-toastify';
@@ -14,16 +16,19 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { collection, getDocs, doc, query, where, onSnapshot, updateDoc, arrayUnion, addDoc, orderBy } from "firebase/firestore";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBookmark, faComment, faEye, faHeart, faPenToSquare, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
-import { CommentCard } from "@/components/Posts/InteractingWithPosts/Likes and Comments/CommentCard";
-import { FollowersFollowingandLikesList } from "@/components/Profile/Followers,FollowingandLikesList";
+import { faBookmark, faComment, faEye, faHeart, faPenToSquare, faTrashAlt, faUsers } from "@fortawesome/free-solid-svg-icons";
 
-import { addLike, removeLike } from "@/functions/Likes";
 import { addBookmark, deleteBookmark } from "@/functions/Bookmark";
 import { deletePost } from "@/functions/Delete";
-import { formatDate } from "@/functions/Formatting";
+import { formatDate, categorizeDate } from "@/functions/Formatting";
+import Threads from '@/components/Posts/ShowingPosts/PostCards/Discussions/threads';
 import ContributionCard from '@/components/Posts/ShowingPosts/PostCards/Discussions/ContributionCard';
-import { UserContext } from '@/utils/ContextandProviders/Contexts';
+
+
+
+
+
+
 
 
 
@@ -34,11 +39,27 @@ export default function Page({ params }) {
   const [user, loading] = useAuthState(auth);
   const { userData, setUserData } = useContext(UserContext);
   const [postData, setPostData] = useState(null)
-  const [contributions, setContributions] = useState(null)
   const [loadingpost, setloadingpost] = useState(true);
+  const [showThreads, setShowThreads] = useState(null);
   const { register, handleSubmit, formState: { errors }, setValue } = useForm();
 
+  const contributionRef = useRef(null)
+  const [contributions, setContributions] = useState(null)
 
+
+
+
+
+
+  /////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////
+  ///////////////                                                 /////////////////
+  ///////////////            INITIAL CONTRIBUTIONS                /////////////////
+  ///////////////                                                 /////////////////
+  /////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////
 
   useEffect(() => {
 
@@ -77,8 +98,6 @@ export default function Page({ params }) {
         }
       }
     }
-
-
 
     const getContributions = async () => {
       try {
@@ -130,40 +149,56 @@ export default function Page({ params }) {
 
 
 
-  const saveUnsave = () => {
-    if (!user) {
-      toast.error("Login to save posts", {
-        position: "top-center",
-        autoClose: 4000
-      })
-    } else {
-      if (postData.bookmarks?.includes(user.uid)) {
-        deleteBookmark(null, user.uid, postId)
-      } else {
-        const { title, postType, authorId, coverImageURL, authorName, authorAvatar } = postData
-        addBookmark(user.uid, postId, title, postType, authorId, coverImageURL, authorName, authorAvatar)
-      }
+  /////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////
+  ///////////////                                                 /////////////////
+  ///////////////           SCROLL DOWN CONTRIBUTIONS             /////////////////
+  ///////////////                                                 /////////////////
+  /////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////
+  useEffect(() => {
+    if (contributionRef.current) {
+      const { scrollTop, scrollHeight } = contributionRef.current;
+      const desiredScrollTop = scrollHeight - contributionRef.current.clientHeight;
+
+      contributionRef.current.scrollTo({
+        top: desiredScrollTop,
+        behavior: "smooth"
+      });
+
     }
-  }
+    return () => { };
+  }, []);
 
 
 
 
 
-  //////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////
-  /////////////////       COMMENTS      ////////////////////////
-  //////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////
+
+
+
+  /////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////
+  ///////////////                                                 /////////////////
+  ///////////////            MAKE NEW CONTRIBUTIONS               /////////////////
+  ///////////////                                                 /////////////////
+  /////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////
   const makeNewContribution = async (data) => {
     if (!user) {
-      toast.error("Login to contribute", {
+      toast.error("Login to contribute to discussion", {
         position: "top-center",
         autoClose: 4000
       })
       return
     }
     else {
+      setValue("Contribution", "")
+
       const newContribution = {
         authorName: user.displayName,
         authorPhoto: user.photoURL,
@@ -182,14 +217,84 @@ export default function Page({ params }) {
         contributeId: contributeId
       });
 
-      setValue("Contribution", "")
+
+
+      if (postData.contributors?.includes(user.uid)) {
+      }
+      else {
+        const postsCollectionRef = collection(db, `posts`)
+        await updateDoc(doc(postsCollectionRef, postId), {
+          contributors: arrayUnion(user.uid)
+        });
+      }
+
+      const { scrollTop, scrollHeight } = contributionRef.current;
+      const desiredScrollTop = scrollHeight - contributionRef.current.clientHeight;
+
+      contributionRef.current.scrollTo({
+        top: desiredScrollTop,
+        behavior: "smooth"
+      });
+
     }
   }
+
+
+  const groupedContributions = {};
+
+  contributions?.forEach((contribute) => {
+    const category = categorizeDate(contribute.createdAt);
+
+    if (!groupedContributions[category]) {
+      groupedContributions[category] = [];
+    }
+
+    groupedContributions[category].push(contribute);
+  })
+
+
+
+
+
+
+
+
+
 
 
 
 
   const pageTitle = postData && `${postData.title} - Discussion started by ${postData.authorName} | Archi NG`
+
+  const saveUnsave = () => {
+    if (!user) {
+      toast.error("Login to save posts", {
+        position: "top-center",
+        autoClose: 4000
+      })
+    } else {
+      if (postData.bookmarks?.includes(user.uid)) {
+        deleteBookmark(null, user.uid, postId)
+      } else {
+        const { title, postType, authorId, coverImageURL, authorName, authorAvatar } = postData
+        addBookmark(user.uid, postId, title, postType, authorId, coverImageURL, authorName, authorAvatar)
+      }
+    }
+  }
+
+  const threadClasses = () => {
+    if (showThreads == null) {
+      return `${styles.thread}`
+    } else if (showThreads == false) {
+      return `${styles.thread} ${styles.close}`
+
+    } else if (showThreads == true) {
+      return `${styles.thread} ${styles.open}`
+
+    }
+  }
+
+
 
 
 
@@ -207,125 +312,131 @@ export default function Page({ params }) {
     <>
       <title>{pageTitle}</title>
 
-      <div className={styles.casestudy}>
 
-        {(!loadingpost && !postData || postData == "Doesn't Exists") &&
-          <div className='infobox'>
-            <h3>Poor internet connection or Post doesn&apos;t exist</h3>
-            <small>Wait a while, this error might automatically be rectified. If nothing happens after 10 seconds, Check your internet connection and try again</small>
-          </div>
-        }
+      {(!loadingpost && !postData || postData == "Doesn't Exists") &&
+        <div className='infobox'>
+          <h3>Poor internet connection or Post doesn&apos;t exist</h3>
+          <small>Wait a while, this error might automatically be rectified. If nothing happens after 10 seconds, Check your internet connection and try again</small>
+        </div>
+      }
 
-        {loadingpost &&
-          <div className='infobox'>
-            <h3>Loading...</h3>
-          </div>
-        }
-
+      {loadingpost &&
+        <div className='infobox'>
+          <h3>Loading...</h3>
+        </div>
+      }
 
 
 
 
-        {
-          !loadingpost && postData && postData !== "Doesn't Exists" &&
-          <div className={`content-container ${styles.container}`}>
-            <header >
-              <section className={styles.title}>
-                <h3>{postData.title}</h3>
-                <small> Discussion started on <em>{formatDate(postData.createdAt)}</em>
+
+
+
+
+      {
+        !loadingpost && postData && postData !== "Doesn't Exists" &&
+        <div className={`content-container ${styles.container}`}>
+
+
+          <header >
+            <section className={styles.title}>
+              <h3>{postData.title}</h3>
+              <span>
+                <small> {width > 720 && "Discussion"} started on <em>{formatDate(postData.createdAt)}</em>  </small>
+                {
+                  width > 720 &&
                   <Link href={`/profile?id=${postData.authorId}`} title="visit author's profile" className={styles.authorinfo}>
                     <img src={postData.authorAvatar} alt={'author image'} /> {postData.authorName}
                   </Link>
-                </small>
-              </section>
-
-
-
-
-              <section className={styles.postinfo}>
-                {
-                  user?.uid === postData.authorId &&
-                  <div className={styles.settings}>
-                    <Link title="Edit Post" href={`/post?edit=${postData.postId}&type=${postData.postType}`}><FontAwesomeIcon icon={faPenToSquare} /></Link>
-                    <span title="Delete Post" onClick={() => deletePost(postData.postId, postData.postContent, postData.coverImageURL)}> <FontAwesomeIcon icon={faTrashAlt} /> </span>
-                  </div>
                 }
+              </span>
+            </section>
 
 
-                <div className={styles.poststats}>
-                  <article className={postData.bookmarks?.includes(user?.uid) ? `${styles.bookmarkedstat}` : `${styles.stat}`} title='bookmark discussion'>
-                    <h5>{postData.bookmarks ? postData.bookmarks.length : 0}</h5>
-                    <span onClick={saveUnsave}>
-                      <FontAwesomeIcon icon={faBookmark} />
-                    </span>
-                  </article>
 
-                  <article className={styles.comment} title='contributions'>
-                    <h5>{postData.comments ? postData.comments.length : 0} </h5>
-                    <FontAwesomeIcon icon={faComment} />
-                  </article>
+            <section className={styles.postinfo}>
+              {
+                user?.uid === postData.authorId &&
+                <div className={styles.settings}>
+                  <Link title="Edit Post" href={`/post?edit=${postData.postId}&type=${postData.postType}`}><FontAwesomeIcon icon={faPenToSquare} /></Link>
+                </div>
+              }
 
-                  <article className={styles.comment} title='contibutors'>
-                    <h5>{postData.comments ? postData.comments.length : 0} </h5>
-                    <FontAwesomeIcon icon={faComment} />
-                  </article>
+              <div className={styles.poststats}>
+                <article className={postData.bookmarks?.includes(user?.uid) ? `${styles.bookmarkedstat}` : `${styles.stat}`} title='bookmark discussion'>
+                  <span onClick={saveUnsave}>
+                    <FontAwesomeIcon icon={faBookmark} />
+                  </span>
+                  <h5>{postData.bookmarks ? postData.bookmarks.length : 0}</h5>
+                </article>
+
+                <article className={styles.comment} title='contributions'>
+                  <FontAwesomeIcon icon={faComment} />
+                  <h5>{contributions?.length} </h5>
+                </article>
+
+                <article className={styles.comment} title='contibutors'>
+                  <FontAwesomeIcon icon={faUsers} />
+                  <h5>{postData.contributors ? postData.contributors.length : 0} </h5>
+                </article>
+              </div>
+            </section>
+          </header>
+
+
+
+
+
+
+
+
+          <section className={styles.allContributions} ref={contributionRef}>
+            {Object.entries(groupedContributions).map(([date, contributions], index) => (
+              <div key={index}>
+                <strong>{date}</strong>
+                {contributions.map((contribute, innerIndex) => (
+                  <ContributionCard key={innerIndex} post={contribute} setShowThreads={setShowThreads} clickable />
+                ))}
+              </div>
+            ))}
+          </section>
+
+
+
+
+
+
+
+          <section id="contributions" className={styles.makeContributionSection}>
+
+              <form id='writecontribution' className={styles.writecomment} onSubmit={handleSubmit(makeNewContribution)}>
+                <div className={`inputdiv ${styles.inputdiv}`}>
+                  <textarea
+                    id="contribution" name="Contribution" type="text"
+                    placeholder="Contribute to the discussion" rows={2}
+                    {...register("Contribution", { required: true })} />
+                  {errors.Contribution && <span>You can&apos;t submit an empty contribution</span>}
                 </div>
 
+                <button form="writecontribution" type="submit" className={'capsulebutton'}>Contribute</button>
+              </form>
 
-              </section>
-
-
-            </header>
-
+          </section>
 
 
 
+          {
+            <section className={threadClasses()}>
 
-
-
-
-            <section className={styles.allContributions}>
-              {
-                contributions?.map((contribute, index) => {
-                  return <ContributionCard key={index} post={contribute} />
-                })
-              }
-            </section>
-
-
-
-
-            <section id="contributions" className={styles.makeContributionSection}>
-
-              {user &&
-                <form id='writecontribution' className={styles.writecomment} onSubmit={handleSubmit(makeNewContribution)}>
-
-                  <div className={`inputdiv ${styles.inputdiv}`}>
-                    <textarea
-                      id="contribution" name="Contribution" type="text"
-                      placeholder="Contribute to the discussion" rows={4}
-                      {...register("Contribution", { required: true })} />
-                    {errors.Comment && <span>You can&apos;t submit an empty contribution</span>}
-                  </div>
-
-                  {/* <div className={styles.writer}> */}
-                    <button form="writecontribution" type="submit" className={styles.writecommentButton}>Post Remark</button>
-                    <button form="writecontribution" type="submit" className={'capsulebutton'}>Post Remark</button>
-                    {/* <div>Contributing as <span><Image src={user.photoURL} alt="user photo" height={28} width={28} /> {user?.displayName}</span></div> */}
-                  {/* </div> */}
-
-
-                </form>
-              }
+              <Threads setShowThreads={setShowThreads} />
 
             </section>
+          }
 
 
-          </div>
-        }
-      </div>
 
-
+        </div>
+      }
     </>
   )
 }

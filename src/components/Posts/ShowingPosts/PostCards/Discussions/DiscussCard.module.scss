@@ -13,6 +13,10 @@
         box-shadow: -10px 10px var(--main-text-clr);
     }
 
+    @media (min-width: 720px) and (max-width: 1149px) {
+        max-width: 550px;
+    }
+
     @media (min-width: 1150px) {
         max-height: 250px;
         min-width: 600px;
@@ -57,7 +61,23 @@
             }
         }
 
+        .poststats {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            h5{
+                font-size: 0.9rem;
+                font-weight: 400;
+            }
 
+            
+            article {
+                display: flex;
+                align-items: center;
+                gap: 0.25rem;
+                font-size: 0.8rem;
+            }
+        }
 
 
         .infobottom {

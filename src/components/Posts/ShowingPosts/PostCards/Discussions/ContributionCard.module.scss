@@ -1,4 +1,5 @@
 .contributioncard {
+    position: relative;
     padding: 0.5rem;
     border-radius: 10px;
     transition: all ease-in-out 350ms;
@@ -6,33 +7,80 @@
     border: solid 1px transparent;
 
 
-    .up {
-        display: flex;
-
-        a {
-            display: flex;
-            align-items: center;
-            gap: 0.35rem;
-            h6{
-                // font-size: 0.9rem;
-                font-weight: 600;
-            }
-
-            img {
-                border-radius: 50px;
-            }
-
-        }
-    }
-
-    .down {
-        display: flex;
-        margin-left: calc(25px + 0.35rem);
-    }
-
 
     &:hover {
         background-color: var(--glass);
         border: solid 1px var(--main-text-clr);
     }
+
+
+
+    .up {
+        display: flex;
+        align-items: center;
+
+        a {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+
+
+            img {
+                border-radius: 50px;
+            }
+        }
+
+        h6 {
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-left: .5rem;
+
+            span {
+                color: var(--sec-text-clr);
+                font-style: italic;
+                font-size: 0.8rem;
+            }
+        }
+
+        .deleteicon {
+            margin-left: 0.125rem;
+
+            svg {   
+                color: var(--sec-text-clr);
+                font-size: 0.85rem;
+                margin-left: 0.75rem;
+
+                &:hover {
+                    color: red;
+                }
+            }
+        }
+    }
+
+
+
+    .down {
+        display: flex;
+        margin-left: calc(25px + 0.35rem);
+        margin-right: 5%;
+
+        p {
+            font-size: 0.9rem;
+            font-weight: 300;
+            font-family: var(--text-poppins);
+        }
+    }
+
+
+
+    .replies {
+        position: absolute;
+        bottom: 0.5rem;
+        right: 5%;
+        font-size: 0.7rem;
+        font-style: italic;
+        color: var(--sec-text-clr);
+
+    }
+
 }

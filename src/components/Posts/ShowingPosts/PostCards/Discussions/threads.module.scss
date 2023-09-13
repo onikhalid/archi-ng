@@ -1,0 +1,46 @@
+.parentThread {
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: solid 1.5px var(--main-text-clr);
+
+    h6 {
+        font-size: 1.195rem;
+        font-weight: 600;
+    }
+
+    span {
+        display: flex;
+            justify-content: space-between;
+
+        h6 {
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
+        
+        svg{
+            font-weight: 400;
+            font-size: 1.15rem;
+            cursor: pointer;
+        }
+    }
+}
+
+
+
+
+.inputdiv {
+    margin-bottom: 0.25rem;
+
+    textarea {
+        padding: .5rem;
+        background-color: var(--background);
+    }
+}
+
+
+
+.infobox {
+    h3 {
+        font-size: 1.25rem;
+    }
+}

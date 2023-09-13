@@ -1,0 +1,36 @@
+.allDiscussions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+}
+
+.inputdiv {
+    position: relative;
+    margin-block: 1.5rem 3rem;
+
+    input {
+        height: 40px;
+
+        @media (min-width: 720px) and (max-width: 1149px) {
+            max-width: 550px;
+        }
+
+        @media (min-width: 1150px) {
+            min-width: 600px;
+            max-width: 700px;
+        }
+    }
+
+    .icon {
+        position: absolute;
+        right: 02%;
+        top: 2.1rem;
+        color: var(--sec-text-clr);
+
+        svg {
+            font-size: 1.2rem;
+        }
+    }
+
+}

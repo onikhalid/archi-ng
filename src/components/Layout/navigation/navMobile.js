@@ -45,12 +45,14 @@ const MobileNav = () => {
 
   // show and hide navbar based on scroll
   const { hidden, toggleHidden } = useContext(MobileNavContext);
-  const classes = hidden == true ? `${styles.hidden} ${styles.mobileNav}` : `${styles.mobileNav}`
+  const classes = hidden === true ? `${styles.hidden} ${styles.mobileNav}` : `${styles.mobileNav}`
 
 
 
 
   useEffect(() => {
+
+
     const handleClickOutside = (event) => {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
         if (!hidden) {
@@ -66,8 +68,19 @@ const MobileNav = () => {
   }, [hidden, toggleHidden]);
 
 
+  useEffect(() => {
 
+    if (currentPath.includes('discuss/')) {
+      toggleHidden(true);
+    }
+    
+   
+    return () => {
 
+    };
+  }, [currentPath]);
+  
+  
 
 
 

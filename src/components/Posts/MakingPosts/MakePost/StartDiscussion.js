@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { useAuthState } from "react-firebase-hooks/auth"
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
-import { addDoc, collection, doc, getDoc, getDocs, query, updateDoc, writeBatch } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, getDocs, query, updateDoc, where, writeBatch } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 
 
@@ -170,6 +170,7 @@ const StartDiscussion = ({ postToEditId, setIsWrongFormat }) => {
                 })
             })
             await batch.commit();
+            router.push(`/discuss/${postToEditId}`)
         }
         else {
             const newPostRef = await addDoc(postCollectionRef, postData);
@@ -178,10 +179,11 @@ const StartDiscussion = ({ postToEditId, setIsWrongFormat }) => {
             await updateDoc(doc(postCollectionRef, newPostRef.id), {
                 postId: postId
             });//updating the new post with the newly created document Id
+
+            router.push(`/discuss/${newpostID}`)
         }
 
 
-        router.push(`/discuss/${newpostID}`)
         toast.success(`Your have succesfully  ${postToEditId ? 'updated' : 'started'} a discussion 😎`, {
             position: toast.POSITION.TOP_CENTER,
             autoClose: 2500,

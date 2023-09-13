@@ -14,7 +14,6 @@ import CaseStudyCard from '@/components/Posts/ShowingPosts/PostCards/Case Study'
 import PhotoCard from '@/components/Posts/ShowingPosts/PostCards/Photo';
 import Button from '@/components/Button/button';
 import { toast } from 'react-toastify';
-import DiscussCard from '@/components/Posts/ShowingPosts/PostCards/Discussions/DiscussionCard';
 
 
 
@@ -43,10 +42,6 @@ export default function Home() {
     {
       number: 3,
       name: "Photography",
-    },
-    {
-      number: 4,
-      name: "Discussions",
     }
   ];
 
@@ -315,12 +310,7 @@ export default function Home() {
 
 
         <section className={styles.allposts}>
-          {/* {
-            allPosts == null &&
-            <div className='infobox main'>
-              <h3>Internet  </h3>
-            </div>
-          } */}
+ 
           {
             allPosts !== null &&
             <>
@@ -362,9 +352,7 @@ export default function Home() {
                   return <ArticleCard key={index} post={post} />
                 } else if (currentPost === 'Case Studies') {
                   return <CaseStudyCard key={index} post={post} />
-                } else if (currentPost === 'Discussions') {
-                  return <DiscussCard key={index} post={post} />
-                }else {
+                } else {
                   return <PhotoCard key={index} post={post} />
                 }
               })}

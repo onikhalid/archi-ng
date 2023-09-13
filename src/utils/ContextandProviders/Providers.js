@@ -1,6 +1,6 @@
 "use client"
 
-import { ThemeContext, MobileNavContext, UserContext } from "./Contexts";
+import { ThemeContext, MobileNavContext, UserContext, ThreadContext } from "./Contexts";
 import { useState, useEffect, useLayoutEffect } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../firebase";
@@ -104,3 +104,21 @@ export const UserProvider = ({ children }) => {
 
 
 
+
+
+export const ThreadProvider = ({ children }) => {
+  const [thread, setThreadId] = useState(null);
+  const [threadParent, setThreadParent] = useState(null);
+
+  const setThread = (newThreadId) => {
+    setThreadId(newThreadId);
+  };
+
+
+
+  return (
+    <ThreadContext.Provider value={{ thread, setThread, threadParent, setThreadParent }}>
+      {children}
+    </ThreadContext.Provider>
+  );
+};

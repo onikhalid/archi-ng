@@ -11,6 +11,8 @@ import { toast } from "react-toastify";
 import WhoseandWhichpost from "@/components/Posts/ShowingPosts/Whosepost/whosepost";
 import DiscussCard from "@/components/Posts/ShowingPosts/PostCards/Discussions/DiscussionCard";
 import PostSkeleton from '@/components/Posts/ShowingPosts/PostCards/Skeleton/PostSkeleton';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 
 
 
@@ -20,7 +22,9 @@ const Discuss = () => {
   const [whoseDiscussion, setwhoseDiscussion] = useState("All");
   const { register, handleSubmit, formState: { errors }, setValue } = useForm();
   const [followedUserIds, setfollowedUserIds] = useState([]);
-  const [allPosts, setAllPosts] = useState([]);
+  const [allDiscussions, setAllDiscussions] = useState([]);
+  const [filteredDiscussions, setFilteredDiscussions] = useState(allDiscussions);
+  const [discussionSearchTerm, setDiscussionSearchTerm] = useState('');
   const [user, loading] = useAuthState(auth);
   const [loadingPosts, setLoadingPosts] = useState(true);
 
@@ -38,9 +42,57 @@ const Discuss = () => {
 
   //create a discuss
   const searchDiscuss = (data) => {
-    // createFolder(data.Name, user.uid, user.displayName)
+    setDiscussionSearchTerm(data.Title)
     console.log(data)
   }
+
+  const handleSearchChange = (e) => {
+    const searchTerm = e.target.value.trim();
+    setDiscussionSearchTerm(searchTerm);
+    console.log(searchTerm)
+  };
+
+  // useEffect(() => {
+  //   if (discussionSearchTerm !== '') {
+  //     // Use the filter function to filter the allDiscussions array
+  //     const filtered = allDiscussions.filter((discussion) => {
+  //       // Check if either authorName or title contains the discussionSearchTerm
+  //       return (
+  //         discussion.authorName.toLowerCase().includes(discussionSearchTerm.toLowerCase()) ||
+  //         discussion.title.toLowerCase().includes(discussionSearchTerm.toLowerCase())
+  //       );
+  //     });
+
+  //     // Set the filtered results to the state
+  //     setFilteredDiscussions(filtered);
+  //   } else {
+  //     // If the search term is empty, reset to the original array
+  //     setFilteredDiscussions(allDiscussions);
+  //   }
+  // }, [discussionSearchTerm, allDiscussions]);
+
+  useEffect(() => {
+
+    if (discussionSearchTerm.trim() !== '') {
+
+      const filtered = allDiscussions.filter((discussion) => {
+        return (
+          discussion.authorName.toLowerCase().includes(discussionSearchTerm.toLowerCase()) ||
+          discussion.title.toLowerCase().includes(discussionSearchTerm.toLowerCase())
+        );
+      });
+
+      setFilteredDiscussions(filtered);
+    } else {
+      setFilteredDiscussions(allDiscussions);
+    }
+  }, [discussionSearchTerm, allDiscussions]);
+
+
+
+
+
+
 
 
   const forumsPerFetch = 40;
@@ -59,11 +111,6 @@ const Discuss = () => {
         if (error.code === "failed-precondition") {
           toast.error("Poor internet connection")
         }
-        // else if (error.code === "auth/network-request-failed" || "unavailable") {
-        //   toast.error("There appears to be a problem with your connection", {
-        //     position: "top-center"
-        //   })
-        // }
         else if (error.message.includes('Backend didn\'t respond' || "[code=unavailable]")) {
           toast.error("There appears to be a problem with your connection", {
             position: "top-center"
@@ -100,7 +147,7 @@ const Discuss = () => {
       const q = await getQuery()
       if (q == null) {
         console.log(q)
-        setAllPosts([])
+        setAllDiscussions([])
         return
       }
       else {
@@ -112,7 +159,7 @@ const Discuss = () => {
           });
 
 
-          setAllPosts(newDataArray)
+          setAllDiscussions(newDataArray)
           setLoadingPosts(false)
         });
         return unsubscribe;
@@ -157,24 +204,25 @@ const Discuss = () => {
 
         <main>
           <section>
-            <form id='searchdiscuss' className={styles.createfolder} onSubmit={handleSubmit(searchDiscuss)}>
+            <form id='searchdiscuss' className={styles.searchDiscuss}>
               <div className={`inputdiv ${styles.inputdiv}`}>
-                <label htmlFor="Title">Search discussions</label>
+                <label htmlFor="SearchTerm">Search discussion title or author</label>
                 <input
-                  id="Title" name="Title" type="text"
-                  placeholder="How has 'Nigerian Architecture' gotten so bad"
-                  {...register("Title", { required: true })} />
-                {errors.Title && <span>This field is required</span>}
+                  id="SearchTerm" name="SearchTerm" type="text" onChange={handleSearchChange}
+                  placeholder="How has 'Nigerian Architecture' gotten so bad" />
+                <span className={styles.icon}>
+                  <FontAwesomeIcon icon={faMagnifyingGlass} />
+                </span>
+
               </div>
-              <button form="searchdiscuss" type="submit" className={styles.createFolderButton}>Search</button>
             </form>
           </section>
 
 
 
 
-          <section>
-            {allPosts?.map((post, index) => {
+          <section className={styles.allDiscussions}>
+            {filteredDiscussions?.map((post, index) => {
 
               if (loadingPosts) {
                 return <PostSkeleton key={index} />

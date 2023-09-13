@@ -35,14 +35,10 @@
         align-items: center;
         min-height: 100vh;
         padding: 1rem;
-
-        &.restricted {
-            max-height: 100vh;
-
-        }
+        // min-height: 95%;
 
         @media (min-width: 1020px) {
-            padding: 1.5rem 10vw;
+            padding: 0 10vw;
         }
 
     }

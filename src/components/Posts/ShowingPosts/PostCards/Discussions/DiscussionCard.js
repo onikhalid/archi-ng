@@ -1,17 +1,20 @@
 import Link from "next/link"
-import styles from "./Discuss.module.scss"
+import styles from "./DiscussCard.module.scss"
 import Image from "next/image"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons"
+import { faArrowUpRightFromSquare, faBookmark, faComment, faUsers } from "@fortawesome/free-solid-svg-icons"
 import Button from "@/components/Button/button"
 import { formatDate } from "@/functions/Formatting"
 import { useWindowWidth } from "@/utils/Hooks/ResponsiveHook"
+import { useAuthState } from "react-firebase-hooks/auth"
+import { auth } from "@/utils/firebase"
+
 
 
 
 
 const DiscussCard = ({ post }) => {
-
+    const [user, loading] = useAuthState(auth);
     const width = useWindowWidth()
 
 
@@ -28,8 +31,22 @@ const DiscussCard = ({ post }) => {
                 <div className={styles.infotop} title={post.title}>
                     {width > 720 && <h3>{post.title.substring(0, 42)}{post.title.length > 42 && "..."}</h3>}
                     {width < 720 && <h3>{post.title.substring(0, 31)}{post.title.length > 31 && "..."}</h3>}
-                    {post.createdAt && <span>created on {formatDate(post.createdAt)}</span>}
-                    
+                    {post.createdAt && <span>started on {formatDate(post.createdAt)}</span>}
+
+                    <div className={styles.poststats}>
+                        <article className={post.bookmarks?.includes(user?.uid) ? `${styles.bookmarkedstat}` : `${styles.stat}`} title='bookmarks'>
+                            <span>
+                                <FontAwesomeIcon icon={faBookmark} />
+                            </span>
+                            <h5>{post.bookmarks ? post.bookmarks.length : 0}</h5>
+                        </article>
+
+                        <article className={styles.comment} title='contibutors'>
+                            <FontAwesomeIcon icon={faUsers} />
+                            <h5>{post.contributors ? post.contributors.length : 0} </h5>
+                        </article>
+                    </div>
+
                 </div>
 
                 <div className={styles.infobottom}>

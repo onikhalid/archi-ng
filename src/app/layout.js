@@ -5,8 +5,7 @@ config.autoAddCss = false;
 import "yet-another-react-lightbox/plugins/captions.css";
 import "yet-another-react-lightbox/styles.css";
 
-import { ThemeProvider, UserProvider } from '@/utils/ContextandProviders/Providers'
-import { MobileNavProvider } from '@/utils/ContextandProviders/Providers';
+import { ThemeProvider, UserProvider, MobileNavProvider, ThreadProvider } from '@/utils/ContextandProviders/Providers'
 
 import Body from '@/components/Layout/html/body';
 
@@ -36,21 +35,23 @@ export default function RootLayout({ children }) {
     <UserProvider>
       <ThemeProvider>
         <MobileNavProvider>
-          <html className={poppins.className} lang="en">
-            <head>
-              <link rel='shortcut icon' href='/favicon.ico' />
-              <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet"></link>
-              <link
-                rel="stylesheet"
-                href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css"
-              />
-              <title> Archi NG</title>
-              <meta name="description" content="{metadata.description}" />
-            </head>
-            <Body>
-              {children}
-            </Body>
-          </html>
+          <ThreadProvider>
+            <html className={poppins.className} lang="en">
+              <head>
+                <link rel='shortcut icon' href='/favicon.ico' />
+                <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet"></link>
+                <link
+                  rel="stylesheet"
+                  href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css"
+                />
+                <title> Archi NG</title>
+                <meta name="description" content="{metadata.description}" />
+              </head>
+              <Body>
+                {children}
+              </Body>
+            </html>
+          </ThreadProvider>
         </MobileNavProvider>
       </ThemeProvider>
     </UserProvider>

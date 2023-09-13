@@ -172,7 +172,7 @@ const Settings = () => {
 
     if (newPassword == newPassword2) {
       if (user.providerData[0].providerId === "google.com") {
-        toast.error("You previously signed up with google, . Change your email and try again", {
+        toast.error("You previously signed up with google, . Add a password to your account and try again", {
           position: toast.POSITION.TOP_CENTER,
           autoClose: 4500,
         });
@@ -392,6 +392,7 @@ const Settings = () => {
                     toBeEdited == "Email" &&
                     <form id='changeEmail' className={styles.changeform} onSubmit={handleSubmit(changeEmail)}>
 
+
                       <div className={`inputdiv ${styles.inputdiv}`}>
                         <label>Password<span>*</span></label>
                         <input type="password" {...register('Password', {
@@ -415,7 +416,19 @@ const Settings = () => {
                   {
                     toBeEdited == "Password" &&
                     <form id='changePassword' className={styles.changeform} onSubmit={handleSubmit(changePassword)}>
+                      <div className="rulesdiv">
+                        {
+                          user.providerData[0].providerId === "google.com" && <>
+                          <h6>1. There's no password to change as you previously signed up/in with Google</h6>
+                          <h6>2. If you want to use a password with your account, access the authenticated page and do these</h6>
+                          <h6>Try signing up llike a new user using your current email, choose your password</h6>
+                          <h6>...and viola!</h6>
 
+                            
+                            
+                          </>
+                        }
+                      </div>
                       <div className={`inputdiv ${styles.inputdiv}`}>
                         <label>Current Password<span>*</span></label>
                         <input type="password" {...register('currentPassword', {

@@ -59,11 +59,12 @@
 
 
  ::-webkit-scrollbar {
-   width: 10px;
+   width: 8px;
    transform: all 550ms ease-in;
  }
 
  ::-webkit-scrollbar-thumb {
+  width: 5px;
    background-color: var(--accent);
    border: solid 1px var(--background);
    transform: all 550ms ease-in;
@@ -403,16 +404,16 @@
 
 
  .rulesdiv {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-left: 1rem;
-  margin-block: 1rem;
+   display: flex;
+   flex-direction: column;
+   gap: 0.5rem;
+   margin-left: 1rem;
+   margin-block: 1rem;
 
-  h6{
-    font-size: 1rem;
+   h6 {
+     font-size: 1rem;
 
-  }
+   }
  }
 
  .infobox {
@@ -434,15 +435,15 @@
    h3 {
      max-width: 20ch;
      line-height: 1.25;
-    }
+   }
 
    h4 {
      max-width: 30ch;
      font-family: var(--text-poppins) !important;
    }
 
-   small{
-    max-width: 40ch;
+   small {
+     max-width: 40ch;
    }
  }
 
@@ -578,7 +579,7 @@
            border-radius: 50px;
            border: solid 1px var(--accent);
            padding: 0 !important;
-           
+
          }
        }
 
@@ -663,24 +664,24 @@
    }
  }
 
- .capsulebutton{
-  appearance: none;
-  font-family: var(--text-poppins);
-  background-color: transparent;
-  color: var(--main-text-clr);
-  padding: .25rem .7rem;
-  border: solid 2px var(--main-text-clr);
-  border-radius: 50px;
-  cursor: pointer;
-  transition: all ease-in-out 250ms;
-  
-  &:hover{
-      border-radius: 5px;
-      color: var(--background);
-      background-color: var(--accent);
-      border: solid 2px transparent;
-  }
-}
+ .capsulebutton {
+   appearance: none;
+   font-family: var(--text-poppins);
+   background-color: transparent;
+   color: var(--main-text-clr);
+   padding: .25rem .7rem;
+   border: solid 2px var(--main-text-clr);
+   border-radius: 50px;
+   cursor: pointer;
+   transition: all ease-in-out 250ms;
+
+   &:hover {
+     border-radius: 5px;
+     color: var(--background);
+     background-color: var(--accent);
+     border: solid 2px transparent;
+   }
+ }
 
 
 
