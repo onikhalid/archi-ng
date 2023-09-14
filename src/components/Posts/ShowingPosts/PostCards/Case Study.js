@@ -20,7 +20,7 @@ const CaseStudyCard = ({ post }) => {
     const [user, loading] = useAuthState(auth)
 
 
-    const {postId,title, authorId, authorName, authorAvatar, coverImageURL, location, tags, typology, createdAt, postType }= post
+    const {postId,title, authorId, authorName, authorUsername, authorAvatar, coverImageURL, location, tags, typology, createdAt, postType }= post
 
 
 
@@ -83,7 +83,7 @@ const CaseStudyCard = ({ post }) => {
                 <section>
                     <section className={styles.metadata}>
                         <div className={styles.authorandtime}>
-                            <Link href={`/profile?id=${authorId}`}  title="visit author's profile" className={styles.authorinfo} >
+                            <Link href={`/profile/${authorUsername}`}  title="visit author's profile" className={styles.authorinfo} >
                                 <img src={authorAvatar} alt={'author image'} />
                                 <h6>{authorName}</h6>
                             </Link>

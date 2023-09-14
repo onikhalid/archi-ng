@@ -38,9 +38,10 @@ export const AMPMTime = (serverTimestamp) => {
 
 
     const serverDate = serverTimestamp.toDate()
-    const currentDate = new Date();
     const serverHours = serverDate.getHours();
     const serverMinutes = serverDate.getMinutes();
+    
+    const currentDate = new Date();
     const currentHours = currentDate.getHours();
     const currentMinutes = currentDate.getMinutes();
 
@@ -61,9 +62,12 @@ export const AMPMTime = (serverTimestamp) => {
             AMPMTime = '12:' + serverMinutes.toString().padStart(2, '0') + ' AM';
         } else if (serverHours === 12) {
             AMPMTime = '12:' + serverMinutes.toString().padStart(2, '0') + ' PM';
-        } else {
+        } else if (serverHours < 12) {
             AMPMTime = serverHours.toString().padStart(2, '0') + ':' + serverMinutes.toString().padStart(2, '0') + ' AM';
+        } else {
+            AMPMTime = (serverHours - 12).toString().padStart(2, '0') + ':' + serverMinutes.toString().padStart(2, '0') + ' PM';
         }
+
     }
 
     return AMPMTime;
@@ -74,28 +78,39 @@ export const AMPMTime = (serverTimestamp) => {
 
 
 
+
 export const categorizeDate = (createdAt) => {
     const today = new Date();
     const contributionDate = createdAt.toDate();
+    const oneDay = 1000 * 60 * 60 * 24; // Number of milliseconds in one day
 
-    // Calculate the difference in days
-    const timeDifference = Math.floor((today - contributionDate) / (1000 * 60 * 60 * 24));
 
-    if (timeDifference === 0) {
-      return 'Today';
+    // Check if the dates have the same year, month, and day
+    if (
+        today.getFullYear() === contributionDate.getFullYear() &&
+        today.getMonth() === contributionDate.getMonth() &&
+        today.getDate() === contributionDate.getDate()
+    ) {
+        return 'Today';
+    } else {
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
+
+        if (
+            yesterday.getFullYear() === contributionDate.getFullYear() &&
+            yesterday.getMonth() === contributionDate.getMonth() &&
+            yesterday.getDate() === contributionDate.getDate()
+        ) {
+            return 'Yesterday';
+        } else if (today - contributionDate <= 7 * oneDay) {
+            // Within the past week
+            const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            return daysOfWeek[contributionDate.getDay()];
+        } else {
+            // Older than a week, return the formatted date
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            return contributionDate.toLocaleDateString(undefined, options);
+        }
     }
-    if (timeDifference === 1) {
-      return 'Yesterday';
-    }
+};
 
-    // Check if it's within the past week
-    if (timeDifference <= 7) {
-      // Use the day of the week
-      const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-      return daysOfWeek[contributionDate.getDay()];
-    }
-
-    // If it's older than a week, return the formatted date
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    return contributionDate.toLocaleDateString(undefined, options);
-  }

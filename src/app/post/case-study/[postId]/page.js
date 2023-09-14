@@ -1,6 +1,7 @@
 "use client"
 import styles from "./casestudypage.module.scss"
-import { useLayoutEffect, useState } from "react";
+import { useContext, useLayoutEffect, useState } from "react";
+import { UserContext } from "@/utils/ContextandProviders/Contexts";
 import { useRouter } from 'next/navigation';
 import { useWindowWidth } from "@/utils/Hooks/ResponsiveHook";
 import { useForm } from "react-hook-form";
@@ -43,7 +44,9 @@ export default function Page({ params }) {
     const { postId } = params
     const router = useRouter()
     const width = useWindowWidth()
-    const [user, loading] = useAuthState(auth);
+    // const [user, loading] = useAuthState(auth);
+    const { userData, setUserData, authenticatedUser } = useContext(UserContext);
+
     const [postData, setPostData] = useState(null)
     const [loadingpost, setloadingpost] = useState(true);
     const { register, handleSubmit, formState: { errors }, setValue } = useForm();
@@ -119,9 +122,10 @@ export default function Page({ params }) {
                             setPostData(data)
                         } else { setPostData("exists but not an article") }
 
-                           
-                        if (user) {
-                            await updateDoc(postDocRef, { reads: arrayUnion(user.uid) })
+
+                        if (authenticatedUser) {
+                            await updateDoc(postDocRef, { reads: arrayUnion(authenticatedUser.uid) })
+
                         }
 
                     }
@@ -158,7 +162,7 @@ export default function Page({ params }) {
         getPost()
         setloadingpost(false)
 
-    }, [postId, user])
+    }, [postId, authenticatedUser])
 
 
 
@@ -172,33 +176,33 @@ export default function Page({ params }) {
     //////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////
     const likeUnlike = () => {
-        if (!user) {
+        if (!authenticatedUser) {
             toast.error("Login to like posts", {
                 position: "top-center",
                 autoClose: 4000
             })
             return
         } else {
-            if (postData.likes?.includes(user.uid)) {
-                removeLike(postId, user.uid)
+            if (postData.likes?.includes(userData.uid)) {
+                removeLike(postId, userData.uid)
             } else {
-                addLike(postId, user.uid)
+                addLike(postId, userData.uid)
             }
         }
     }
 
     const saveUnsave = () => {
-        if (!user) {
+        if (!authenticatedUser) {
             toast.error("Login to save posts", {
                 position: "top-center",
                 autoClose: 4000
             })
         } else {
-            if (postData.bookmarks?.includes(user.uid)) {
-                deleteBookmark(null, user.uid, postId)
+            if (postData.bookmarks?.includes(userData.uid)) {
+                deleteBookmark(null, userData.uid, postId)
             } else {
                 const { title, postType, authorId, coverImageURL, authorName, authorAvatar } = postData
-                addBookmark(user.uid, postId, title, postType, authorId, coverImageURL, authorName, authorAvatar)
+                addBookmark(userData.uid, postId, title, postType, authorId, coverImageURL, authorName, authorAvatar)
             }
         }
     }
@@ -224,7 +228,7 @@ export default function Page({ params }) {
     //////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////
     const makeNewComment = async (data) => {
-        if (!user) {
+        if (!authenticatedUser) {
             toast.error("Login to make remark", {
                 position: "top-center",
                 autoClose: 4000
@@ -233,9 +237,9 @@ export default function Page({ params }) {
         }
         else {
             const newComment = {
-                authorName: user.displayName,
-                authorPhoto: user.photoURL,
-                authorId: user.uid,
+                authorName: userData.name,
+                authorPhoto: userData.profilePicture,
+                authorId: userData.id,
                 createdAt: new Date(),
                 text: data.Comment
             }
@@ -288,7 +292,7 @@ export default function Page({ params }) {
                                 {width > 719 && <span> Article by {postData.authorName}, <em>{formatDate(postData.createdAt)}</em></span>}
                             </div>
                             {
-                                user?.uid === postData.authorId &&
+                                userData?.id === postData.authorId &&
                                 <div className={styles.settings}>
                                     <Link title="Edit Post" href={`/post?edit=${postData.postId}&type=${postData.postType}`}><FontAwesomeIcon icon={faPenToSquare} /></Link>
                                     <span title="Delete Post" onClick={delPost}> <FontAwesomeIcon icon={faTrashAlt} /> </span>
@@ -345,7 +349,7 @@ export default function Page({ params }) {
                                 {/* ///////////       STATS         //////// */}
                                 {/* //////////////////////////////////////// */}
                                 <div className={styles.poststats}>
-                                    <article className={postData.likes?.includes(user?.uid) ? ` ${styles.likedstat}` : `${styles.stat}`}>
+                                    <article className={postData.likes?.includes(userData?.id) ? ` ${styles.likedstat}` : `${styles.stat}`}>
                                         <span>
                                             <h5>{postData.likes ? postData.likes.length : 0} <span>Likes</span></h5>
                                             <FollowersFollowingandLikesList postId={postId} />
@@ -356,7 +360,7 @@ export default function Page({ params }) {
                                         </span>
                                     </article>
 
-                                    <article className={postData.bookmarks?.includes(user?.uid) ? `${styles.bookmarkedstat}` : `${styles.stat}`}>
+                                    <article className={postData.bookmarks?.includes(userData?.id) ? `${styles.bookmarkedstat}` : `${styles.stat}`}>
                                         <h5>{postData.bookmarks ? postData.bookmarks.length : 0} <span>Saves</span></h5>
                                         <span onClick={saveUnsave}>
                                             <FontAwesomeIcon icon={faBookmark} />
@@ -425,7 +429,7 @@ export default function Page({ params }) {
                         <section id="remarks" className={styles.commentsection}>
                             <h2>Remarks</h2>
 
-                            {user &&
+                            {authenticatedUser &&
                                 <form id='writecomment' className={styles.writecomment} onSubmit={handleSubmit(makeNewComment)}>
 
                                     <div className={`inputdiv ${styles.inputdiv}`}>
@@ -438,7 +442,7 @@ export default function Page({ params }) {
 
                                     <div className={styles.writer}>
                                         <button form="writecomment" type="submit" className={styles.writecommentButton}>Post Remark</button>
-                                        <span><Image src={user.photoURL} alt="user photo" height={28} width={28} /> {user?.displayName}</span>
+                                        <span><Image src={userData.profilePicture} alt="user photo" height={28} width={28} /> {userData?.name}</span>
                                     </div>
 
 

@@ -10,12 +10,14 @@ import { doc, collection, addDoc, updateDoc, setDoc, getDoc, writeBatch, getDocs
 import { db, auth, storage } from '@/utils/firebase';
 
 import { toast } from 'react-toastify';
+import { UserContext } from '@/utils/ContextandProviders/Contexts';
 
 
 const MakeArticle = ({ postToEditId }) => {
   const router = useRouter()
   const editorRef = useRef(null);
-  const [user, loading] = useAuthState(auth)
+  // const [user, loading] = useAuthState(auth)
+  const {userData, setUserData} = useContext(UserContext);
   const [articleContent, setArticleContent] = useState('') //tiny-mce content
   const [selectedImage, setSelectedImage] = useState(null);
   const [coverImgURL, setCoverImgURL] = useState(null)
@@ -76,14 +78,15 @@ const MakeArticle = ({ postToEditId }) => {
 
 
     const postData = {
-      authorId: user.uid,
-      authorName: user.displayName,
-      authorAvatar: user.photoURL,
+      authorId: userData.id,
+      authorName: userData.name,
+      authorAvatar: userData.profilePicture,
+      authorUsername: userData.username,
       desc: data.Desc,
       coverImageURL: downloadURL,
       createdAt: postToEditId ? createdAt : new Date(),
       postContent: articleContent,
-      postId: postToEditId ? postToEditId : user.uid,
+      postId: postToEditId ? postToEditId : userData.id,
       postType: 'Articles',
       tags: data.Tags.split(","),
       title: data.Title,
@@ -196,7 +199,7 @@ const MakeArticle = ({ postToEditId }) => {
       await deleteObject(previousImageRef)
     }
 
-    const imageRef = ref(storage, `cover_images/${user.uid}/Articles/${imageFile.name}`);
+    const imageRef = ref(storage, `cover_images/${userData.id}/Articles/${imageFile.name}`);
     const snapshot = await uploadBytes(imageRef, imageFile)
     const downloadURL = await getDownloadURL(snapshot.ref);
     if (postToEditId) {

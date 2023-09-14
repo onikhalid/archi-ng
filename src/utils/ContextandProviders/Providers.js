@@ -72,7 +72,7 @@ export const UserProvider = ({ children }) => {
   const [userData, setUserData] = useState({});
 
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const getUserData = async () => {
       if (!loadingauthenticatedUser) {
         if (authenticatedUser) {
@@ -96,7 +96,7 @@ export const UserProvider = ({ children }) => {
 
 
   return (
-    <UserContext.Provider value={{ userData, setUserData }}>
+    <UserContext.Provider value={{ userData, setUserData, authenticatedUser }}>
       {children}
     </UserContext.Provider>
   );

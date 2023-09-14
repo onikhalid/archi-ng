@@ -1,6 +1,6 @@
 "use client"
 import styles from "./Archive.module.scss"
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { auth, db } from "@/utils/firebase";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -11,6 +11,7 @@ import { BookmarkCard, FolderCard } from "@/components/Posts/ShowingPosts/PostCa
 import { useForm } from "react-hook-form";
 import { createFolder } from "@/functions/Bookmark";
 import { toast } from "react-toastify";
+import { UserContext } from "@/utils/ContextandProviders/Contexts";
 
 
 
@@ -19,6 +20,8 @@ const Archive = () => {
   const [userBookmarks, setUserBookmarks] = useState([]);
   const [userFolders, setUserFolders] = useState([]);
   const [user, loading] = useAuthState(auth);
+  const { userData, setUserData, authenticatedUser } = useContext(UserContext);
+
   const router = useRouter()
   const { register, handleSubmit, formState: { errors }, setValue } = useForm();
 
@@ -84,7 +87,7 @@ const Archive = () => {
           });
         }
       };
-      
+
       getArchivedPosts();
       setLoadingPosts(false)
     }
@@ -99,16 +102,16 @@ const Archive = () => {
       }
     }
     return () => { }
-  }, [archiveType, user, loading]);
+  }, [archiveType, authenticatedUser, loading]);
 
 
 
   //create a folder
   const CreateNewFolder = (data) => {
-    createFolder(data.Name, user.uid, user.displayName)
+    createFolder(data.Name, userData?.id, userData?.displayName)
   }
 
-  const pageTitle = `Archives - ${user?.displayName}'s ${archiveType} |  Archi NG`
+  const pageTitle = `Archives - ${userData ? `${userData.name}'s` : `No one's 🙄`} ${archiveType} |  Archi NG`
 
 
 
@@ -132,7 +135,7 @@ const Archive = () => {
         {
           !loading && !user &&
           <div className='infobox'>
-            <h2>😒 Can&apos;t save any post without logging in</h2>
+            <h3>😒 Can&apos;t save any posts without logging in</h3>
           </div>
         }
 

@@ -22,10 +22,9 @@ import { extractImages, extractImageUrl } from '@/functions/Delete';
 
 const MakeCaseStudy = ({ postToEditId }) => {
   const router = useRouter()
-  // const { user, setUser } = useContext(UserContext);
 
   const editorRef = useRef(null);
-  const [user, loading] = useAuthState(auth)
+  const {userData, setUserData} = useContext(UserContext)
   const [caseContent, setCaseContent] = useState('') //tiny-mce content
 
   const [selectedCoverImage, setSelectedCoverImage] = useState(null);
@@ -140,22 +139,24 @@ const MakeCaseStudy = ({ postToEditId }) => {
     }
 
 
+    //extract images to use for post gallery slideshow
     const postImages = await extractImages(caseContent)
     const postImagesURLs = await extractImageUrl(postImages) || []
 
 
     const postData = {
       architect: data.Architect,
-      authorId: user.uid,
-      authorName: user.displayName,
-      authorAvatar: user.photoURL,
+      authorId: userData.id,
+      authorName: userData.name,
+      authorAvatar: userData.profilePicture,
+      authorUsername: userData.username,
       client: data.Client == '' ? 'unknown' : data.Client,
       coverImageURL: coverImageDownloadURL,
       createdAt: new Date(),
       location: data.Location.split(",").map(item => item.trim()),
       allImages: [coverImageDownloadURL, ...postImagesURLs, ...galleryImagesURL],
       postContent: caseContent,
-      postId: postToEditId ? postToEditId : user.uid,
+      postId: postToEditId ? postToEditId : userData.id,
       postType: 'Case Studies',
       tags: data.Tags.split(","),
       titleForSearch: data.Title.split(/[,:.\s-]+/).filter(word => word !== ''),
@@ -299,7 +300,7 @@ const MakeCaseStudy = ({ postToEditId }) => {
       await deleteObject(previousImageRef)
     }
 
-    const imageRef = ref(storage, `cover_images/${user.uid}/Case Studies/${imageFile.name}`);
+    const imageRef = ref(storage, `cover_images/${userData.id}/Case Studies/${imageFile.name}`);
     const snapshot = await uploadBytes(imageRef, imageFile)
     const downloadURL = await getDownloadURL(snapshot.ref);
     if (postToEditId) {
@@ -360,11 +361,11 @@ const MakeCaseStudy = ({ postToEditId }) => {
 
 
   const uploadGalleryImages = async () => {
-    const storageRef = ref(storage, `post_images/${user.uid}/Case Studies`);
+    const storageRef = ref(storage, `post_images/${userData.id}/Case Studies`);
 
 
     if (selectedGalleryImageFiles.length == 0) {
-      return;
+      return [];
     }
     else {
 

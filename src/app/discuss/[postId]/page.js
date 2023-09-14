@@ -34,10 +34,9 @@ import ContributionCard from '@/components/Posts/ShowingPosts/PostCards/Discussi
 
 export default function Page({ params }) {
   const { postId } = params
-  const router = useRouter()
-  const width = useWindowWidth()
-  const [user, loading] = useAuthState(auth);
   const { userData, setUserData } = useContext(UserContext);
+
+  const width = useWindowWidth()
   const [postData, setPostData] = useState(null)
   const [loadingpost, setloadingpost] = useState(true);
   const [showThreads, setShowThreads] = useState(null);
@@ -139,7 +138,7 @@ export default function Page({ params }) {
 
     setloadingpost(false)
 
-  }, [postId, user])
+  }, [postId])
 
 
 
@@ -189,7 +188,7 @@ export default function Page({ params }) {
   /////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////
   const makeNewContribution = async (data) => {
-    if (!user) {
+    if (!userData) {
       toast.error("Login to contribute to discussion", {
         position: "top-center",
         autoClose: 4000
@@ -200,9 +199,9 @@ export default function Page({ params }) {
       setValue("Contribution", "")
 
       const newContribution = {
-        authorName: user.displayName,
-        authorPhoto: user.photoURL,
-        authorId: user.uid,
+        authorName: userData.name,
+        authorPhoto: userData.profilePicture,
+        authorId: userData.id,
         authorUsername: userData.username,
         createdAt: new Date(),
         text: data.Contribution,
@@ -219,12 +218,12 @@ export default function Page({ params }) {
 
 
 
-      if (postData.contributors?.includes(user.uid)) {
+      if (postData.contributors?.includes(userData.id)) {
       }
       else {
         const postsCollectionRef = collection(db, `posts`)
         await updateDoc(doc(postsCollectionRef, postId), {
-          contributors: arrayUnion(user.uid)
+          contributors: arrayUnion(userData.id)
         });
       }
 
@@ -267,17 +266,17 @@ export default function Page({ params }) {
   const pageTitle = postData && `${postData.title} - Discussion started by ${postData.authorName} | Archi NG`
 
   const saveUnsave = () => {
-    if (!user) {
+    if (!userData) {
       toast.error("Login to save posts", {
         position: "top-center",
         autoClose: 4000
       })
     } else {
-      if (postData.bookmarks?.includes(user.uid)) {
-        deleteBookmark(null, user.uid, postId)
+      if (postData.bookmarks?.includes(userData.id)) {
+        deleteBookmark(null, userData.id, postId)
       } else {
         const { title, postType, authorId, coverImageURL, authorName, authorAvatar } = postData
-        addBookmark(user.uid, postId, title, postType, authorId, coverImageURL, authorName, authorAvatar)
+        addBookmark(userData.id, postId, title, postType, authorId, coverImageURL, authorName, authorAvatar)
       }
     }
   }
@@ -356,14 +355,14 @@ export default function Page({ params }) {
 
             <section className={styles.postinfo}>
               {
-                user?.uid === postData.authorId &&
+                userData.id === postData.authorId &&
                 <div className={styles.settings}>
                   <Link title="Edit Post" href={`/post?edit=${postData.postId}&type=${postData.postType}`}><FontAwesomeIcon icon={faPenToSquare} /></Link>
                 </div>
               }
 
               <div className={styles.poststats}>
-                <article className={postData.bookmarks?.includes(user?.uid) ? `${styles.bookmarkedstat}` : `${styles.stat}`} title='bookmark discussion'>
+                <article className={postData.bookmarks?.includes(userData.id) ? `${styles.bookmarkedstat}` : `${styles.stat}`} title='bookmark discussion'>
                   <span onClick={saveUnsave}>
                     <FontAwesomeIcon icon={faBookmark} />
                   </span>

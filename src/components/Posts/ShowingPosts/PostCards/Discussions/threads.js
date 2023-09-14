@@ -176,7 +176,7 @@ const Threads = ({ setShowThreads }) => {
 
 
 
-                    <section>
+                    <section className={StyleSheet.allThreadContributions}>
                         {
                             // Object.entries returns an array of the Object properties
                             //a long way to go Khalid

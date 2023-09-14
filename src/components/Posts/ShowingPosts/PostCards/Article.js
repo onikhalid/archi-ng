@@ -18,7 +18,6 @@ const ArticleCard = ({ post }) => {
     const width = useWindowWidth()
     const [saved, setSaved] = useState(false)
     const [menuOpen, setMenuOpen] = useState(null)
-    const [authorUsername, setAuthorUsername] = useState("null")
     const [user, loading] = useAuthState(auth)
 
     const postId = post.postId
@@ -28,6 +27,7 @@ const ArticleCard = ({ post }) => {
     const postAuthorName = post.authorName
     const postAuthorPhoto = post.authorAvatar
     const postCoverPhoto = post.coverImageURL
+    const authorUsername = post.authorUsername
 
 
 
@@ -108,7 +108,7 @@ const ArticleCard = ({ post }) => {
                 <section>
                     <section className={styles.metadata}>
                         <div className={styles.authorandtime}>
-                            <Link href={`/profile?id=${post.authorId}`} title="visit author's profile" className={styles.authorinfo}>
+                            <Link href={`/profile/${authorUsername}`} title="visit author's profile" className={styles.authorinfo}>
                                 <img src={avatar} alt={'author image'} />
                                 <h6>{post.authorName}</h6>
                             </Link>

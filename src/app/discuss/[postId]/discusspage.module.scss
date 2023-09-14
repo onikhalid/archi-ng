@@ -2,7 +2,7 @@
     width: 100%;
     min-height: 95%;
     margin-block: 4.5rem 2.5rem;
-    scrollbar-color: var(--glass) var(--background) !important;
+    scrollbar-color: var(--scrollbar-lite) var(--background) !important;
 
 
     @media (max-width: 1019px) {
@@ -155,7 +155,7 @@
         overflow-y: scroll;
         max-height: 60vh;
         min-height: 55vh;
-        padding-bottom: 2rem;
+        padding-bottom: 6vh;
 
 
         @media (min-width: 1020px) {

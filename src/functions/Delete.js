@@ -2,7 +2,6 @@ import { db, storage } from '@/utils/firebase';
 import { doc, deleteDoc } from 'firebase/firestore';
 import { deleteObject, ref } from 'firebase/storage';
 import { toast } from 'react-toastify';
-import { useRouter } from 'next/navigation';
 
 
 
