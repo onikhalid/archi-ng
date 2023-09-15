@@ -1,9 +1,8 @@
 "use client"
 import styles from "./Archive.module.scss"
 import { useContext, useEffect, useState } from "react";
-import { auth, db } from "@/utils/firebase";
+import { db } from "@/utils/firebase";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
-import { useAuthState } from "react-firebase-hooks/auth";
 import { useRouter } from 'next/navigation';
 import PostSkeleton from "@/components/Posts/ShowingPosts/PostCards/Skeleton/PostSkeleton";
 import WhoseandWhichpost from "@/components/Posts/ShowingPosts/Whosepost/whosepost";
@@ -19,8 +18,7 @@ const Archive = () => {
   const [archiveType, setArchiveType] = useState("Bookmarks");
   const [userBookmarks, setUserBookmarks] = useState([]);
   const [userFolders, setUserFolders] = useState([]);
-  const [user, loading] = useAuthState(auth);
-  const { userData, setUserData, authenticatedUser } = useContext(UserContext);
+  const { userData, setUserData, authenticatedUser, loadingauthenticatedUser } = useContext(UserContext);
 
   const router = useRouter()
   const { register, handleSubmit, formState: { errors }, setValue } = useForm();
@@ -55,12 +53,12 @@ const Archive = () => {
       const getArchivedPosts = async () => {
         setLoadingPosts(true)
 
-        if (!loading && !user) {
+        if (!loadingauthenticatedUser && !authenticatedUser) {
           setAllPosts([])
           return
         }
-        else if (user) {
-          const currentUser = user?.uid
+        else if (authenticatedUser) {
+          const currentUser = authenticatedUser?.uid
 
 
           const foldersCollectionRef = collection(db, "folders");
@@ -102,7 +100,7 @@ const Archive = () => {
       }
     }
     return () => { }
-  }, [archiveType, authenticatedUser, loading]);
+  }, [archiveType, authenticatedUser]);
 
 
 
@@ -133,7 +131,7 @@ const Archive = () => {
 
 
         {
-          !loading && !user &&
+          !loadingauthenticatedUser && !authenticatedUser &&
           <div className='infobox'>
             <h3>😒 Can&apos;t save any posts without logging in</h3>
           </div>
@@ -142,7 +140,7 @@ const Archive = () => {
 
 
         {
-          user &&
+          authenticatedUser &&
           <>
 
             {/* //////////////////////////////////////////////////////////// */}

@@ -126,7 +126,7 @@ export const SmallPostCard = ({ post, id }) => {
                         </div>
                         <div className={styles.other}>
                             <Button name={saved ? 'Saved' : 'Save'} icon={saved ? <FontAwesomeIcon icon={faCircleCheck} /> : <FontAwesomeIcon icon={faFolder} />} link={bookmarkPost} type={"tertiary"} chiquito/>
-                            <Button name={"Read"} icon={<FontAwesomeIcon icon={faArrowUpRightFromSquare} />} link={`/post/${type()}/${postData.postId}`} type={"type4"} chiquito/>
+                            <Button name={"Read"} icon={<FontAwesomeIcon icon={faArrowUpRightFromSquare} />} link={type () === 'discuss' ? `/discuss/${postData.postId}`: `/post/${type()}/${postData.postId}`} type={"type4"} chiquito/>
                         </div>
 
                     </section>
@@ -137,47 +137,3 @@ export const SmallPostCard = ({ post, id }) => {
 
     )
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////
-////////////////       FOLDER CARD       ////////////////////////
-/////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////
-
-
-export const FolderCard = ({ post }) => {
-    const [user, loading] = useAuthState(auth);
-
-    return (
-        <article className={styles.folderCard}>
-            <Link href={`/archive/folder/${post.folderId}`}>
-                <div className={styles.docket}>
-                    <FontAwesomeIcon icon={faFolder} />
-                </div>
-                <h5 title={post.folderName}>{post.folderName?.substring(0, 9)}{post.folderName?.length > 9 && "..."}</h5>
-                <h6>{post.bookmarks?.length} posts</h6>
-            </Link>
-            {post.userId == user?.uid &&
-                <button onClick={() => deleteFolder(post.folderId)} className={styles.deletebutton}>
-                    <FontAwesomeIcon icon={faTrash} /> Delete
-                </button>
-            }
-        </article>
-    )
-}
-

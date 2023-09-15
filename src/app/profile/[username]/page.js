@@ -492,7 +492,7 @@ export default function Page({ params }) {
                                 <article ref={wrapperRef} >
                                     <h1>
                                         <span className={styles.sortmenu} onClick={showSortOptions}>
-                                            Sort By <FontAwesomeIcon icon={sortOptionsOpen ? faCircleChevronUp : faCircleChevronDown} shake />
+                                            Sort By <FontAwesomeIcon icon={sortOptionsOpen ? faCircleChevronUp : faCircleChevronDown} shake /> : {sortBy}
                                         </span>
                                         <ul className={sortmenuclasses()}>
                                             {

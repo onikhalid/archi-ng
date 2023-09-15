@@ -56,7 +56,7 @@ const AppBar = () => {
 
       </div>
       <div className={styles.right}>
-        <Button name={menuOpen ? "Close" : "Menu"} type='secondary' link={showmenu} />
+        <Button name={menuOpen ? "CLOSE" : "MENU"} type='secondary' link={showmenu} />
       </div>
 
 

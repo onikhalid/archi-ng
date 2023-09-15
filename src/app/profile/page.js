@@ -1,14 +1,18 @@
 "use client"
 import { useRouter } from "next/navigation";
-import { useLayoutEffect } from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { db, auth } from "@/utils/firebase";
+import { useContext, useLayoutEffect } from "react";
+import { db } from "@/utils/firebase";
 import { useSearchParams } from 'next/navigation';
 import { doc, getDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
+import { UserContext } from "@/utils/ContextandProviders/Contexts";
+
+
+
 
 export default function Profile() {
-  const [user, loading] = useAuthState(auth)
+  const { userData, setUserData, authenticatedUser, loadingauthenticatedUser } = useContext(UserContext);
+
   const router = useRouter()
   const userParams = useSearchParams()
   const profileUserId = userParams.get('id')
@@ -16,8 +20,8 @@ export default function Profile() {
   useLayoutEffect(() => {
 
     const getUserUserName = async () => {
-      if (!loading && user && !profileUserId) {
-        const currentUserId = user.uid
+      if (!loadingauthenticatedUser && authenticatedUser && !profileUserId) {
+        const currentUserId = authenticatedUser.uid
         const userDocRef = doc(db, `users/${currentUserId}`)
         const userDocSnap = await getDoc(userDocRef)
         if (userDocSnap) {
@@ -25,7 +29,7 @@ export default function Profile() {
           router.replace(`/profile/${userData?.username}`)
         }
       }
-      else if (!loading && !user && !profileUserId) {
+      else if (!loadingauthenticatedUser && !authenticatedUser && !profileUserId) {
         router.push(`/auth?redirect=home`)
       }
       else if (profileUserId) {
@@ -48,8 +52,18 @@ export default function Profile() {
 
     getUserUserName()
     return () => { };
-  }, [user, loading, profileUserId])
+  }, [authenticatedUser, loadingauthenticatedUser, profileUserId])
 
+
+
+
+
+
+
+
+
+
+  
 
   return (
     <>
@@ -57,10 +71,9 @@ export default function Profile() {
       <main className="content-container">
         <div className="infobox">
           <h3>
-            loading profile...
+            loading  profile...
           </h3>
         </div>
-
       </main>
     </>
   );

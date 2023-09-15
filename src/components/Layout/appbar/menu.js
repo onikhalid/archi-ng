@@ -148,12 +148,12 @@ const Menu = ({ menuOpen, setMenuOpen, menuclass, setMenuClass }) => {
                             />
                         </Link>
                         <div className={styles.permalinks}>
-                            <Link href={'/settings'} onClick={closemenu}>App Settings</Link>
-                            <Link href={'/about'} onClick={closemenu}>About Archi NG</Link>
-                            <Link href={'/contact'} onClick={closemenu}>Contact Us</Link>
+                            <Link href={'/settings'} onClick={closemenu}>{width > 1279 && "App"} Settings</Link>
+                            <Link href={'/about'} onClick={closemenu}>About {width > 1279 && "Archi NG"}</Link>
+                            <Link href={'/contact'} onClick={closemenu}>Contact {width > 1279 && "Us"} </Link>
                             <Link href={'/faqs'} onClick={closemenu}>FAQs</Link>
-                            <Link href={'/policy'} onClick={closemenu}>Privacy Policy</Link>
-                            <Link href={'/terms'} onClick={closemenu}>Terms and Conditions</Link>
+                            <Link href={'/policy'} onClick={closemenu}>{width > 1279 && "Privacy"} Policy</Link>
+                            <Link href={'/terms'} onClick={closemenu}>{width > 1279 ? "Terms and Conditions" : "Terms"}</Link>
                         </div>
                         <small>
                             All rights reserved.  <FontAwesomeIcon icon={faCopyright} /> 2023, archi NG

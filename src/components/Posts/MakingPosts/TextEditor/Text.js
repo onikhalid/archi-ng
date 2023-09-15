@@ -1,14 +1,14 @@
 import React, { useRef, useContext, useEffect } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
-import { auth, storage } from '@/utils/firebase';
-import { useAuthState } from 'react-firebase-hooks/auth';
+import { storage } from '@/utils/firebase';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
-import { ThemeContext } from '@/utils/ContextandProviders/Contexts';
+import { ThemeContext, UserContext } from '@/utils/ContextandProviders/Contexts';
 
 
 
 export default function Edit({ editorRef, setContent, editorContent, type}) {
-  const [user, loading] = useAuthState(auth)
+  const { userData, setUserData, authenticatedUser, loadingauthenticatedUser } = useContext(UserContext);
+
   const previousContentRef = useRef('')
 
   // tinymce theme
@@ -24,7 +24,7 @@ export default function Edit({ editorRef, setContent, editorContent, type}) {
   // ///////////////////////////////////////////////////////////
   // ///////////////////////////////////////////////////////////
   const handleImageUpload = async (blobInfo, progress) => {
-    const storageRef = ref(storage, `post_images/${user?.uid}/${type}/${blobInfo.filename()}`);
+    const storageRef = ref(storage, `post_images/${authenticatedUser?.uid}/${type}/${blobInfo.filename()}`);
 
     try {
       const snapshot = await uploadBytes(storageRef, blobInfo.blob(), {
