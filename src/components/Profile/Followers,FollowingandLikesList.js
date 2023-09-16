@@ -6,7 +6,6 @@ import { getDoc, doc } from 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { addBookmarkToFolder } from '@/functions/Bookmark';
 import { useWindowWidth } from '@/utils/Hooks/ResponsiveHook';
 import { useRouter } from 'next/navigation';
 
@@ -22,7 +21,6 @@ export const FollowersFollowingandLikesList = ({ userId, username, postId, follo
     const [postLikes, setPostLikes] = useState([]);
     const [menuOpen, setMenuOpen] = useState(null);
     const wrapperRef = useRef(null)
-    const width = useWindowWidth()
     const router = useRouter()
 
 

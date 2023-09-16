@@ -6,7 +6,6 @@
     font-family: var(--text-poppins);
     transition: all 250ms ease-in-out;
     max-width: 450px;
-    // overflow: hidden;
 
     @media (min-width: 1150px) {
         flex-direction: row;
@@ -146,8 +145,9 @@
                 flex-direction: column;
                 gap: 0.15rem;
                 align-items: flex-start;
-                line-height: 1.75;
                 margin-top: 1.5rem;
+                font-size: 0.9rem;
+                line-height: 1.75;
                 text-align: justify;
             }
 

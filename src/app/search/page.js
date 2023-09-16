@@ -78,9 +78,12 @@ const Search = () => {
             else if (categoryParameter === 'Studies') {
               return 'Case Studies'
             }
-           
+
             else if (categoryParameter === 'Photos') {
               return 'Photography'
+            }
+            else {
+              return null
             }
 
           }
@@ -89,6 +92,11 @@ const Search = () => {
           else if (whichResultType === 'Articles') { return 'Articles' }
           else if (whichResultType === 'Photos') { return 'Photography' }
           else 'Case Studies'
+        }
+        if (whichPost() === null) {
+          setSearchResult("Wrong Category")
+          setSearching(false)
+          return
         }
 
         const postsCollection = collection(db, 'posts');
@@ -347,8 +355,6 @@ const Search = () => {
         {/* ///////////////////////////////////////////////////////////// */}
         {/* ///////////////////////////////////////////////////////////// */}
 
-
-
         {
           searchParameter !== null &&
           <header className={styles.pageheader}>
@@ -356,8 +362,8 @@ const Search = () => {
             {
               !categoryParameter && <WhoseandWhichpost variations={resultypevariations} currentwhosePost={whichResultType} setCurrentWhosePost={setwhichResultType} />
             }
-            {!searching && searchResult && searchResult.length < 1 && <h3>No results for <em>{searchParameter}</em> in {whichResultType}</h3>}
-            {!searching && searchResult && searchResult.length > 0 && <h3><em>{searchResult.length}</em> results for <em>{searchParameter}</em> in {whichResultType}</h3>}
+            {!searching && searchResult && searchResult !== "Wrong Category" && searchResult.length < 1 && <h3>No results for <em>{searchParameter}</em> in {whichResultType}</h3>}
+            {!searching && searchResult && searchResult !== "Wrong Category" && searchResult.length > 0 && <h3><em>{searchResult.length}</em> results for <em>{searchParameter}</em> in {whichResultType}</h3>}
           </header>
         }
 
@@ -380,27 +386,35 @@ const Search = () => {
         {/* ///////////////////////////////////////////////////////////// */}
         {/* ///////////       DISPLAY SEARCH RESULTS       ////////////// */}
         {/* ///////////////////////////////////////////////////////////// */}
+
+
         {
-          searchResult &&
-          <>
-            {!searching && !(searchParameter === null || '') && (
-              <section className={styles.resultspage}>
-                <div className={styles.resultcontainer}>
-                  {searchResult.map((result, index) => {
+          searchResult === "Wrong Category" &&
+          <div className="infobox">
+            <h3>Check your URL, it has a wrong category, it has to be one of &quot;Articles&quot;, &quot;Studies&apos;, or &quot;Photos&apos; and not <em>{categoryParameter}</em> </h3>
+          </div>
+        }
 
-                    if (whichResultType === 'Articles') {
-                      return <ArticleCard key={index} post={result} />
-                    } else if (whichResultType === 'Studies') {
-                      return <CaseStudyCard key={index} post={result} />
-                    } else if (whichResultType === 'Photos') {
-                      return <PhotoCard key={index} post={result} />
-                    }
-                  })}
-                </div>
+          {searchResult &&
+        <>
+          {!searching && !(searchParameter === null || '') && searchResult !== "Wrong Category" && (
+            <section className={styles.resultspage}>
+              <div className={styles.resultcontainer}>
+                {searchResult.map((result, index) => {
 
-              </section>
-            )}
-          </>
+                  if (whichResultType === 'Articles') {
+                    return <ArticleCard key={index} post={result} />
+                  } else if (whichResultType === 'Studies') {
+                    return <CaseStudyCard key={index} post={result} />
+                  } else if (whichResultType === 'Photos') {
+                    return <PhotoCard key={index} post={result} />
+                  }
+                })}
+              </div>
+
+            </section>
+          )}
+        </>
         }
 
 

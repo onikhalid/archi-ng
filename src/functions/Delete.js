@@ -40,6 +40,15 @@ const deleteImageFromFirebase = async (imageUrl) => {
 
 
 
+
+
+
+
+
+
+
+
+
 export const deletePost = async (postId, content, coverImage) => {
 
     try {
@@ -49,7 +58,17 @@ export const deletePost = async (postId, content, coverImage) => {
         const encodedPath = coverImage.substring(startIndex, endIndex);
         const storagePath = decodeURIComponent(encodedPath);
         const coverImageRef = ref(storage, storagePath)
-        await deleteObject(coverImageRef)
+        try {
+            await deleteObject(coverImageRef)
+            
+        } catch (error) {
+            if (error.code == "storage/object-not-found") {
+                toast.info("You might have used the cover image of the just deleted post in another post, we advise against that in the future thank you!", {
+                    position: "top-center",
+                    autoClose: 4000
+                })
+            } 
+        }
 
 
         // Delete all post images
@@ -60,9 +79,9 @@ export const deletePost = async (postId, content, coverImage) => {
                 if (imageUrl && imageUrl.includes("firebasestorage.googleapis.com/v0/b/archi-nigeria.appspot.com/")) {
                     await deleteImageFromFirebase(imageUrl);
                 }
-                // if (imageUrl && imageUrl.includes("firebasestorage.googleapis.com/v0/b/architecture-ng.appspot.com/")) {
-                //     await deleteImageFromFirebase(imageUrl);
-                // }
+                if (imageUrl && imageUrl.includes("firebasestorage.googleapis.com/v0/b/architecture-ng.appspot.com/")) {
+                    await deleteImageFromFirebase(imageUrl);
+                }
             }
         }
 

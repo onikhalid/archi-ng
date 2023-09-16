@@ -7,10 +7,10 @@ import { db, auth, storage } from '@/utils/firebase';
 import { updateProfile } from "firebase/auth";
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { getMetadata, getDownloadURL, ref, uploadBytes, deleteObject } from "firebase/storage";
-import { doc, collection, updateDoc, getDoc, setDoc, getDocs, query, where, writeBatch } from 'firebase/firestore';
+import { doc, collection, setDoc, getDocs, query, where, writeBatch } from 'firebase/firestore';
 import { toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope, faThumbTack } from "@fortawesome/free-solid-svg-icons";
+import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { faBehance, faInstagram, faTwitter } from "@fortawesome/free-brands-svg-icons";
 import { UserContext } from "@/utils/ContextandProviders/Contexts";
 
@@ -22,9 +22,8 @@ const EditProfile = ({ save, update }) => {
   const [savingProfile, setSavingProfile] = useState(false)
   const [pictureURL, setPictureURL] = useState(null)
   const [selectedImage, setSelectedImage] = useState(null)
-  const newUserPic = "/assets/logo/logo-light.svg"
-
-  const { userData, setUserData } = useContext(UserContext);
+  const newUserPic = "/assets/img/unknown_user_profile_picture.png"
+  const { userData } = useContext(UserContext);
 
 
 

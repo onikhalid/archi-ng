@@ -694,6 +694,7 @@
  .saving {
   position: fixed;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   top: 0;
@@ -706,6 +707,7 @@
   backdrop-filter: blur(5px);
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   z-index: 10000000000000000000000;
+
 }
 
 

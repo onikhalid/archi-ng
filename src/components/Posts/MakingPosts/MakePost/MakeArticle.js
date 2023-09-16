@@ -17,7 +17,7 @@ const MakeArticle = ({ postToEditId }) => {
   const router = useRouter()
   const editorRef = useRef(null);
   // const [user, loading] = useAuthState(auth)
-  const {userData, setUserData} = useContext(UserContext);
+  const { userData, setUserData } = useContext(UserContext);
   const [articleContent, setArticleContent] = useState('') //tiny-mce content
   const [selectedImage, setSelectedImage] = useState(null);
   const [coverImgURL, setCoverImgURL] = useState(null)
@@ -57,10 +57,10 @@ const MakeArticle = ({ postToEditId }) => {
   ///////////////////////////////////////////////////////////
 
   const submitForm = async (data) => {
-       
+
     document.body.scrollTo({ top: 0, behavior: "smooth" });
     window.scrollTo({ top: 0, behavior: "smooth" })
-    
+
 
     if (selectedImage === null && !postToEditId) {
       toast.error("Select a cover image", {
@@ -231,13 +231,9 @@ const MakeArticle = ({ postToEditId }) => {
   return (
     <>
 
-      {
-        savingPost &&
-        <div className='saving'>
-          Saving Post...
-        </div>
-      }
+
       <div className={styles.makearticle}>
+
         <article className='ImageUploader'>
           <input type="file" onChange={handleImageUpload} />
           {!selectedImage && !coverImgURL &&
@@ -313,6 +309,18 @@ const MakeArticle = ({ postToEditId }) => {
 
 
         <button className={styles.submitbutton} form='Article' type="submit">Post your Article 📒</button>
+
+
+
+
+ 
+        {
+          savingPost &&
+          <div className='saving'>
+            <span>Saving Post...this might take a while</span>
+             <span>Please do not close tab.</span>
+          </div>
+        }
       </div>
     </>
 

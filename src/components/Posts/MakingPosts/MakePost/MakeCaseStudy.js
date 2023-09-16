@@ -24,7 +24,7 @@ const MakeCaseStudy = ({ postToEditId }) => {
   const router = useRouter()
 
   const editorRef = useRef(null);
-  const {userData, setUserData} = useContext(UserContext)
+  const { userData, setUserData } = useContext(UserContext)
   const [caseContent, setCaseContent] = useState('') //tiny-mce content
 
   const [selectedCoverImage, setSelectedCoverImage] = useState(null);
@@ -107,7 +107,7 @@ const MakeCaseStudy = ({ postToEditId }) => {
 
     if (postToEditId) {
       let deletedImages = [];
-      
+
       //if new image ifiles have been selected
       if (selectedGalleryImageFiles.length > 0) {
         //if there's a post to be edited and the user is adding new images, 
@@ -121,7 +121,7 @@ const MakeCaseStudy = ({ postToEditId }) => {
         galleryImagesURL = updatedOriginalGalleryURLs
         deletedImages = originalGalleryURLs.filter(item => !galleryImagesURL.includes(item));
       }
-      
+
       deletedImages.forEach(async (image) => {
         //delete deleted gallery images from firebase
         const startIndex = image.indexOf('/o/') + 3;
@@ -189,7 +189,7 @@ const MakeCaseStudy = ({ postToEditId }) => {
       await batch.commit();
     }
 
-    
+
     ///////////////////
     //   new post   //
     ///////////////////
@@ -210,7 +210,7 @@ const MakeCaseStudy = ({ postToEditId }) => {
 
 
 
-    
+
     setSavingPost(false)
   }
 
@@ -540,15 +540,21 @@ const MakeCaseStudy = ({ postToEditId }) => {
         <button className={styles.submitbutton} form='CaseStudy' type="submit">Submit your Case Study <FontAwesomeIcon icon={faNewspaper} /></button>
 
 
+
+
+
+
+        {
+          savingPost &&
+          <div className='saving'>
+            <span>Saving Post...this might take a while</span>
+             <span>Please do not close tab.</span>
+          </div>
+        }
       </div>
 
 
-      {
-        savingPost &&
-        <div className='saving'>
-          Saving Post...this might take a while<br /> Please do not close tab.
-        </div>
-      }
+
     </>
   )
 }
