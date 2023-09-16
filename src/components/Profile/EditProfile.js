@@ -176,11 +176,13 @@ const EditProfile = ({ save, update }) => {
   ////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////
   const createOrUpdateProfile = async (data) => {
+    setSavingProfile(true)
+
     document.body.scrollTo({ top: 0, behavior: "smooth" });
     window.scrollTo({ top: 0, behavior: "smooth" })
 
-    const newImageURL = selectedImage && await uploadImage(selectedImage)
 
+    const newImageURL = selectedImage && await uploadImage(selectedImage)
     const userData = {
       id: user?.uid,
       name: data.Name,
@@ -263,7 +265,7 @@ const EditProfile = ({ save, update }) => {
 
       batch.update(contributionDocRef, {
         authorName: data.Name,
-        authorAvatar: selectedImage ? newImageURL : pictureURL,
+        authorPhoto: selectedImage ? newImageURL : pictureURL,
         authorUsername: data.Username
       })
     });
@@ -280,9 +282,11 @@ const EditProfile = ({ save, update }) => {
       router.push(`/`)
 
     } else {
-      router.push(`/profile/${username}`)
+      // router.push(`/profile/${username}`)
 
     }
+    setSavingProfile(false)
+
   }
 
 
@@ -305,6 +309,14 @@ const EditProfile = ({ save, update }) => {
       {
         loading && <div>Loading..</div>
       }
+
+{
+        savingProfile &&
+        <div className='saving'>
+          Saving Profile...this might take a while<br /> Please do not close tab.
+        </div>
+      }
+
       {
         user && <div className={styles.userDetails}>
 

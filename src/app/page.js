@@ -138,7 +138,7 @@ export default function Home() {
       
       const getQuery = async() => {
         if (currentwhosePost === "Feed") {
-          return query(postsCollectionRef, where('postType', '==', currentPost), orderBy("createdAt"), limit(postsPerFetch))
+          return query(postsCollectionRef, where('postType', '==', currentPost), orderBy("createdAt", 'desc'), limit(postsPerFetch))
         }
         // when user is signed in but doesn't follow anyone/ their followees😅 haven't posted anything
         else if (user && followedUserIds?.length < 1 && (currentwhosePost === "Following")) {
@@ -227,7 +227,7 @@ export default function Home() {
 
           const getQuery = () => {
             if (currentwhosePost === "Feed") {
-              return query(postsCollectionRef, where('postType', '==', currentPost), orderBy("createdAt"), limit(postsPerFetch), startAfter(fetchedPosts))
+              return query(postsCollectionRef, where('postType', '==', currentPost), orderBy("createdAt", 'desc'), limit(postsPerFetch), startAfter(fetchedPosts))
             }
 
             // when user is signed in but doesn't follow anyone
@@ -237,7 +237,7 @@ export default function Home() {
             }
 
             else if (user && (currentwhosePost === "Following")) {
-              return query(postsCollectionRef, where('postType', '==', currentPost), where('authorId', 'in', followedUserIds), orderBy("createdAt", "desc"), limit(postsPerFetch), startAfter(fetchedPosts));
+              return query(postsCollectionRef, where('postType', '==', currentPost), where('authorId', 'in', followedUserIds), orderBy("createdAt", 'desc'), limit(postsPerFetch), startAfter(fetchedPosts));
             }
 
             // when user isn't signed in and wants to see posts from their imaginary followed user

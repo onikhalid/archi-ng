@@ -14,7 +14,6 @@ import MobileNav from './navMobile';
 const Navigation = () => {
   const width = useWindowWidth()
   const [nav, setNav] = useState()
-  let renderedNav
 
   useLayoutEffect(() => {
     const getAppropriateNav = () => {

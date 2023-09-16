@@ -6,13 +6,10 @@ import { useContext, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { UserContext } from '@/utils/ContextandProviders/Contexts';
 import { useWindowWidth } from "@/utils/Hooks/ResponsiveHook";
 
-import { useRouter } from 'next/navigation';
-import Image from "next/image";
 import Link from "next/link";
 import { toast } from 'react-toastify';
 
-import { auth, db } from "@/utils/firebase";
-import { useAuthState } from "react-firebase-hooks/auth";
+import { db } from "@/utils/firebase";
 import { collection, getDocs, doc, query, where, onSnapshot, updateDoc, arrayUnion, addDoc, orderBy } from "firebase/firestore";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -34,7 +31,7 @@ import ContributionCard from '@/components/Posts/ShowingPosts/PostCards/Discussi
 
 export default function Page({ params }) {
   const { postId } = params
-  const { userData, setUserData } = useContext(UserContext);
+  const { userData, setUserData, authenticatedUser } = useContext(UserContext);
 
   const width = useWindowWidth()
   const [postData, setPostData] = useState(null)
@@ -201,7 +198,7 @@ export default function Page({ params }) {
       const newContribution = {
         authorName: userData.name,
         authorPhoto: userData.profilePicture,
-        authorId: userData.id,
+        authorId: authenticatedUser.uid,
         authorUsername: userData.username,
         createdAt: new Date(),
         text: data.Contribution,
@@ -218,12 +215,12 @@ export default function Page({ params }) {
 
 
 
-      if (postData.contributors?.includes(userData.id)) {
+      if (postData.contributors?.includes(authenticatedUser?.id)) {
       }
       else {
         const postsCollectionRef = collection(db, `posts`)
         await updateDoc(doc(postsCollectionRef, postId), {
-          contributors: arrayUnion(userData.id)
+          contributors: arrayUnion(authenticatedUser?.uid)
         });
       }
 
@@ -272,11 +269,11 @@ export default function Page({ params }) {
         autoClose: 4000
       })
     } else {
-      if (postData.bookmarks?.includes(userData.id)) {
-        deleteBookmark(null, userData.id, postId)
+      if (postData.bookmarks?.includes(authenticatedUser?.id)) {
+        deleteBookmark(null, authenticatedUser?.id, postId)
       } else {
         const { title, postType, authorId, coverImageURL, authorName, authorAvatar } = postData
-        addBookmark(userData.id, postId, title, postType, authorId, coverImageURL, authorName, authorAvatar)
+        addBookmark(authenticatedUser?.id, postId, title, postType, authorId, coverImageURL, authorName, authorAvatar)
       }
     }
   }
@@ -355,14 +352,14 @@ export default function Page({ params }) {
 
             <section className={styles.postinfo}>
               {
-                userData.id === postData.authorId &&
+                authenticatedUser?.id === postData.authorId &&
                 <div className={styles.settings}>
                   <Link title="Edit Post" href={`/post?edit=${postData.postId}&type=${postData.postType}`}><FontAwesomeIcon icon={faPenToSquare} /></Link>
                 </div>
               }
 
               <div className={styles.poststats}>
-                <article className={postData.bookmarks?.includes(userData.id) ? `${styles.bookmarkedstat}` : `${styles.stat}`} title='bookmark discussion'>
+                <article className={postData.bookmarks?.includes(authenticatedUser?.id) ? `${styles.bookmarkedstat}` : `${styles.stat}`} title='bookmark discussion'>
                   <span onClick={saveUnsave}>
                     <FontAwesomeIcon icon={faBookmark} />
                   </span>
@@ -427,7 +424,7 @@ export default function Page({ params }) {
           {
             <section className={threadClasses()}>
 
-              <Threads setShowThreads={setShowThreads} />
+              <Threads setShowThreads={setShowThreads} postId={postId} />
 
             </section>
           }

@@ -19,7 +19,7 @@ import { UserContext } from '@/utils/ContextandProviders/Contexts';
 const Discuss = () => {
 
   const [whoseDiscussion, setwhoseDiscussion] = useState("All");
-  const { userData, setUserData } = useContext(UserContext);
+  const { userData, setUserData, authenticatedUser } = useContext(UserContext);
   const [followedUserIds, setfollowedUserIds] = useState([]);
   const [allDiscussions, setAllDiscussions] = useState([]);
   const [filteredDiscussions, setFilteredDiscussions] = useState(allDiscussions);
@@ -113,9 +113,7 @@ const Discuss = () => {
       <title>Discussions | Archi NG</title>
 
       <div className="content-container">
-        {/* <header> */}
         <h1> Discussions</h1>
-        {/* </header> */}
 
         <main>
           <section>

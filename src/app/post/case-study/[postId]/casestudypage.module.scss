@@ -183,6 +183,8 @@
 
                             img {
                                 width: 9vw;
+                                height: 9vw;
+                                max-height: 30px;
                                 max-width: 30px;
                                 border-radius: 50px;
                                 border: solid 1px var(--accent);

@@ -55,9 +55,17 @@ const MobileNav = () => {
 
     const handleClickOutside = (event) => {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
-        if (!hidden) {
-          toggleHidden(true);
+        if (window.scrollY == 0) {
+          toggleHidden(false);
+
         }
+        else {
+          //only hide the nav when user click outside it IF there's enough content to scroll and show nav again
+          if (!hidden) {
+            toggleHidden(true);
+          }
+        }
+
       }
     };
     document.addEventListener('click', handleClickOutside);
@@ -69,18 +77,17 @@ const MobileNav = () => {
 
 
   useEffect(() => {
-
     if (currentPath.includes('discuss/')) {
       toggleHidden(true);
     }
-    
-   
+
+
     return () => {
 
     };
   }, [currentPath, toggleHidden]);
-  
-  
+
+
 
 
 

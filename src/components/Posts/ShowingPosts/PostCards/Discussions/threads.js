@@ -15,7 +15,7 @@ import { faX } from '@fortawesome/free-solid-svg-icons';
 import { categorizeDate } from '@/functions/Formatting';
 
 
-const Threads = ({ setShowThreads }) => {
+const Threads = ({ setShowThreads, postId }) => {
     const width = useWindowWidth()
     const { register, handleSubmit, formState: { errors }, setValue } = useForm();
     const [user, loading] = useAuthState(auth);
@@ -96,7 +96,7 @@ const Threads = ({ setShowThreads }) => {
                 authorUsername: userData.username,
                 createdAt: new Date(),
                 text: data.Reply,
-                // postId: postId,
+                postId: postId,
                 parentContributionId: thread,
             }
 

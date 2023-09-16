@@ -6,15 +6,16 @@ import { faArrowUpRightFromSquare, faBookmark, faComment, faUsers } from "@forta
 import Button from "@/components/Button/button"
 import { formatDate } from "@/functions/Formatting"
 import { useWindowWidth } from "@/utils/Hooks/ResponsiveHook"
-import { useAuthState } from "react-firebase-hooks/auth"
-import { auth } from "@/utils/firebase"
+import { UserContext } from "@/utils/ContextandProviders/Contexts"
+import { useContext } from "react"
 
 
 
 
 
 const DiscussCard = ({ post }) => {
-    const [user, loading] = useAuthState(auth);
+    const { authenticatedUser } = useContext(UserContext);
+
     const width = useWindowWidth()
 
 
@@ -34,7 +35,7 @@ const DiscussCard = ({ post }) => {
                     {post.createdAt && <span>started on {formatDate(post.createdAt)}</span>}
 
                     <div className={styles.poststats}>
-                        <article className={post.bookmarks?.includes(user?.uid) ? `${styles.bookmarkedstat}` : `${styles.stat}`} title='bookmarks'>
+                        <article className={post.bookmarks?.includes(authenticatedUser?.uid) ? `${styles.bookmarkedstat}` : `${styles.stat}`} title='bookmarks'>
                             <span>
                                 <FontAwesomeIcon icon={faBookmark} />
                             </span>

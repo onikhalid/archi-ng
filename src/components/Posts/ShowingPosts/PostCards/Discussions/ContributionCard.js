@@ -2,26 +2,28 @@ import styles from "./ContributionCard.module.scss"
 
 import Link from "next/link"
 import Image from "next/image"
-import { ThreadContext } from "@/utils/ContextandProviders/Contexts"
+import { ThreadContext, UserContext } from "@/utils/ContextandProviders/Contexts"
 import { useContext, useEffect, useRef, useState } from "react"
 import { useWindowWidth } from "@/utils/Hooks/ResponsiveHook"
+import { arrayRemove, collection, deleteDoc, doc, getDocs, onSnapshot, query, updateDoc, where, writeBatch } from "firebase/firestore"
+import { db } from "@/utils/firebase"
 import { AMPMTime } from "@/functions/Formatting"
-import { collection, deleteDoc, doc, getDocs, onSnapshot, query, where, writeBatch } from "firebase/firestore"
-import { auth, db } from "@/utils/firebase"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons"
-import { useAuthState } from "react-firebase-hooks/auth"
 
 
 
 const ContributionCard = ({ post, clickable, setShowThreads }) => {
 
-    const { authorId, authorUsername, authorName, authorPhoto, createdAt, contributeId, text } = post
+    const { authorId, authorUsername, authorName, authorPhoto, createdAt, contributeId, postId, text } = post
     const { thread, setThread, threadParent, setThreadParent } = useContext(ThreadContext);
     const [replies, setReplies] = useState([]);
     const width = useWindowWidth()
-    const [user, loading] = useAuthState(auth);
+    const { userData, setUserData, authenticatedUser } = useContext(UserContext);
     const delButtonRef = useRef(null)
+
+
+
 
     const showReplies = (e) => {
         if (delButtonRef.current && !delButtonRef.current.contains(e.target)) {
@@ -71,7 +73,8 @@ const ContributionCard = ({ post, clickable, setShowThreads }) => {
 
 
 
-    const delContriReply = async () => {
+
+    const delContributionOrReply = async () => {
         const docRef = doc(db, `contributions/${contributeId}`)
 
         if (clickable) {
@@ -89,7 +92,6 @@ const ContributionCard = ({ post, clickable, setShowThreads }) => {
             await batch.commit();
             deleteDoc(docRef)
             if (contributeId === thread) {
-
                 setThread(null)
             }
 
@@ -99,6 +101,18 @@ const ContributionCard = ({ post, clickable, setShowThreads }) => {
                 setThread(null)
             }
         }
+
+
+        const contributionsCollections = collection(db, 'contributions')
+        const postRef = doc(db, `posts/${postId}`)
+        const userConributions = query(contributionsCollections, where('postId', '==', postId), where('authorId', '==', authorId));
+        const userConributionSnap = await getDocs(userConributions)
+
+
+        if (userConributionSnap.docs.length < 1) {
+            await updateDoc(postRef, { contributors: arrayRemove(authorId) })
+        }
+
     }
 
 
@@ -112,9 +126,9 @@ const ContributionCard = ({ post, clickable, setShowThreads }) => {
                 </Link>
                 <h6>{authorName.substring(0, 30)}{authorName.length > 30 && "..."} - <span>{AMPMTime(createdAt)}</span></h6>
 
-                {user.uid === post.authorId &&
+                {authenticatedUser?.uid === post.authorId &&
 
-                    <span className={styles.deleteicon} title={clickable ? `delete contribution` : `delete reply`} onClick={delContriReply} ref={delButtonRef}>
+                    <span className={styles.deleteicon} title={clickable ? `delete contribution` : `delete reply`} onClick={delContributionOrReply} ref={delButtonRef}>
                         <FontAwesomeIcon icon={faTrashAlt} />
                     </span>
                 }

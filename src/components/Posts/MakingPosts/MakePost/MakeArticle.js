@@ -233,7 +233,7 @@ const MakeArticle = ({ postToEditId }) => {
 
       {
         savingPost &&
-        <div className={styles.saving}>
+        <div className='saving'>
           Saving Post...
         </div>
       }

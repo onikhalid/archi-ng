@@ -18,7 +18,7 @@ import { faMagnifyingGlass, faHouse, faUser, faFolder, faRightFromBracket, faGea
 const DesktopNav = () => {
   const [user, loading] = useAuthState(auth);
   const { theme, toggleTheme } = useContext(ThemeContext);
-  const { userData, setUserData } = useContext(UserContext);
+  const { userData } = useContext(UserContext);
 
   const logo = theme === 'light' ? "/assets/logo/logo-dark.svg" : "/assets/logo/logo-light.svg"
   const currentPath = usePathname()

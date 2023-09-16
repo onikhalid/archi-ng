@@ -7,13 +7,16 @@
 
 .inputdiv {
     position: relative;
-    margin-block: 1.5rem 3rem;
-
+    margin-block: 1.5rem 3rem !important;
+    transition: width 350ms ease-in-out !important;
+    
     input {
-        height: 40px;
-
+        height: 40px  !important;
+        border-radius: 12px !important;
+        
         @media (min-width: 720px) and (max-width: 1149px) {
-            max-width: 550px;
+            min-width: 520px;
+            width: 550px;
         }
 
         @media (min-width: 1150px) {
@@ -24,8 +27,8 @@
 
     .icon {
         position: absolute;
-        right: 02%;
-        top: 2.1rem;
+        right: 3.0%;
+        top: 2.2rem;
         color: var(--sec-text-clr);
 
         svg {

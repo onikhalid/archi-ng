@@ -14,6 +14,7 @@ import WhoseandWhichpost from "@/components/Posts/ShowingPosts/Whosepost/whosepo
 import { faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
+import { toast } from "react-toastify";
 
 
 export default function Login() {
@@ -57,6 +58,14 @@ export default function Login() {
         }
       }
     } catch (error) {
+      if (error.code || error.message === "auth/popup-blocked") {
+        toast.error("Your browser blocked a pop-up", {
+          position: "top-center",
+          autoClose: 3500
+        })
+      } else {
+        
+      }
       console.log(error);
     }
   };

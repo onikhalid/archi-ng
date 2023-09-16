@@ -1,6 +1,6 @@
 "use client"
 import styles from "./casestudypage.module.scss"
-import { useContext, useLayoutEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "@/utils/ContextandProviders/Contexts";
 import { useRouter } from 'next/navigation';
 import { useWindowWidth } from "@/utils/Hooks/ResponsiveHook";
@@ -22,7 +22,6 @@ import { addBookmark, deleteBookmark } from "@/functions/Bookmark";
 import { formatDate } from "@/functions/Formatting";
 import { deletePost } from "@/functions/Delete";
 
-import PhotoAlbum from "react-photo-album";
 import Lightbox from "yet-another-react-lightbox";
 import Captions from "yet-another-react-lightbox/plugins/captions";
 import Counter from "yet-another-react-lightbox/plugins/counter";
@@ -44,7 +43,6 @@ export default function Page({ params }) {
     const { postId } = params
     const router = useRouter()
     const width = useWindowWidth()
-    // const [user, loading] = useAuthState(auth);
     const { userData, setUserData, authenticatedUser } = useContext(UserContext);
 
     const [postData, setPostData] = useState(null)
@@ -56,7 +54,7 @@ export default function Page({ params }) {
     const [lightHouseOpen, setLightHouseOpen] = useState(false);
 
 
-    const gallerySlides = galleryImages.map((photo) => {
+    const gallerySlides = galleryImages?.map((photo) => {
         const width = 4000;
         const height = 2500;
         const breakpoints = [4320, 2160, 1080, 640, 384, 256, 128];
@@ -76,25 +74,7 @@ export default function Page({ params }) {
         };
     });
 
-    const gallerypreviewImages = galleryImages.slice(0, 4).map((photo) => {
-        const width = 250;
-        const height = 200;
-        const breakpoints = [4320, 2160, 1080, 640, 384, 256, 128];
 
-        return {
-            src: photo,
-            width,
-            height,
-            srcSet: breakpoints.map((breakpoint) => {
-                const breakpointHeight = Math.round((height / width) * breakpoint);
-                return {
-                    src: photo,
-                    width: breakpoint,
-                    height: breakpointHeight,
-                };
-            }),
-        };
-    });
 
 
 
@@ -105,7 +85,7 @@ export default function Page({ params }) {
     //////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////
 
-    useLayoutEffect(() => {
+    useEffect(() => {
 
         const getPost = async () => {
             try {
@@ -120,7 +100,7 @@ export default function Page({ params }) {
 
                         if (data.postType === "Case Studies") {
                             setPostData(data)
-                        } else { setPostData("exists but not an article") }
+                        } else { setPostData("exists but not a case study") }
 
 
                         if (authenticatedUser) {
@@ -170,11 +150,16 @@ export default function Page({ params }) {
 
 
 
+
+
+
     //////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////
     ///////////////      LIKE/BOOKMARK      //////////////////////
     //////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////
+
+
     const likeUnlike = () => {
         if (!authenticatedUser) {
             toast.error("Login to like posts", {
@@ -183,10 +168,10 @@ export default function Page({ params }) {
             })
             return
         } else {
-            if (postData.likes?.includes(userData.uid)) {
-                removeLike(postId, userData.uid)
+            if (postData.likes?.includes(userData.id)) {
+                removeLike(postId, userData.id)
             } else {
-                addLike(postId, userData.uid)
+                addLike(postId, userData.id)
             }
         }
     }
@@ -198,26 +183,15 @@ export default function Page({ params }) {
                 autoClose: 4000
             })
         } else {
-            if (postData.bookmarks?.includes(userData.uid)) {
-                deleteBookmark(null, userData.uid, postId)
+            if (postData.bookmarks?.includes(authenticatedUser.uid)) {
+                deleteBookmark(null, authenticatedUser.uid, postId)
             } else {
                 const { title, postType, authorId, coverImageURL, authorName, authorAvatar } = postData
-                addBookmark(userData.uid, postId, title, postType, authorId, coverImageURL, authorName, authorAvatar)
+                addBookmark(authenticatedUser.uid, postId, title, postType, authorId, coverImageURL, authorName, authorAvatar)
             }
         }
     }
 
-
-
-
-
-
-
-
-
-
-    const content = postData?.postContent
-    const pageTitle = postData && `${lightHouseOpen ? `Gallery of` : ``} ${postData.title} - Case Study by ${postData.authorName} | Archi NG`
 
 
 
@@ -250,6 +224,15 @@ export default function Page({ params }) {
         }
     }
 
+
+
+
+
+    //////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////
+    /////////////////       DELETE POST      /////////////////////
+    //////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////
     const delPost = async () => {
         await deletePost(postData.postId, postData.postContent, postData.coverImageURL)
         router.push('/')
@@ -263,21 +246,36 @@ export default function Page({ params }) {
 
 
 
+    const content = postData?.postContent
+    const pageTitle = postData && `${lightHouseOpen ? `Gallery of` : ``} ${postData.title} - Case Study by ${postData.authorName} | Archi NG`
+
+
+
+
+
+
+
+
+
+
     return (
 
         <>
             <title>{pageTitle}</title>
+            <meta name="description" content={postData?.title} />
+
 
             <div className={styles.casestudy}>
 
                 {(!loadingpost && !postData) &&
                     <div className='infobox'>
-                        <h2>Bad internet connection or Post doesn&apos;t exist</h2>
+                        <h3>Bad internet connection or Post doesn&apos;t exist</h3>
+                        <small>If this doesn&apos; clear with 10 seconds, check your internet connection and try again</small>
                     </div>
                 }
                 {loadingpost &&
                     <div className='infobox'>
-                        <h2>Loading...</h2>
+                        <h3>Loading...</h3>
                     </div>
                 }
 
@@ -285,183 +283,199 @@ export default function Page({ params }) {
 
                 {
                     !loadingpost && postData &&
-                    <div className={`content-container ${styles.container}`}>
-                        <header >
-                            <div className={styles.title}>
-                                <h1>{postData.title}</h1>
-                                {width > 719 && <span> Article by {postData.authorName}, <em>{formatDate(postData.createdAt)}</em></span>}
+
+                    <>
+
+                        {
+                            postData == 'exists but not a case study' &&
+                            <div className='infobox'>
+                                <h3>This post is not a case study</h3>
                             </div>
-                            {
-                                userData?.id === postData.authorId &&
-                                <div className={styles.settings}>
-                                    <Link title="Edit Post" href={`/post?edit=${postData.postId}&type=${postData.postType}`}><FontAwesomeIcon icon={faPenToSquare} /></Link>
-                                    <span title="Delete Post" onClick={delPost}> <FontAwesomeIcon icon={faTrashAlt} /> </span>
-                                </div>
-                            }
-                        </header>
+                        }
+                        {
+                            postData !== 'exists but not a case study' &&
+
+                            <div className={`content-container ${styles.container}`}>
+                                <header >
+                                    <div className={styles.title}>
+                                        <h1>{postData.title}</h1>
+                                        {width > 719 && <span> Article by {postData.authorName}, <em>{formatDate(postData.createdAt)}</em></span>}
+                                    </div>
+                                    {
+                                        userData?.id === postData.authorId &&
+                                        <div className={styles.settings}>
+                                            <Link title="Edit Post" href={`/post?edit=${postData.postId}&type=${postData.postType}`}><FontAwesomeIcon icon={faPenToSquare} /></Link>
+                                            <span title="Delete Post" onClick={delPost}> <FontAwesomeIcon icon={faTrashAlt} /> </span>
+                                        </div>
+                                    }
+                                </header>
 
 
-                        <section className={styles.postinfosection}>
-                            <div className={styles.coverimage}>
-                                <Image
-                                    src={postData.coverImageURL}
-                                    alt={`case study post cover image`}
-                                    height={900}
-                                    width={1600}
-                                    layout="responsive"
-                                    placeholder="empty"
-                                />
-                            </div>
+                                <section className={styles.postinfosection}>
+                                    <div className={styles.coverimage}>
+                                        <Image
+                                            src={postData.coverImageURL}
+                                            alt={`case study post cover image`}
+                                            height={900}
+                                            width={1600}
+                                            layout="responsive"
+                                            placeholder="empty"
+                                        />
+                                    </div>
 
-                            <div className={styles.postinfo}>
-                                <div className={styles.basicinfo}>
-                                    <section className={styles.desc}>
-                                        <h6><span>architect:</span><br />  {postData.architect}</h6>
-                                        <h6><span>year:</span> <br />  {postData.year}</h6>
-                                        <h6><span>location:</span> <br />  {postData.location?.join(', ')}</h6>
-                                        <h6><span>typology:</span> <br />  {postData.typology}</h6>
-                                    </section>
+                                    <div className={styles.postinfo}>
+                                        <div className={styles.basicinfo}>
+                                            <section className={styles.desc}>
+                                                <h6><span>architect:</span><br />  {postData.architect}</h6>
+                                                <h6><span>year:</span> <br />  {postData.year}</h6>
+                                                <h6><span>location:</span> <br />  {postData.location?.join(', ')}</h6>
+                                                <h6><span>typology:</span> <br />  {postData.typology}</h6>
+                                            </section>
 
 
-                                    <section className={styles.otherinfo}>
-                                        <div className={styles.postags}>
-                                            {width > 1279 && <h6>Tags:</h6>}
+                                            <section className={styles.otherinfo}>
+                                                <div className={styles.postags}>
+                                                    {width > 1279 && <h6>Tags:</h6>}
+
+                                                    {
+                                                        postData.tags.map((tag, index) => {
+                                                            return (
+                                                                <Link title='Explore tag' key={index} href={`/search?q=${tag}`}><em>{tag.toUpperCase()},</em></Link>
+                                                            )
+                                                        })
+                                                    }
+                                                </div>
+                                                <div className={styles.authorandtime}>
+                                                    <Link href={`/profile/${postData.authorUsername}`} title="visit author's profile" className={styles.authorinfo}>
+                                                        <img src={postData.authorAvatar} alt={'author image'} />
+                                                        <h6 title={postData.authorName}>{postData.authorName}</h6>
+                                                    </Link>
+                                                </div>
+                                            </section>
+                                        </div>
+
+
+                                        {/* //////////////////////////////////////// */}
+                                        {/* ///////////       STATS         //////// */}
+                                        {/* //////////////////////////////////////// */}
+                                        <div className={styles.poststats}>
+                                            <article className={postData.likes?.includes(userData?.id) ? ` ${styles.likedstat}` : `${styles.stat}`}>
+                                                <span>
+                                                    <h5>{postData.likes ? postData.likes.length : 0} <span>Likes</span></h5>
+                                                    <FollowersFollowingandLikesList postId={postId} />
+                                                </span>
+
+                                                <span onClick={likeUnlike}>
+                                                    <FontAwesomeIcon icon={faHeart} />
+                                                </span>
+                                            </article>
+
+                                            <article className={postData.bookmarks?.includes(userData?.id) ? `${styles.bookmarkedstat}` : `${styles.stat}`}>
+                                                <h5>{postData.bookmarks ? postData.bookmarks.length : 0} <span>Saves</span></h5>
+                                                <span onClick={saveUnsave}>
+                                                    <FontAwesomeIcon icon={faBookmark} />
+                                                </span>
+
+                                            </article>
+
+                                            <article className={styles.comment}>
+                                                <h5>{postData.comments ? postData.comments.length : 0} <span>Remarks</span></h5>
+                                                <Link href={'#remarks'}><FontAwesomeIcon icon={faComment} /></Link>
+                                            </article>
 
                                             {
-                                                postData.tags.map((tag, index) => {
-                                                    return (
-                                                        <Link title='Explore tag' key={index} href={`/search?q=${tag}`}><em>{tag.toUpperCase()},</em></Link>
-                                                    )
-                                                })
+                                                width > 1279 &&
+                                                <article className={styles.reads}>
+                                                    <h5>{postData.reads ? postData.reads.length : 0} <span>Reads</span></h5>
+                                                    <FontAwesomeIcon icon={faEye} />
+                                                </article>
                                             }
                                         </div>
-                                        <div className={styles.authorandtime}>
-                                            <Link href={`/profile?id=${postData.authorId}`} title="visit author's profile" className={styles.authorinfo}>
-                                                <img src={postData.authorAvatar} alt={'author image'} />
-                                                <h6 title={postData.authorName}>{postData.authorName}</h6>
-                                            </Link>
-                                        </div>
-                                    </section>
-                                </div>
+                                    </div>
+
+                                </section>
 
 
-                                {/* //////////////////////////////////////// */}
-                                {/* ///////////       STATS         //////// */}
-                                {/* //////////////////////////////////////// */}
-                                <div className={styles.poststats}>
-                                    <article className={postData.likes?.includes(userData?.id) ? ` ${styles.likedstat}` : `${styles.stat}`}>
-                                        <span>
-                                            <h5>{postData.likes ? postData.likes.length : 0} <span>Likes</span></h5>
-                                            <FollowersFollowingandLikesList postId={postId} />
-                                        </span>
+                                <main dangerouslySetInnerHTML={{ __html: content }} />
 
-                                        <span onClick={likeUnlike}>
-                                            <FontAwesomeIcon icon={faHeart} />
-                                        </span>
-                                    </article>
 
-                                    <article className={postData.bookmarks?.includes(userData?.id) ? `${styles.bookmarkedstat}` : `${styles.stat}`}>
-                                        <h5>{postData.bookmarks ? postData.bookmarks.length : 0} <span>Saves</span></h5>
-                                        <span onClick={saveUnsave}>
-                                            <FontAwesomeIcon icon={faBookmark} />
-                                        </span>
 
-                                    </article>
 
-                                    <article className={styles.comment}>
-                                        <h5>{postData.comments ? postData.comments.length : 0} <span>Remarks</span></h5>
-                                        <Link href={'#remarks'}><FontAwesomeIcon icon={faComment} /></Link>
-                                    </article>
+                                <section className={styles.gallery}>
+                                    <h2>Gallery</h2>
+                                    <div className={styles.previewcontainer}>
+                                        {
+                                            gallerySlides.slice(0, 5).map((image, index) => {
 
-                                    {
-                                        width > 1279 &&
-                                        <article className={styles.reads}>
-                                            <h5>{postData.reads ? postData.reads.length : 0} <span>Reads</span></h5>
-                                            <FontAwesomeIcon icon={faEye} />
-                                        </article>
+                                                return (
+                                                    <img className={styles.previewgalleryimage} src={image.src} key={index} />
+
+                                                )
+                                            })
+                                        }
+                                        {
+                                            gallerySlides.length > 5 &&
+                                            <button className={styles.previewmore} onClick={() => setLightHouseOpen(true)} title="open gallery">
+                                                +{gallerySlides.length - 5}
+                                            </button>
+                                        }
+                                    </div>
+
+                                    <button className={styles.openlightboxbutton} onClick={() => setLightHouseOpen(true)} >See The Full Gallery</button>
+                                    <Lightbox
+                                        open={lightHouseOpen}
+                                        close={() => setLightHouseOpen(false)}
+                                        slides={gallerySlides}
+                                        plugins={[Captions, Fullscreen, Slideshow, Thumbnails, Video, Zoom, Counter]}
+                                        carousel={{ finite: true }}
+                                    />
+
+                                    {/* <PhotoAlbum layout="rows" photos={gallerypreviewImages} columns={4}/>; */}
+                                </section>
+
+
+
+
+                                <section id="remarks" className={styles.commentsection}>
+                                    <h2>Remarks</h2>
+
+                                    {authenticatedUser &&
+                                        <form id='writecomment' className={styles.writecomment} onSubmit={handleSubmit(makeNewComment)}>
+
+                                            <div className={`inputdiv ${styles.inputdiv}`}>
+                                                <textarea
+                                                    id="Comment" name="Comment" type="text"
+                                                    placeholder="Write a Remark" rows={5}
+                                                    {...register("Comment", { required: true })} />
+                                                {errors.Comment && <span>You can&apos;t submit an empty remark</span>}
+                                            </div>
+
+                                            <div className={styles.writer}>
+                                                <button form="writecomment" type="submit" className={styles.writecommentButton}>Post Remark</button>
+                                                <span><img src={userData?.profilePicture} alt="user photo" height={28} width={28} /> {userData?.name}</span>
+                                            </div>
+
+
+                                        </form>
                                     }
-                                </div>
-                            </div>
 
-                        </section>
+                                    <div className={styles.comments}>
+                                        {(postData.comments && postData.comments.length > 0) &&
+                                            [...postData.comments]?.reverse().map((comment, index) => {
+                                                return <CommentCard key={index} comment={comment} postId={postData.postId} />
+                                            })
+                                        }
 
-
-                        <main dangerouslySetInnerHTML={{ __html: content }} />
-
-
-
-
-                        <section className={styles.gallery}>
-                            <h2>Gallery</h2>
-                            <div className={styles.previewcontainer}>
-                                {
-                                    gallerySlides.slice(0, 5).map((image, index) => {
-
-                                        return (
-                                            <img className={styles.previewgalleryimage} src={image.src} key={index} />
-
-                                        )
-                                    })
-                                }
-                                {
-                                    gallerySlides.length > 5 &&
-                                    <button className={styles.previewmore} onClick={() => setLightHouseOpen(true)} title="open gallery">
-                                        +{gallerySlides.length - 5}
-                                    </button>
-                                }
-                            </div>
-
-                            <button className={styles.openlightboxbutton} onClick={() => setLightHouseOpen(true)} >See The Full Gallery</button>
-                            <Lightbox
-                                open={lightHouseOpen}
-                                close={() => setLightHouseOpen(false)}
-                                slides={gallerySlides}
-                                plugins={[Captions, Fullscreen, Slideshow, Thumbnails, Video, Zoom, Counter]}
-                                carousel={{ finite: true }}
-                            />
-
-                            {/* <PhotoAlbum layout="rows" photos={gallerypreviewImages} columns={4}/>; */}
-                        </section>
-
-
-
-
-                        <section id="remarks" className={styles.commentsection}>
-                            <h2>Remarks</h2>
-
-                            {authenticatedUser &&
-                                <form id='writecomment' className={styles.writecomment} onSubmit={handleSubmit(makeNewComment)}>
-
-                                    <div className={`inputdiv ${styles.inputdiv}`}>
-                                        <textarea
-                                            id="Comment" name="Comment" type="text"
-                                            placeholder="Write a Remark" rows={5}
-                                            {...register("Comment", { required: true })} />
-                                        {errors.Comment && <span>You can&apos;t submit an empty remark</span>}
+                                        {(!postData.comments || postData.comments.length < 1) &&
+                                            <h6>No remarks yet, Be the first to post a remark</h6>
+                                        }
                                     </div>
-
-                                    <div className={styles.writer}>
-                                        <button form="writecomment" type="submit" className={styles.writecommentButton}>Post Remark</button>
-                                        <span><Image src={userData.profilePicture} alt="user photo" height={28} width={28} /> {userData?.name}</span>
-                                    </div>
-
-
-                                </form>
-                            }
-
-                            <div className={styles.comments}>
-                                {(postData.comments && postData.comments.length > 0) &&
-                                    [...postData.comments]?.reverse().map((comment, index) => {
-                                        return <CommentCard key={index} comment={comment} postId={postData.postId} />
-                                    })
-                                }
-
-                                {(!postData.comments || postData.comments.length < 1) &&
-                                    <h6>No remarks yet, Be the first to post a remark</h6>
-                                }
+                                </section>
                             </div>
-                        </section>
-                    </div>
+                        }
+
+                    </>
+
                 }
             </div>
         </>

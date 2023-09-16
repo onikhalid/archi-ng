@@ -52,6 +52,8 @@ const Body = ({ children }) => {
       const shouldShowButton = window.scrollY > 600
       setIsVisible(shouldShowButton);
 
+      //show back to top button when user scroll to a certain point and keeps scrolling down
+      //hide the button when user scrolls back up
       if ((window.scrollY > lastScrollY) && window.scrollY > 1600) {
         setIsVisible(true);
       } else if (window.scrollY < lastScrollY) {
@@ -60,6 +62,11 @@ const Body = ({ children }) => {
         setIsVisible(false);
       }
 
+      
+
+       //hide mobile nav when user is scrolling down
+       //show mobile nav when user is scrolling up
+       //show mobile nav when there's no scroll
       if ((window.scrollY == 0) && !(currentPath.includes('discuss/'))) {
         toggleHidden(false)
       } else if (window.scrollY == 0 && currentPath.includes('discuss/')) {
@@ -100,7 +107,7 @@ const Body = ({ children }) => {
     <body data-theme={theme} className={styles.body}>
       <ToastContainer limit={3} />
       <ProgressBar />
-      <button className={isVisible ? `${styles.topbtn}` : `${styles.topbtn} ${styles.hidden}`} onClick={scrollToTop}><FontAwesomeIcon icon={faCaretUp} /></button>
+      <span role="button" tabindex="0" className={isVisible ? `${styles.topbtn}` : `${styles.topbtn} ${styles.hidden}`} onClick={scrollToTop}><FontAwesomeIcon icon={faCaretUp} /></span>
 
       <div className={styles.container}>
         <section className={styles.sidebarandnav} style={{ '--sidebar-width': `${sidebarWidth}px` }}>

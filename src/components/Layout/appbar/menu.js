@@ -2,10 +2,8 @@
 
 import styles from "./menu.module.scss"
 import { useContext } from 'react';
-import { ThemeContext } from '@/utils/ContextandProviders/Contexts';
-import { useAuthState } from "react-firebase-hooks/auth";
+import { ThemeContext, UserContext } from '@/utils/ContextandProviders/Contexts';
 import { useWindowWidth } from "@/utils/Hooks/ResponsiveHook";
-import { auth } from "@/utils/firebase";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -21,7 +19,8 @@ const Menu = ({ menuOpen, setMenuOpen, menuclass, setMenuClass }) => {
     const router = useRouter()
     const { theme, toggleTheme } = useContext(ThemeContext);
     const logo = theme === 'light' ? "/assets/logo/logo-dark.svg" : "/assets/logo/logo-light.svg"
-    const [user, loading] = useAuthState(auth);
+    const { userData, authenticatedUser, loadingAuthenticatedUser } = useContext(UserContext);
+
     const width = useWindowWidth()
     const buildingTypologies = ["Residential", "Commercial", "Institutional", "Industrial", "Religious", "Transportation", "Hospitality", "Educational", "Mixed Use", "Cultural and Recreational", "Civic and Government"];
     const buildingArray = width < 720 ? buildingTypologies.slice(0, 8) : buildingTypologies
@@ -68,15 +67,15 @@ const Menu = ({ menuOpen, setMenuOpen, menuclass, setMenuClass }) => {
                             </div>
 
                             {
-                                user ?
-                                    <Link href={`/profile?id=${user?.uid}`} className={styles.user} onClick={closemenu}>
-                                        <h6>{user?.displayName}</h6>
+                                authenticatedUser ?
+                                    <Link href={`/profile/${userData.username}`} className={styles.user} onClick={closemenu}>
+                                        <h6>{authenticatedUser?.displayName}</h6>
                                         {
-                                            !loading && user &&
+                                            !loadingAuthenticatedUser && authenticatedUser &&
 
                                             <Image
-                                                src={user?.photoURL || logo}
-                                                alt={`picture - ${user?.displayName}`}
+                                                src={authenticatedUser?.photoURL || logo}
+                                                alt={`picture - ${authenticatedUser?.displayName}`}
                                                 width={40}
                                                 height={40}
                                             />
@@ -95,14 +94,17 @@ const Menu = ({ menuOpen, setMenuOpen, menuclass, setMenuClass }) => {
                         {
                             width < 720 &&
                             <section>
-                                {!loading && user && <span onClick={closemenu}><Button name={'Make Post'} link={"/post"} type={"quinta"} /></span>}
-                                {user && <span className={styles.logout} onClick={logOut}> <FontAwesomeIcon icon={faRightFromBracket} /> Logout</span>}
+                                {!loadingAuthenticatedUser && authenticatedUser && <span onClick={closemenu}><Button name={'Make Post'} link={"/post"} type={"quinta"} /></span>}
+                                {authenticatedUser && <span className={styles.logout} onClick={logOut}> <FontAwesomeIcon icon={faRightFromBracket} /> Logout</span>}
                             </section>
                         }
                     </section>
 
 
+
+                    {/* *contents */}
                     <section className={styles.menuContents}>
+
                         <section className={styles.casestudies}>
                             <h3>Case Studies</h3>
                             <ul>
@@ -117,6 +119,7 @@ const Menu = ({ menuOpen, setMenuOpen, menuclass, setMenuClass }) => {
                                 })}
                             </ul>
                         </section>
+
                         <section className={styles.articles}>
                             <h3>Articles</h3>
                             <ul>
@@ -132,7 +135,11 @@ const Menu = ({ menuOpen, setMenuOpen, menuclass, setMenuClass }) => {
                             </ul>
                         </section>
 
+
                     </section>
+
+
+
 
 
                     {/* *footer */}

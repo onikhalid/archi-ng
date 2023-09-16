@@ -208,7 +208,9 @@ const MakeCaseStudy = ({ postToEditId }) => {
       autoClose: 2500,
     });
 
-    window.scrollTo({ top: 0, behavior: "smooth" })
+
+
+    
     setSavingPost(false)
   }
 
@@ -543,7 +545,7 @@ const MakeCaseStudy = ({ postToEditId }) => {
 
       {
         savingPost &&
-        <div className={styles.saving}>
+        <div className='saving'>
           Saving Post...this might take a while<br /> Please do not close tab.
         </div>
       }

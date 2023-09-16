@@ -1,5 +1,44 @@
-.infobox{
-    h3{
-        max-width: 50ch;
+.errorPage {
+    display: flex !important;
+    height: 100vh !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-block: 0 !important;
+    background-color: var(--background) !important;
+    text-align: center !important;
+
+
+    svg {
+        color: red;
+        font-size: clamp(2.8rem, 4.2vw, 4.2rem);
+
+    }
+
+    h3 {
+        max-width: 20ch;
+    }
+
+
+
+    .capsulebutton {
+        display: block;
+        appearance: none;
+        font-family: var(--text-poppins);
+        background-color: transparent;
+        color: var(--main-text-clr);
+        margin-top: 2rem;
+        padding: .25rem .7rem;
+        border: solid 2px var(--main-text-clr);
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all ease-in-out 250ms;
+
+        &:hover {
+            border-radius: 5px;
+            color: var(--background);
+            background-color: var(--accent);
+            border: solid 2px transparent;
+        }
     }
 }

@@ -1,9 +1,11 @@
 'use client'
-import './not-found.module.scss'
+import styles from './not-found.module.scss'
 
-import Button from "@/components/Button/button"
 import { useRouter } from "next/navigation"
 import { Poppins, Lora } from 'next/font/google'
+import Link from 'next/link'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
 const poppins = Poppins({
   weight: ['300', '400', '500', '600', '700', '800', '900'],
   subsets: ['latin'],
@@ -14,19 +16,20 @@ const poppins = Poppins({
 
 
 
-export default function Error({ error, reset }) {
+export default function Error() {
   const router = useRouter()
 
 
   return (
     <>
 
-    <title>Error 404: Not Found | Archi NG</title>
+      <title>Error 404: Not Found | Archi NG</title>
 
-      <div className={`${poppins.className} infobox`}>
-        <h3>Sorry, We couldn&apos;t find what you&apos;re looking for</h3>
-        <Button name={'Go Back'} type={'tertiary'} link={()=>router.back()}/>
-        {/* <button onClick={() => reset()}>Try again</button> */}
+      <div className={`${poppins.className} ${styles.errorPage}`}>
+        <FontAwesomeIcon icon={faTriangleExclamation}/>
+        <h1>Error 404 </h1>
+        <h3>Sorry, we couldn&apos;t find what you&apos;re looking for</h3>
+        <Link href={'/'} className={styles.capsulebutton}>Go Back Home</Link>
       </div>
     </>
 

@@ -2,15 +2,14 @@
 
 "use client"
 import styles from "./articlepage.module.scss"
-import { useContext, useLayoutEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from 'next/navigation';
 import { useWindowWidth } from "@/utils/Hooks/ResponsiveHook";
 import Image from "next/image";
 import Link from "next/link";
 
-import { auth, db } from "@/utils/firebase";
-import { useAuthState } from "react-firebase-hooks/auth";
+import { db } from "@/utils/firebase";
 import { collection, getDocs, doc, query, where, onSnapshot, updateDoc, arrayUnion } from "firebase/firestore";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -31,8 +30,7 @@ export default function Page({ params }) {
     const { postId } = params
     const router = useRouter()
     const width = useWindowWidth()
-    // const [user, loading] = useAuthState(auth);
-    const {userData, setUserData, authenticatedUser} = useContext(UserContext);
+    const { userData, setUserData, authenticatedUser } = useContext(UserContext);
 
     const [postData, setPostData] = useState(null)
     const [loadingpost, setloadingpost] = useState(true);
@@ -40,7 +38,7 @@ export default function Page({ params }) {
 
 
 
-    useLayoutEffect(() => {
+    useEffect(() => {
 
 
         const getPost = async () => {
@@ -99,6 +97,15 @@ export default function Page({ params }) {
 
 
 
+
+
+
+
+    //////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////
+    ///////////////       LIKE AND BOOKMARK      /////////////////
+    //////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////
     const likeUnlike = () => {
         if (!authenticatedUser) {
             toast.error("Login to like posts", {
@@ -122,11 +129,11 @@ export default function Page({ params }) {
                 autoClose: 4000
             })
         } else {
-            if (postData.bookmarks?.includes(user.uid)) {
-                deleteBookmark(null, user.uid, postId)
+            if (postData.bookmarks?.includes(authenticatedUser.uid)) {
+                deleteBookmark(null, authenticatedUser.uid, postId)
             } else {
                 const { title, postType, authorId, coverImageURL, authorName, authorAvatar } = postData
-                addBookmark(user.uid, postId, title, postType, authorId, coverImageURL, authorName, authorAvatar)
+                addBookmark(authenticatedUser.uid, postId, title, postType, authorId, coverImageURL, authorName, authorAvatar)
             }
         }
     }
@@ -166,8 +173,10 @@ export default function Page({ params }) {
 
 
 
+
+
     const content = postData?.postContent
-    const pageTitle = postData && `${postData.title} - case study by ${postData.authorName} | Archi NG`
+    const pageTitle = postData && `${postData.title} - Article by ${postData.authorName} | Archi NG`
 
 
 
@@ -187,7 +196,7 @@ export default function Page({ params }) {
 
         <>
             <title>{pageTitle}</title>
-
+            <meta name="description" content={postData?.desc} />
             <div className={styles.casestudy}>
 
                 {(!loadingpost && !postData) &&
@@ -197,7 +206,7 @@ export default function Page({ params }) {
                 }
                 {loadingpost &&
                     <div className='infobox'>
-                        <h2>Loading...</h2>
+                        <h3>Loading...</h3>
                     </div>
                 }
 
@@ -257,7 +266,7 @@ export default function Page({ params }) {
                                             }
                                         </div>
                                         <div className={styles.authorandtime}>
-                                            <Link href={`/profile?id=${postData.authorId}`} title="visit author's profile" className={styles.authorinfo}>
+                                            <Link href={`/profile/${postData.authorUsername}`} title="visit author's profile" className={styles.authorinfo}>
                                                 <img src={postData.authorAvatar} alt={'author image'} />
                                                 <h6 title={postData.authorName}>{postData.authorName}</h6>
                                             </Link>
@@ -327,7 +336,7 @@ export default function Page({ params }) {
 
                                     <div className={styles.writer}>
                                         <button form="writecomment" type="submit" className={styles.writecommentButton}>Post Remark</button>
-                                        <span><Image src={userData.profilePicture} alt="user photo" height={28} width={28} /> {userData?.name}</span>
+                                        <span><img src={userData.profilePicture} alt="user photo" height={28} width={28} /> {userData?.name}</span>
                                     </div>
 
 
