@@ -15,7 +15,7 @@ import PhotoCard from '@/components/Posts/ShowingPosts/PostCards/Photo';
 import Button from '@/components/Button/button';
 import { toast } from 'react-toastify';
 
-
+import { useSearchParams } from 'next/navigation';
 
 
 
@@ -25,6 +25,8 @@ export default function Home() {
   const [currentwhosePost, setCurrentWhosePost] = useState("Feed");
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [followedUserIds, setfollowedUserIds] = useState([]);
+  const paramsGetter = useSearchParams()
+const categoryParam = paramsGetter.get('category')
 
 
   /////////////////////////////////////////////////
@@ -100,6 +102,12 @@ export default function Home() {
   ////////////         GET INITIAL POSTS         ////////////////
   ///////////////////////////////////////////////////////////////
   useEffect(() => {
+    if (categoryParam) {
+      setCurrentPost(categoryParam)
+    }
+  }, [categoryParam]);
+
+  useEffect(() => {
 
     const postsCollectionRef = collection(db, "posts");
     const followsCollectionRef = collection(db, 'follows');
@@ -135,8 +143,8 @@ export default function Home() {
       // start fetching
       setLoadingPosts(true)
       await GetFollowedUsersIds()
-      
-      const getQuery = async() => {
+
+      const getQuery = async () => {
         if (currentwhosePost === "Feed") {
           return query(postsCollectionRef, where('postType', '==', currentPost), orderBy("createdAt", 'desc'), limit(postsPerFetch))
         }
@@ -157,7 +165,6 @@ export default function Home() {
 
       const q = await getQuery();
       if (q == null) {
-        console.log(q)
         setAllPosts([])
         return
       }
@@ -310,7 +317,7 @@ export default function Home() {
 
 
         <section className={styles.allposts}>
- 
+
           {
             allPosts !== null &&
             <>

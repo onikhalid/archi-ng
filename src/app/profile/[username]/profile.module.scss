@@ -1,3 +1,8 @@
+.container{
+    width: 105% !important;
+    max-width: 105% !important;
+}
+
 .header {
     .pagetitle {
         display: flex;
@@ -21,7 +26,7 @@
     margin-block: 1rem;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 7.5vw;
+    gap: 3.5vw;
     width: 120%;
 
     @media (max-width: 1019px) {

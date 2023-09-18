@@ -20,7 +20,7 @@ const CaseStudyCard = ({ post }) => {
     const [user, loading] = useAuthState(auth)
 
 
-    const {postId,title, authorId, authorName, authorUsername, authorAvatar, coverImageURL, location, tags, typology, createdAt, postType }= post
+    const { postId, title, authorId, authorName, authorUsername, authorAvatar, coverImageURL, location, tags, typology, createdAt, postType } = post
 
 
 
@@ -83,7 +83,7 @@ const CaseStudyCard = ({ post }) => {
                 <section>
                     <section className={styles.metadata}>
                         <div className={styles.authorandtime}>
-                            <Link href={`/profile/${authorUsername}`}  title="visit author's profile" className={styles.authorinfo} >
+                            <Link href={`/profile/${authorUsername}`} title="visit author's profile" className={styles.authorinfo} >
                                 <img src={authorAvatar} alt={'author image'} />
                                 <h6>{authorName}</h6>
                             </Link>
@@ -100,8 +100,8 @@ const CaseStudyCard = ({ post }) => {
                     </section>
 
                     <section className={styles.postinfo}>
-                        <h3 className={styles.title} title={title}>{title.substring(0, 40)}{title.length > 40 && "..."}</h3>
-                        <div className={styles.desc}>
+                        <h3 className={styles.title} title={title}>{title.substring(0, 60)}{title.length > 60 && "..."}</h3>
+                        <div className={`${styles.desc} ${styles.h6}`}>
                             <h6><FontAwesomeIcon icon={faUserTie} /> <span>Architect: </span> {post.architect}</h6>
                             <h6><FontAwesomeIcon icon={faCalendarDays} /> <span>Year: </span> {post.year}</h6>
                             <h6><FontAwesomeIcon icon={faLocationDot} /> <span>Location: </span> {location?.join(', ')}</h6>

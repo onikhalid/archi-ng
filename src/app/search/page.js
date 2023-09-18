@@ -137,7 +137,7 @@ const Search = () => {
         const titleCIQuery = query(postsCollection, where('postType', '==', whichPost()), where('title', 'in', caseInsensitiveQueryText), orderBy('title'));
         const titleCIResults = await getDocs(titleCIQuery);
 
-        const tagsCIQuery = query(postsCollection, where('postType', '==', whichPost()), where('tags', 'array-contains', caseInsensitiveQueryText));
+        const tagsCIQuery = query(postsCollection, where('postType', '==', whichPost()), where('tags', 'array-contains-any', caseInsensitiveQueryText));
         const tagsCIResults = await getDocs(tagsCIQuery);
 
         const typologyCIQuery = query(postsCollection, where('postType', '==', whichPost()), where('typology', 'in', caseInsensitiveQueryText), orderBy('typology'));

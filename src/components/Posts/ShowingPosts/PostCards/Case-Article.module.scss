@@ -51,11 +51,26 @@
                 border-radius: 10px 0 0 10px;
                 width: 100%;
                 height: 100%;
-                object-position: 5 0;
+                object-position: 100% 0;
+                
+                &:hover{
+                    animation: gag 5000ms linear infinite both;
+                }
             }
 
             @media (max-width: 719px) {
                 aspect-ratio: 15/10 !important;
+            }
+
+            @keyframes gag {
+                0%{
+                    object-position: 100% 0;
+
+                }
+                50%{
+                    object-position: 0 0;
+
+                }
             }
         }
     }
@@ -94,11 +109,11 @@
 
                     img {
                         width: 9vw;
+                        height: 9vw;
                         max-width: 30px;
                         max-height: 30px;
                         border-radius: 50px;
                         border: solid 1px var(--accent);
-                        // aspect-ratio: 1/1 !important;
                     }
 
                     h6 {
@@ -136,7 +151,6 @@
 
             .title {
                 display: block;
-
             }
 
             .desc {
@@ -149,6 +163,11 @@
                 font-size: 0.9rem;
                 line-height: 1.75;
                 text-align: justify;
+                width: 100%;
+                hyphens: auto;
+                &.h6{
+                    text-align: left;
+                }
             }
 
         }

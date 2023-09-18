@@ -27,12 +27,12 @@ export const extractImageUrl = async (image) => {
 };
 
 const deleteImageFromFirebase = async (imageUrl) => {
-    const startIndex = imageUrl.indexOf('/o/') + 3; // Add 3 to exclude '/o/'
+    const startIndex = imageUrl.indexOf('/o/') + 3;
     const endIndex = imageUrl.indexOf('?alt=media');
     const encodedPath = imageUrl.substring(startIndex, endIndex);
     const storagePath = decodeURIComponent(encodedPath);
     const imageRef = ref(storage, storagePath)
-    deleteObject(imageRef)
+    await deleteObject(imageRef)
 };
 
 
@@ -60,29 +60,38 @@ export const deletePost = async (postId, content, coverImage) => {
         const coverImageRef = ref(storage, storagePath)
         try {
             await deleteObject(coverImageRef)
-            
+
         } catch (error) {
             if (error.code == "storage/object-not-found") {
                 toast.info("You might have used the cover image of the just deleted post in another post, we advise against that in the future thank you!", {
                     position: "top-center",
                     autoClose: 4000
                 })
-            } 
+            }
         }
 
 
-        // Delete all post images
+
         const extractedImages = await extractImages(content);
         if (extractedImages.length > 0) {
-            for (const image of extractedImages) {
-                const imageUrl = await extractImageUrl(image);
-                if (imageUrl && imageUrl.includes("firebasestorage.googleapis.com/v0/b/archi-nigeria.appspot.com/")) {
-                    await deleteImageFromFirebase(imageUrl);
+            const promises = extractedImages.map(async (image) => {
+                try {
+                    console.log(image);
+                    const imageUrl = await extractImageUrl(image);
+                    const dbURL = 'architecture-ng.appspot.com';
+
+                    const imageUrlString = String(imageUrl);
+
+                    if (imageUrlString.includes(dbURL)) {
+                        await deleteImageFromFirebase(imageUrlString);
+                    }
+                } catch (error) {
+                    console.error(`Error processing image: ${error}`);
                 }
-                if (imageUrl && imageUrl.includes("firebasestorage.googleapis.com/v0/b/architecture-ng.appspot.com/")) {
-                    await deleteImageFromFirebase(imageUrl);
-                }
-            }
+            });
+
+            await Promise.all(promises);
+
         }
 
         const postRef = doc(db, `posts/${postId}`)

@@ -278,7 +278,7 @@ export default function Page({ params }) {
         <>
             <title>{pageTitle}</title>
 
-            <main className='content-container'>
+            <main className={`${styles.container} content-container`}>
                 <header className={styles.header}>
                     <div className={currentSection === "Profile" ? "" : `${styles.pagetitle}`}>
                         <h1>Profile</h1>

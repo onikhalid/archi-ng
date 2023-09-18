@@ -3,10 +3,11 @@ import { Editor } from '@tinymce/tinymce-react';
 import { storage } from '@/utils/firebase';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { ThemeContext, UserContext } from '@/utils/ContextandProviders/Contexts';
+import { toast } from 'react-toastify';
 
 
 
-export default function Edit({ editorRef, setContent, editorContent, type}) {
+export default function Edit({ editorRef, setContent, editorContent, type }) {
   const { userData, setUserData, authenticatedUser, loadingauthenticatedUser } = useContext(UserContext);
 
   const previousContentRef = useRef('')
@@ -95,13 +96,26 @@ export default function Edit({ editorRef, setContent, editorContent, type}) {
   };
 
   const deleteImageFromDatabase = (imageUrl) => {
-    const startIndex = imageUrl.indexOf('/o/') + 3; // Add 3 to exclude '/o/'
-    const endIndex = imageUrl.indexOf('?alt=media');
-    const encodedPath = imageUrl.substring(startIndex, endIndex);
-    const storagePath = decodeURIComponent(encodedPath);
-    const imageRef = ref(storage, storagePath)
-    deleteObject(imageRef)
+    try {
+      const startIndex = imageUrl.indexOf('/o/') + 3; // Add 3 to exclude '/o/'
+      const endIndex = imageUrl.indexOf('?alt=media');
+      const encodedPath = imageUrl.substring(startIndex, endIndex);
+      const storagePath = decodeURIComponent(encodedPath);
+      const imageRef = ref(storage, storagePath)
+      deleteObject(imageRef)
+    } catch (error) {
+      if (error.code || error.message == "storage/object-not-found") {
+        toast.error("Duplicate delete action, image has already been deleted", {
+          position: "top-center",
+          autoClose: 3500
+        })
+      }
+    }
+
   };
+
+
+
 
 
 
@@ -135,7 +149,7 @@ export default function Edit({ editorRef, setContent, editorContent, type}) {
             'bold italic | alignleft aligncenter ' +
             'alignright alignjustify | bullist numlist outdent indent | ' +
             'removeformat',
-          block_formats: 'Paragraph=p; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6',
+          block_formats: 'Paragraph=p; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6',
           images_upload_handler: handleImageUpload,
           content_style: `h2{font-family: 'Poppins', 'Arial' , 'Helvetica' , 'sans-serif}` + `body { font-family: 'Lora','Times New Roman', Times, serif; font-size:14px; width:100% }` + 'div { margin: 10px; border: 5px solid red; padding: 3px; }'
         }}

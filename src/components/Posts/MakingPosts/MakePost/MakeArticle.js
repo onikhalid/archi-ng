@@ -16,7 +16,6 @@ import { UserContext } from '@/utils/ContextandProviders/Contexts';
 const MakeArticle = ({ postToEditId }) => {
   const router = useRouter()
   const editorRef = useRef(null);
-  // const [user, loading] = useAuthState(auth)
   const { userData, setUserData } = useContext(UserContext);
   const [articleContent, setArticleContent] = useState('') //tiny-mce content
   const [selectedImage, setSelectedImage] = useState(null);
@@ -92,7 +91,7 @@ const MakeArticle = ({ postToEditId }) => {
       title: data.Title,
       titleForSearch: data.Title.split(/[,:.\s-]+/).filter(word => word !== ''),
       timeToRead: data.TimeToRead,
-      updatedAt: new Date()
+      updatedAt: postToEditId ? new Date() : "New"
     }
 
     const postCollectionRef = collection(db, "posts");
@@ -125,7 +124,13 @@ const MakeArticle = ({ postToEditId }) => {
       });
     }
 
-    router.push('/')
+    if (postToEditId) {
+      router.push(`/post/article/${postToEditId}`)
+      
+    } else {
+      router.push('/?category=Articles')
+    }
+
     toast.success(`Your article has been ${postToEditId ? 'updated' : 'posted'} 😎`, {
       position: toast.POSITION.TOP_CENTER,
       autoClose: 3500,
@@ -161,6 +166,7 @@ const MakeArticle = ({ postToEditId }) => {
         setDesc(desc)
         setTimeToRead(timeToRead)
         setEditorContent(postContent)
+        setArticleContent(postContent)
         setTags(tags.join(','))
 
       }
@@ -262,9 +268,9 @@ const MakeArticle = ({ postToEditId }) => {
           <div className='inputdiv'>
             <label htmlFor="Desc">Short Description/Excerpt<span>*</span></label>
             <textarea
-              id="Desc" name='Desc' type="text"
-              placeholder="Mr Agbadi Owusu" defaultValue={desc}
-              onChange={handleInputChange} rows={3}
+              id="Desc" name='Desc' type="text" maxLength={160}
+              placeholder="A site plan is a drawing that shows the layout of a property, including the location of buildings, roads, sidewalks, landscaping, and other features." defaultValue={desc}
+              onChange={handleInputChange} rows={2}
               {...register("Desc", { required: false })} />
           </div>
 
@@ -305,10 +311,10 @@ const MakeArticle = ({ postToEditId }) => {
         </form>
 
         {/* TinyMCE RTE */}
-        <Edit editorRef={editorRef} editorContent={editorContent} setContent={setArticleContent} type={"Case Studies"} />
+        <Edit editorRef={editorRef} editorContent={editorContent} setContent={setArticleContent} type={"Articles"} />
 
 
-        <button className={styles.submitbutton} form='Article' type="submit">Post your Article 📒</button>
+        <button className={styles.submitbutton} form='Article' type="submit">{postToEditId ? "Update" : "Post"} your Article</button>
 
 
 
@@ -318,7 +324,7 @@ const MakeArticle = ({ postToEditId }) => {
           savingPost &&
           <div className='saving'>
             <span>Saving Post...this might take a while</span>
-             <span>Please do not close tab.</span>
+             <span>Please do not close this tab.</span>
           </div>
         }
       </div>

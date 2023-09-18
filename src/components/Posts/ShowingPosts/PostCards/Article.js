@@ -82,14 +82,14 @@ const ArticleCard = ({ post }) => {
     }
 
     //yes I'm lazy 😪
-    const postdesc = width < 720 ? post.desc?.substring(0, 120) : post.desc?.substring(0, 250)
+    const postdesc = width < 720 ? post.desc?.substring(0, 120) : post.desc?.substring(0, 150)
     const elipsis = () => {
         if (width < 720) {
             if (post.desc?.length > 120) {
                 return "..."
             } else return ""
         } else {
-            if (post.desc?.length > 250) {
+            if (post.desc?.length > 150) {
                 return "..."
             } else return ""
         }
@@ -129,7 +129,7 @@ const ArticleCard = ({ post }) => {
                     </section>
 
                     <section className={styles.postinfo}>
-                        <h3 className={styles.title} title={post.title}>{post.title.substring(0, 40)}{post.title.length > 40 && "..."}</h3>
+                        <h3 className={styles.title} title={post.title}>{post.title.substring(0, 55)}{post.title.length > 55 && "..."}</h3>
                         <div className={styles.desc}>
                             <p> {postdesc}{elipsis()}</p>
                         </div>

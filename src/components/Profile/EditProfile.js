@@ -175,10 +175,10 @@ const EditProfile = ({ save, update }) => {
   ////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////
   const createOrUpdateProfile = async (data) => {
-    setSavingProfile(true)
-
     document.body.scrollTo({ top: 0, behavior: "smooth" });
     window.scrollTo({ top: 0, behavior: "smooth" })
+
+    setSavingProfile(true)
 
 
     const newImageURL = selectedImage && await uploadImage(selectedImage)

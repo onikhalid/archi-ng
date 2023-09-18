@@ -106,7 +106,7 @@ const Archive = () => {
 
   //create a folder
   const CreateNewFolder = (data) => {
-    createFolder(data.Name, userData?.id, userData?.displayName)
+    createFolder(data.Name, userData?.id, userData?.name)
   }
 
   const pageTitle = `Archives - ${userData ? `${userData.name}'s` : `No one's 🙄`} ${archiveType} |  Archi NG`

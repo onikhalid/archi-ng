@@ -120,7 +120,7 @@ export const BookmarkCard = ({ post }) => {
 
                     <section className={width < 1020 ? `${styles.bottom} ${styles.menuisopen}` : bottomclass}>
                         <div className={styles.bottomtop}>
-                            <h3 title={postTitle ? postTitle : ""}>{postTitle?.substring(0, 34)}{(loadingPosts == false && postTitle?.length > 35) && '...'}</h3>
+                            <h3 title={postTitle ? postTitle : ""}>{postTitle?.substring(0, 36)}{(loadingPosts == false && postTitle?.length > 36) && '...'}</h3>
                             {
                                 bookmarkOwnerId == user?.uid &&
                                 <span title="delete bookmark" onClick={() => deleteBookmark(bookmarkId, user.uid, postId)} className={styles.deleteicon}>

@@ -157,9 +157,9 @@ export default function Page({ params }) {
         }
         else {
             const newComment = {
-                authorName: userData.name,
-                authorPhoto: userData.profilePicture,
-                authorId: userData.id,
+                authorName: userData?.name,
+                authorPhoto: userData?.profilePicture,
+                authorId: userData?.id,
                 createdAt: new Date(),
                 text: data.Comment
             }
@@ -202,6 +202,7 @@ export default function Page({ params }) {
                 {(!loadingpost && !postData) &&
                     <div className='infobox'>
                         <h3>Bad internet connection or Post doesn&apos;t exist</h3>
+                        <small>If this doesn&apos; clear with 10 seconds, check your internet connection and try again</small>
                     </div>
                 }
                 {loadingpost &&
@@ -249,7 +250,7 @@ export default function Page({ params }) {
                                 <div className={styles.basicinfo}>
                                     <section className={styles.desc}>
                                         <h6><span>time to read:</span><br />  {postData.timeToRead} mins</h6>
-                                        <h6><span>desc:</span> <br />  {postData.desc}</h6>
+                                        <h6><span>desc:</span> <br />  {postData.desc.substring(0, 100)}{postData.desc.length > 100 && "..."}</h6>
                                     </section>
 
 
@@ -305,7 +306,7 @@ export default function Page({ params }) {
                                     </article>
 
                                     {
-                                        width > 1279 &&
+                                        width > 1499 &&
                                         <article className={styles.reads}>
                                             <h5>{postData.reads ? postData.reads.length : 0} <span>Reads</span></h5>
                                             <FontAwesomeIcon icon={faEye} />
@@ -336,7 +337,7 @@ export default function Page({ params }) {
 
                                     <div className={styles.writer}>
                                         <button form="writecomment" type="submit" className={styles.writecommentButton}>Post Remark</button>
-                                        <span><img src={userData.profilePicture} alt="user photo" height={28} width={28} /> {userData?.name}</span>
+                                        <span><img src={userData?.profilePicture} alt="user photo" height={28} width={28} /> {userData?.name}</span>
                                     </div>
 
 

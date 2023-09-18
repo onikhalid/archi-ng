@@ -299,7 +299,7 @@ export default function Page({ params }) {
                                 <header >
                                     <div className={styles.title}>
                                         <h1>{postData.title}</h1>
-                                        {width > 719 && <span> Article by {postData.authorName}, <em>{formatDate(postData.createdAt)}</em></span>}
+                                        {width > 719 && <span> Case Study by {postData.authorName}, <em>{formatDate(postData.createdAt)}</em></span>}
                                     </div>
                                     {
                                         userData?.id === postData.authorId &&

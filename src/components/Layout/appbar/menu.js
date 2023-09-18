@@ -25,7 +25,7 @@ const Menu = ({ menuOpen, setMenuOpen, menuclass, setMenuClass }) => {
     const buildingTypologies = ["Residential", "Commercial", "Institutional", "Industrial", "Religious", "Transportation", "Hospitality", "Educational", "Mixed Use", "Cultural and Recreational", "Civic and Government"];
     const buildingArray = width < 720 ? buildingTypologies.slice(0, 8) : buildingTypologies
 
-    const articlesTypologies = ["News", "How-Tos and Tutorials", "Architectural Tours", "Famous Architects and their Works", "Architectural Travel", "Architecture and Technology "];
+    const articlesTypologies = ["News", "Architectural Tours", "Architectural Travel", "How-Tos and Tutorials", "Architecture and Technology", "Famous Architects and their Works",];
     const articlesArray = width < 720 ? articlesTypologies.slice(0, 5) : articlesTypologies
 
 
@@ -68,7 +68,7 @@ const Menu = ({ menuOpen, setMenuOpen, menuclass, setMenuClass }) => {
 
                             {
                                 authenticatedUser ?
-                                    <Link href={`/profile/${userData.username}`} className={styles.user} onClick={closemenu}>
+                                    <Link href={`/profile/${userData?.username}`} className={styles.user} onClick={closemenu}>
                                         <h6>{authenticatedUser?.displayName}</h6>
                                         {
                                             !loadingAuthenticatedUser && authenticatedUser &&

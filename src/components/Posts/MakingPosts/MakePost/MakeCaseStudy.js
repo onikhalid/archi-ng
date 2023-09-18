@@ -1,6 +1,6 @@
 import styles from './MakeCaseStudy.module.scss'
 import Edit from "../TextEditor/Text"
-import { useRef, useState, useContext, useEffect } from "react";
+import { useRef, useState, useContext, useEffect, useLayoutEffect } from "react";
 import { UserContext } from '@/utils/ContextandProviders/Contexts';
 import { useRouter } from 'next/navigation';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -27,13 +27,167 @@ const MakeCaseStudy = ({ postToEditId }) => {
   const { userData, setUserData } = useContext(UserContext)
   const [caseContent, setCaseContent] = useState('') //tiny-mce content
 
-  const [selectedCoverImage, setSelectedCoverImage] = useState(null);
-  const [previousCoverImgURL, setPreviousCoverImgURL] = useState(null)
-  const [coverImgURL, setCoverImgURL] = useState(null)
 
   const [savingPost, setSavingPost] = useState(false)
   const { register, handleSubmit, formState: { errors }, setValue } = useForm();
 
+
+  const [selectedCoverImage, setSelectedCoverImage] = useState(null);
+  const [previousCoverImgURL, setPreviousCoverImgURL] = useState(null)
+  const [coverImgURL, setCoverImgURL] = useState(null)
+
+  const [selectedGalleryImageFiles, setSelectedGalleryImageFiles] = useState([]);
+  const [previewGalleryImageURLs, setPreviewGalleryImageURLs] = useState([]);//for display and UI
+  const [originalGalleryURLs, setOriginalGalleryURLs] = useState([]);//for comparison, to check deleted images etc.
+  const [updatedOriginalGalleryURLs, setUpdatedOriginalGalleryURLs] = useState([]);//for upload, to add to the newly added/uploaded images
+
+
+
+
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////       IMAGE UPLOAD         /////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+
+  ///////////////////////////////////////////////////////////
+  ////////////        COVER IMAGE          //////////////////
+  ///////////////////////////////////////////////////////////
+  const handleCoverImageFileChange = async (event) => {
+    const file = event.target.files[0];
+    if (postToEditId) {
+      setPreviousCoverImgURL(coverImgURL)
+    }
+    setSelectedCoverImage(file);
+
+    const newImgURL = URL.createObjectURL(file)
+    setCoverImgURL(newImgURL)
+
+  };
+
+  //upload selected image to firebase
+  const uploadCoverImage = async (imageFile) => {
+    if (postToEditId) {
+      //delete previous image from firebase
+      const startIndex = previousCoverImgURL.indexOf('/o/') + 3;
+      const endIndex = previousCoverImgURL.indexOf('?alt=media');
+      const encodedPath = previousCoverImgURL.substring(startIndex, endIndex);
+      const storagePath = decodeURIComponent(encodedPath);
+      const previousImageRef = ref(storage, storagePath)
+      await deleteObject(previousImageRef)
+    }
+
+    const imageRef = ref(storage, `cover_images/${userData.id}/Case Studies/${imageFile.name}`);
+    const snapshot = await uploadBytes(imageRef, imageFile)
+    const downloadURL = await getDownloadURL(snapshot.ref);
+    if (postToEditId) {
+      await updateDoc(doc(db, `posts/${postToEditId}`), {
+        coverImageURL: downloadURL
+      });
+    }
+
+    return downloadURL;
+  };
+
+
+
+
+
+  ///////////////////////////////////////////////////////////
+  ////////////        GALLERY IMAGES          ///////////////
+  ///////////////////////////////////////////////////////////
+
+  const handleAddGalleryImage = (e) => {
+    const selectedImages = Array.from(e.target.files);
+    setSelectedGalleryImageFiles([...selectedGalleryImageFiles, ...selectedImages]);
+
+    const selectedImagesURLs = selectedImages.map((image) => URL.createObjectURL(image));
+    setPreviewGalleryImageURLs([...previewGalleryImageURLs, ...selectedImagesURLs]);
+  };
+
+
+
+  const handleRemoveGalleryImage = (index) => {
+
+    const updatedImages = [...selectedGalleryImageFiles];
+    const updatedImageURLs = [...previewGalleryImageURLs];
+
+    updatedImages.splice(index, 1);
+    updatedImageURLs.splice(index, 1);
+
+    const removedURL = updatedImageURLs[index];
+    const updatedOriginalURLs = originalGalleryURLs.filter((url) => url !== removedURL);
+    setUpdatedOriginalGalleryURLs(updatedOriginalURLs)
+
+    setSelectedGalleryImageFiles(updatedImages);
+    setPreviewGalleryImageURLs(updatedImageURLs);
+  };
+
+
+  const uploadGalleryImages = async () => {
+    const storageRef = ref(storage, `post_images/${userData.id}/Case Studies`);
+
+
+    if (selectedGalleryImageFiles.length == 0) {
+      return [];
+    }
+    else {
+
+      try {
+        const downloadURLs = await Promise.all(
+          selectedGalleryImageFiles.map(async (image) => {
+            const imageRef = ref(storageRef, image.name);
+
+            try {
+              const snapshot = await uploadBytes(imageRef, image);
+
+              const downloadURL = await getDownloadURL(imageRef);
+              return downloadURL;
+            } catch (error) {
+              toast.error('Error uploading an image', {
+                position: "top-center",
+                autoClose: 3000
+              })
+              console.error('Error uploading an image:', error);
+              return null;
+            }
+          })
+        );
+
+        return downloadURLs
+      }
+
+      catch (error) {
+        toast.error('Error uploading images', {
+          position: "top-center",
+          autoClose: 3000
+        })
+        console.error('Error uploading images:', error);
+      }
+    }
+
+  };
+
+
+
+
+
+
+
+
+
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  ///////////////////          CREATE OR EDIT POST         /////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   // Initial Fields Values, handle change
   const [title, setTitle] = useState('')
@@ -44,6 +198,8 @@ const MakeCaseStudy = ({ postToEditId }) => {
   const [typology, setTypology] = useState('')
   const [tags, setTags] = useState('')
   const [editorContent, setEditorContent] = useState("")
+  const [createdAt, setCreatedAt] = useState("")
+  const [credits, setcredits] = useState('');
 
   const handleInputChange = (e) => {
     setValue(e.target.name, e.target.value);
@@ -63,22 +219,6 @@ const MakeCaseStudy = ({ postToEditId }) => {
 
 
 
-
-
-
-
-
-
-
-
-
-  //////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////
-  ///////////////////          CREATE OR EDIT POST         /////////////////////
-  //////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////
 
   const submitForm = async (data) => {
     document.body.scrollTo({ top: 0, behavior: "smooth" });
@@ -145,6 +285,7 @@ const MakeCaseStudy = ({ postToEditId }) => {
 
 
     const postData = {
+      allImages: [coverImageDownloadURL, ...postImagesURLs, ...galleryImagesURL],
       architect: data.Architect,
       authorId: userData.id,
       authorName: userData.name,
@@ -152,9 +293,10 @@ const MakeCaseStudy = ({ postToEditId }) => {
       authorUsername: userData.username,
       client: data.Client == '' ? 'unknown' : data.Client,
       coverImageURL: coverImageDownloadURL,
-      createdAt: new Date(),
+      createdAt: postToEditId ? createdAt : new Date(),
+      credits: credits,
       location: data.Location.split(",").map(item => item.trim()),
-      allImages: [coverImageDownloadURL, ...postImagesURLs, ...galleryImagesURL],
+      otherImages: galleryImagesURL,
       postContent: caseContent,
       postId: postToEditId ? postToEditId : userData.id,
       postType: 'Case Studies',
@@ -162,6 +304,7 @@ const MakeCaseStudy = ({ postToEditId }) => {
       titleForSearch: data.Title.split(/[,:.\s-]+/).filter(word => word !== ''),
       title: data.Title,
       typology: data.Typology,
+      updatedAt: postToEditId ? new Date() : "New",
       year: data.Year,
     }
 
@@ -201,8 +344,10 @@ const MakeCaseStudy = ({ postToEditId }) => {
       });//updating the new post with the newly created document Id
     }
 
+    if (postToEditId) {
+      router.push(`/post/case-study/${postToEditId}`)
+    } else { router.push('/?category=Case Studies') }
 
-    router.push('/')
     toast.success(`Your case study has been ${postToEditId ? 'updated' : 'submitted'} 😎`, {
       position: toast.POSITION.TOP_CENTER,
       autoClose: 2500,
@@ -216,13 +361,20 @@ const MakeCaseStudy = ({ postToEditId }) => {
 
 
 
+
+
+
+
+
+
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////       CHECK IF USER WANTS TO CREATE NEW POST OR EDIT PREVIOUS POSTS       /////////////
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const checkPostToEdit = async () => {
       if (postToEditId == null || '' || undefined) {
         return
@@ -231,22 +383,25 @@ const MakeCaseStudy = ({ postToEditId }) => {
         const postToEditRef = doc(db, `posts/${postToEditId}`)
         const postToEditSnap = await getDoc(postToEditRef)
         const postToEdit = postToEditSnap.data()
-        const { coverImageURL, title, client, location, architect, year, typology, tags, postContent, otherImages } = postToEdit
+        const { coverImageURL, title, client, createdAt, credits, location, architect, year, typology, tags, postContent, otherImages } = postToEdit
         setCoverImgURL(coverImageURL)
         setPreviewGalleryImageURLs(otherImages)
         //save previously uploaded images into an array for later use [i.e the images firebase urls]
         //doing this because the new image src will be pointing to a blob file just for preview, 
-        //which will later be uploaded to firebase when user submits
+        //which will later be uploaded to firebase when user submits post
         setOriginalGalleryURLs(otherImages)
         setUpdatedOriginalGalleryURLs(otherImages)
         setTitle(title)
         setClient(client)
+        setCreatedAt(createdAt)
         setLocation(location.join(','))
         setArchitect(architect)
         setYear(year)
         setTypology(typology)
         setEditorContent(postContent)
+        setCaseContent(postContent)
         setTags(tags.join(','))
+        setcredits(credits)
       }
     }
 
@@ -263,148 +418,6 @@ const MakeCaseStudy = ({ postToEditId }) => {
 
 
 
-
-
-
-
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-  ///////////////////////////////       IMAGE UPLOAD         /////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-
-  ///////////////////////////////////////////////////////////
-  ////////////        COVER IMAGE          //////////////////
-  ///////////////////////////////////////////////////////////
-  const handleCoverImageFileChange = async (event) => {
-    const file = event.target.files[0];
-    if (postToEditId) {
-      setPreviousCoverImgURL(coverImgURL)
-    }
-    setSelectedCoverImage(file);
-
-    const newImgURL = URL.createObjectURL(file)
-    setCoverImgURL(newImgURL)
-
-  };
-
-  //upload selected image to firebase
-  const uploadCoverImage = async (imageFile) => {
-    if (postToEditId) {
-      //delete previous image from firebase
-      const startIndex = previousCoverImgURL.indexOf('/o/') + 3;
-      const endIndex = previousCoverImgURL.indexOf('?alt=media');
-      const encodedPath = previousCoverImgURL.substring(startIndex, endIndex);
-      const storagePath = decodeURIComponent(encodedPath);
-      const previousImageRef = ref(storage, storagePath)
-      await deleteObject(previousImageRef)
-    }
-
-    const imageRef = ref(storage, `cover_images/${userData.id}/Case Studies/${imageFile.name}`);
-    const snapshot = await uploadBytes(imageRef, imageFile)
-    const downloadURL = await getDownloadURL(snapshot.ref);
-    if (postToEditId) {
-      await updateDoc(doc(db, `posts/${postToEditId}`), {
-        coverImageURL: downloadURL
-      });
-    }
-
-    return downloadURL;
-  };
-
-
-
-
-
-
-
-
-
-  ///////////////////////////////////////////////////////////
-  ////////////        GALLERY IMAGES          ///////////////
-  ///////////////////////////////////////////////////////////
-  const [selectedGalleryImageFiles, setSelectedGalleryImageFiles] = useState([]);
-  const [previewGalleryImageURLs, setPreviewGalleryImageURLs] = useState([]);//for display and UI
-  const [originalGalleryURLs, setOriginalGalleryURLs] = useState([]);//for comparison, to check deleted images etc.
-  const [updatedOriginalGalleryURLs, setUpdatedOriginalGalleryURLs] = useState([]);//for upload, to add to the newly added/uploaded images
-
-
-
-  const handleAddGalleryImage = (e) => {
-    const selectedImages = Array.from(e.target.files);
-    setSelectedGalleryImageFiles([...selectedGalleryImageFiles, ...selectedImages]);
-
-    const selectedImagesURLs = selectedImages.map((image) => URL.createObjectURL(image));
-    setPreviewGalleryImageURLs([...previewGalleryImageURLs, ...selectedImagesURLs]);
-  };
-
-
-
-
-  const handleRemoveGalleryImage = (index) => {
-
-    const updatedImages = [...selectedGalleryImageFiles];
-    const updatedImageURLs = [...previewGalleryImageURLs];
-
-    updatedImages.splice(index, 1);
-    updatedImageURLs.splice(index, 1);
-
-    const removedURL = updatedImageURLs[index];
-    console.log(removedURL)
-    const updatedOriginalURLs = originalGalleryURLs.filter((url) => url !== removedURL);
-    console.log(updatedOriginalURLs)
-    setUpdatedOriginalGalleryURLs(updatedOriginalURLs)
-
-    setSelectedGalleryImageFiles(updatedImages);
-    setPreviewGalleryImageURLs(updatedImageURLs);
-  };
-
-
-  const uploadGalleryImages = async () => {
-    const storageRef = ref(storage, `post_images/${userData.id}/Case Studies`);
-
-
-    if (selectedGalleryImageFiles.length == 0) {
-      return [];
-    }
-    else {
-
-      try {
-        const downloadURLs = await Promise.all(
-          selectedGalleryImageFiles.map(async (image) => {
-            const imageRef = ref(storageRef, image.name);
-
-            try {
-              const snapshot = await uploadBytes(imageRef, image);
-
-              const downloadURL = await getDownloadURL(imageRef);
-              return downloadURL;
-            } catch (error) {
-              toast.error('Error uploading an image', {
-                position: "top-center",
-                autoClose: 3000
-              })
-              console.error('Error uploading an image:', error);
-              return null;
-            }
-          })
-        );
-
-        return downloadURLs
-      }
-
-      catch (error) {
-        toast.error('Error uploading images', {
-          position: "top-center",
-          autoClose: 3000
-        })
-        console.error('Error uploading images:', error);
-      }
-    }
-
-  };
 
 
 
@@ -525,7 +538,7 @@ const MakeCaseStudy = ({ postToEditId }) => {
           </div>
           <input type="file" multiple onChange={handleAddGalleryImage} />
           <div className={styles.imagepreviewcontainer}>
-            {previewGalleryImageURLs.map((url, index) => (
+            {previewGalleryImageURLs?.map((url, index) => (
               <div key={index} className={styles.imagepreview}>
                 <img src={url} alt={`Image ${index}`} />
                 <span className={styles.closebutton} onClick={() => handleRemoveGalleryImage(index)} title='Remove Image'>
@@ -537,10 +550,14 @@ const MakeCaseStudy = ({ postToEditId }) => {
         </section>
 
 
-        <button className={styles.submitbutton} form='CaseStudy' type="submit">Submit your Case Study <FontAwesomeIcon icon={faNewspaper} /></button>
+        <div className={`inputdiv ${styles.inputdiv}`}>
+          <label htmlFor="Credits">Credits and references</label>
+          <input
+            id="Credits" name="Credits" type="text" onChange={(e) => setcredits(e.target.value)}
+            value={credits} placeholder="All images from google.com" />
+        </div>
 
-
-
+        <button className={styles.submitbutton} form='CaseStudy' type="submit">{postToEditId ? "Update" : "Submit"} your Case Study <FontAwesomeIcon icon={faNewspaper} /></button>
 
 
 
@@ -548,7 +565,7 @@ const MakeCaseStudy = ({ postToEditId }) => {
           savingPost &&
           <div className='saving'>
             <span>Saving Post...this might take a while</span>
-             <span>Please do not close tab.</span>
+            <span>Please do not close tab.</span>
           </div>
         }
       </div>

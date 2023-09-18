@@ -107,7 +107,7 @@ const Body = ({ children }) => {
     <body data-theme={theme} className={styles.body}>
       <ToastContainer limit={3} />
       <ProgressBar />
-      <span role="button" tabindex="0" className={isVisible ? `${styles.topbtn}` : `${styles.topbtn} ${styles.hidden}`} onClick={scrollToTop}><FontAwesomeIcon icon={faCaretUp} /></span>
+      <span role="button" tabIndex="0" className={isVisible ? `${styles.topbtn}` : `${styles.topbtn} ${styles.hidden}`} onClick={scrollToTop}><FontAwesomeIcon icon={faCaretUp} /></span>
 
       <div className={styles.container}>
         <section className={styles.sidebarandnav} style={{ '--sidebar-width': `${sidebarWidth}px` }}>
