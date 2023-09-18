@@ -491,7 +491,13 @@ const MakeCaseStudy = ({ postToEditId }) => {
             <input id="Year" name='Year' type="text"
               placeholder="2022" defaultValue={year}
               onChange={handleInputChange}
-              {...register("Year", { required: true })} />
+              {...register("Year", {
+                required: true,
+                pattern: {
+                  value: /^[0-9]{4}$/,
+                  message: 'Field must contain exactly four numbers',
+                },
+              })} />
             {errors.Year && <span>This field is required</span>}
           </div>
 
