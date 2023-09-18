@@ -26,7 +26,7 @@ export default function Home() {
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [followedUserIds, setfollowedUserIds] = useState([]);
   const paramsGetter = useSearchParams()
-const categoryParam = paramsGetter.get('category')
+  const categoryParam = paramsGetter.get('category')
 
 
   /////////////////////////////////////////////////
@@ -229,54 +229,62 @@ const categoryParam = paramsGetter.get('category')
       if (scrollTop + window.innerHeight === document.body.offsetHeight) {
         // start fetching
         if (!loadingPosts && fetchedPosts) {
-          setLoadingPosts(true);
+          if (fetchedPosts >= 20) {
+
+            setLoadingPosts(true);
 
 
-          const getQuery = () => {
-            if (currentwhosePost === "Feed") {
-              return query(postsCollectionRef, where('postType', '==', currentPost), orderBy("createdAt", 'desc'), limit(postsPerFetch), startAfter(fetchedPosts))
+            const getQuery = () => {
+              if (currentwhosePost === "Feed") {
+                return query(postsCollectionRef, where('postType', '==', currentPost), orderBy("createdAt", 'desc'), limit(postsPerFetch), startAfter(fetchedPosts))
+              }
+
+              // when user is signed in but doesn't follow anyone
+              else if (user && followedUserIds.length < 1 && (currentwhosePost === "Following")) {
+                setLoadingPosts(false)
+                return null
+              }
+
+              else if (user && (currentwhosePost === "Following")) {
+                return query(postsCollectionRef, where('postType', '==', currentPost), where('authorId', 'in', followedUserIds), orderBy("createdAt", 'desc'), limit(postsPerFetch), startAfter(fetchedPosts));
+              }
+
+              // when user isn't signed in and wants to see posts from their imaginary followed user
+              else if (!user && (currentwhosePost === "Following")) {
+                return null
+              }
             }
 
-            // when user is signed in but doesn't follow anyone
-            else if (user && followedUserIds.length < 1 && (currentwhosePost === "Following")) {
-              setLoadingPosts(false)
-              return null
+
+
+            const nextPageQuery = getQuery();
+            if (nextPageQuery == null) {
+              const newResult = []
+              setAllPosts(allPosts.concat(newResult))
+              return
+            }
+            else {
+              const unsubscribe = onSnapshot(nextPageQuery, (snapshot) => {
+                const newResult = [];
+                snapshot.forEach((doc) => {
+                  const data = doc.data();
+                  newResult.push(data);
+                });
+
+                setAllPosts(allPosts.concat(newResult))
+                const documents = snapshot.docs;
+                setfetchedPosts(documents[documents.length - 1])
+
+
+                // stop fetching
+                setLoadingPosts(false)
+              });
+              return unsubscribe;
             }
 
-            else if (user && (currentwhosePost === "Following")) {
-              return query(postsCollectionRef, where('postType', '==', currentPost), where('authorId', 'in', followedUserIds), orderBy("createdAt", 'desc'), limit(postsPerFetch), startAfter(fetchedPosts));
-            }
-
-            // when user isn't signed in and wants to see posts from their imaginary followed user
-            else if (!user && (currentwhosePost === "Following")) {
-              return null
-            }
-          }
-
-
-          const nextPageQuery = getQuery();
-          if (nextPageQuery == null) {
-            const newResult = []
-            setAllPosts(allPosts.concat(newResult))
-            return
           }
           else {
-            const unsubscribe = onSnapshot(nextPageQuery, (snapshot) => {
-              const newResult = [];
-              snapshot.forEach((doc) => {
-                const data = doc.data();
-                newResult.push(data);
-              });
-
-              setAllPosts(allPosts.concat(newResult))
-              const documents = snapshot.docs;
-              setfetchedPosts(documents[documents.length - 1])
-
-
-              // stop fetching
-              setLoadingPosts(false)
-            });
-            return unsubscribe;
+            return
           }
         }
       }
@@ -326,7 +334,7 @@ const categoryParam = paramsGetter.get('category')
                 // user signed in but no post in the db
                 (user && currentwhosePost === 'Feed' && !loadingPosts && allPosts.length < 1) && <div className='infobox main'>
                   <h3>🙁Nothing has been posted here yet, Be the first to make a post</h3>
-                  <small>This could also be as a result of your bad internet connection.</small>
+                  <small>This could also be as a result of poor internet connection.</small>
                   <Button name={'Make Post'} type={'primary'} link={'/post'} />
                 </div>
               }
@@ -334,14 +342,14 @@ const categoryParam = paramsGetter.get('category')
                 // user signed in but nothing in the following tab
                 (user && currentwhosePost === 'Following' && !loadingPosts && allPosts.length < 1) && <div className='infobox main'>
                   <h3>🙁Nothing has been posted here yet, Either you don&apos;t follow anyone or the people you follow haven&apos;t posted anything</h3>
-                  <small>This could also be as a result of your bad internet connection.</small>
+                  <small>This could also be as a result of poor internet connection.</small>
                 </div>
               }
               {
                 // user not signed in and no post in the db
                 (!user && currentwhosePost === 'Feed' && !loadingPosts && allPosts.length < 1) && <div className='infobox main'>
                   <h3>🙁Nothing has been posted here yet, Sign in and be the first to make a post  </h3>
-                  <small>This could also be as a result of your bad internet connection.</small>
+                  <small>This could also be as a result of poor internet connection.</small>
                 </div>
               }
               {

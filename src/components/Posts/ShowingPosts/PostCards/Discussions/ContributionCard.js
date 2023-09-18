@@ -119,7 +119,7 @@ const ContributionCard = ({ post, clickable, setShowThreads }) => {
 
 
     return (
-        <article className={styles.contributioncard} onClick={(e) => showReplies(e)} style={clickable && { 'cursor': `pointer` }}>
+        <article className={thread === contributeId ? `${styles.contributioncard} ${styles.selected}` : `${styles.contributioncard}`} onClick={(e) => showReplies(e)} style={clickable && { 'cursor': `pointer` }}>
             <section className={styles.up}>
                 <Link href={`/profile/${authorUsername}`} title="visit user profile">
                     <Image src={authorPhoto} width={20} height={20} alt={`${authorName}'s photo`} />
