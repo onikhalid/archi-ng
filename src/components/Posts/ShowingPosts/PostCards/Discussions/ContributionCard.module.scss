@@ -61,6 +61,9 @@
 
     .down {
         display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        
         margin-left: calc(25px + 0.35rem);
         margin-right: 5%;
 
@@ -68,6 +71,9 @@
             font-size: 0.9rem;
             font-weight: 300;
             font-family: var(--text-poppins);
+        }
+        img{
+            border-radius: 12px;
         }
     }
 

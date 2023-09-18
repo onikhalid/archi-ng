@@ -258,10 +258,11 @@
         border-inline: solid 1.5px var(--main-text-clr);
         padding: 1rem;
         scrollbar-color: var(--glass) var(--background) !important;
-
+        --z-index: 250;
 
 
         @media (max-width: 1019px) {
+            --z-index: 650;
 
             --size: 50%;
             z-index: -250;
@@ -282,7 +283,7 @@
         @media (max-width: 720px) {
             --size: 20%;
             left: var(--size);
-            padding-block: 6rem 2rem;
+            padding-block: 2rem;
         }
 
         @media (min-height: 1020px) {
@@ -309,13 +310,13 @@
             1% {
                 opacity: 0;
                 left: var(--size);
-                z-index: 250;
+                z-index: var(--z-index);
             }
 
             100% {
                 opacity: 1;
                 left: var(--size);
-                z-index: 250;
+                z-index: var(--z-index);
             }
         }
 
@@ -323,7 +324,7 @@
             0% {
                 opacity: 1;
                 left: var(--size);
-                z-index: 250;
+                z-index: var(--z-index);
             }
 
             99% {

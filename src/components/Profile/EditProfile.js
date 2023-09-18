@@ -105,12 +105,13 @@ const EditProfile = ({ save, update }) => {
   const checkIfUsernameTaken = async (username) => {
     const q = query(collection(db, 'users'), where('username', '==', username));
     const querySnapshot = await getDocs(q);
+
     let userWithUserName
     querySnapshot.docs.forEach((doc) => {
       const data = doc.data();
       userWithUserName = data
     });
-    if (user.uid == userWithUserName?.id) {
+    if (user.uid === userWithUserName.id) {
       return true
     } else return querySnapshot.empty;
   };

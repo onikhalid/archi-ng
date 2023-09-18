@@ -2,20 +2,20 @@
 import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import styles from './StartDiscussion.module.scss'
 
-import { auth, db, storage } from "@/utils/firebase"
-import { useEffect, useState } from 'react';
-import { useAuthState } from "react-firebase-hooks/auth"
+import { db, storage } from "@/utils/firebase"
+import { useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { addDoc, collection, doc, getDoc, getDocs, query, updateDoc, where, writeBatch } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
+import { UserContext } from '@/utils/ContextandProviders/Contexts';
 
 
 
 
 
 const StartDiscussion = ({ postToEditId, setIsWrongFormat }) => {
-    const [user, loading] = useAuthState(auth);
+    const { userData, authenticatedUser } = useContext(UserContext);
     const router = useRouter();
     const { register, handleSubmit, formState: { errors }, setValue } = useForm();
 
@@ -98,15 +98,9 @@ const StartDiscussion = ({ postToEditId, setIsWrongFormat }) => {
             await deleteObject(previousImageRef)
         }
 
-        const imageRef = ref(storage, `cover_images/${user.uid}/Discussions/${imageFile.name}`);
+        const imageRef = ref(storage, `cover_images/${authenticatedUser.uid}/Discussions/${imageFile.name}`);
         const snapshot = await uploadBytes(imageRef, imageFile)
         const downloadURL = await getDownloadURL(snapshot.ref);
-        // if (postToEditId) {
-        //     await updateDoc(doc(db, `posts/${postToEditId}`), {
-        //         coverImageURL: downloadURL
-        //     });
-        // }
-
         return downloadURL;
     };
 
@@ -137,13 +131,13 @@ const StartDiscussion = ({ postToEditId, setIsWrongFormat }) => {
 
 
         const postData = {
-            authorId: user.uid,
-            authorName: user.displayName,
-            authorAvatar: user.photoURL,
+            authorId: authenticatedUser.uid,
+            authorName: authenticatedUser.displayName,
+            authorAvatar: authenticatedUser.photoURL,
             coverImageURL: coverImageDownloadURL,
             createdAt: postToEditId ? createdAt : new Date(),
             desc: data.Desc,
-            postId: postToEditId ? postToEditId : user.uid,
+            postId: postToEditId ? postToEditId : authenticatedUser.uid,
             titleForSearch: data.Title.split(/[,:.\s-]+/).filter(word => word !== ''),
             title: data.Title,
             postType: "Discussions",
@@ -152,7 +146,31 @@ const StartDiscussion = ({ postToEditId, setIsWrongFormat }) => {
 
 
 
+        const contributionsCollectionRef = collection(db, `contributions`)
+        const newContribution = {
+            authorName: userData.name,
+            authorPhoto: userData.profilePicture,
+            authorId: authenticatedUser.uid,
+            authorUsername: userData.username,
+            image: coverImageDownloadURL,
+            createdAt: new Date(),
+            text: data.Desc,
+            parentContributionId: null
+        }
+
+
+
+
+
+        const postsCollectionRef = collection(db, `posts`)
+        // await updateDoc(doc(postsCollectionRef, postId), 
+        //   contributors: arrayUnion(authenticatedUser?.uid)
+
+
+
         const postCollectionRef = collection(db, "posts");
+
+
         if (postToEditId) {
             await updateDoc(doc(postCollectionRef, postToEditId), postData);
 
@@ -173,12 +191,23 @@ const StartDiscussion = ({ postToEditId, setIsWrongFormat }) => {
             router.push(`/discuss/${postToEditId}`)
         }
         else {
+
+       
             const newPostRef = await addDoc(postCollectionRef, postData);
             const postId = newPostRef.id
             newpostID = newPostRef.id
             await updateDoc(doc(postCollectionRef, newPostRef.id), {
                 postId: postId
             });//updating the new post with the newly created document Id
+
+            
+            //create discuss 1st message
+            const newContributionRef = await addDoc(contributionsCollectionRef, newContribution);
+            const contributeId = newContributionRef.id
+            await updateDoc(doc(contributionsCollectionRef, newContributionRef.id), {
+                postId: newpostID,
+                contributeId: contributeId
+            });
 
             router.push(`/discuss/${newpostID}`)
         }

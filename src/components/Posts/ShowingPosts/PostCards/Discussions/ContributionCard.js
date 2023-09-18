@@ -15,7 +15,7 @@ import { faTrashAlt } from "@fortawesome/free-solid-svg-icons"
 
 const ContributionCard = ({ post, clickable, setShowThreads }) => {
 
-    const { authorId, authorUsername, authorName, authorPhoto, createdAt, contributeId, postId, text } = post
+    const { authorId, authorUsername, authorName, authorPhoto, createdAt, contributeId, postId, image, text } = post
     const { thread, setThread, threadParent, setThreadParent } = useContext(ThreadContext);
     const [replies, setReplies] = useState([]);
     const width = useWindowWidth()
@@ -137,6 +137,7 @@ const ContributionCard = ({ post, clickable, setShowThreads }) => {
 
 
             <section className={styles.down}>
+                {image && <img src={image} alt="Discussion Cover Image"/>}
                 <p> {text}</p>
             </section>
 

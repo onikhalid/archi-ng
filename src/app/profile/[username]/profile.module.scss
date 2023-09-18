@@ -1,6 +1,8 @@
-.container{
-    width: 105% !important;
-    max-width: 105% !important;
+.container {
+    @media (min-width: 720px) {
+        width: 105% !important;
+        max-width: 105% !important;
+    }
 }
 
 .header {
@@ -46,14 +48,14 @@
         gap: 1rem;
         flex: 1.2;
         text-align: center;
-        
-        
+
+
         @media (min-width: 1020px) {
             border-right: solid 2px var(--main-text-clr);
             padding-right: 2.5rem;
             border-bottom: none;
         }
-        
+
         @media (max-width: 1019px) {
             border-bottom: solid 2px var(--main-text-clr);
             padding-bottom: 2.5rem;

@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopyright, faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import Button from "@/components/Button/button";
 import { toast } from "react-toastify";
+import { auth } from "@/utils/firebase";
 
 
 
