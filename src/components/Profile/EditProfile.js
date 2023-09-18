@@ -282,7 +282,7 @@ const EditProfile = ({ save, update }) => {
       router.push(`/`)
 
     } else {
-      // router.push(`/profile/${username}`)
+      router.push(`/profile/${username}`)
 
     }
     setSavingProfile(false)
