@@ -19,7 +19,6 @@ const EditProfile = ({ save, update }) => {
   const [user, loading] = useAuthState(auth)
   const router = useRouter()
 
-  const [savingProfile, setSavingProfile] = useState(false)
   const [pictureURL, setPictureURL] = useState(null)
   const [selectedImage, setSelectedImage] = useState(null)
   const newUserPic = "/assets/img/unknown_user_profile_picture.png"
@@ -179,7 +178,6 @@ const EditProfile = ({ save, update }) => {
     document.body.scrollTo({ top: 0, behavior: "smooth" });
     window.scrollTo({ top: 0, behavior: "smooth" })
 
-    setSavingProfile(true)
 
 
     const newImageURL = selectedImage && await uploadImage(selectedImage)
@@ -279,7 +277,6 @@ const EditProfile = ({ save, update }) => {
     })
 
     router.push(`/`)
-    setSavingProfile(false)
 
   }
 
@@ -302,13 +299,6 @@ const EditProfile = ({ save, update }) => {
     <>
       {
         loading && <div>Loading..</div>
-      }
-
-      {
-        savingProfile &&
-        <div className='saving'>
-          Saving Profile...this might take a while<br /> Please do not close tab.
-        </div>
       }
 
       {
