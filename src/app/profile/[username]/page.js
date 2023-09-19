@@ -339,7 +339,7 @@ export default function Page({ params }) {
                                 />
                                 <div>
                                     <h3>{userInfo.name}</h3>
-                                    {user && user.uid == userInfo.id && width < 720 && <Link href={'/settings'}><FontAwesomeIcon icon={faGear} /></Link>}
+                                    {user && user.uid == userInfo.id && width < 750 && <Link href={'/settings'}><FontAwesomeIcon icon={faGear} /></Link>}
 
                                 </div>
                                 <h6 className={styles.username}>@{userInfo.username}</h6>
