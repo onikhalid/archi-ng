@@ -278,13 +278,7 @@ const EditProfile = ({ save, update }) => {
       autoClose: 2000,
     })
 
-    if (update) {
-      router.push(`/`)
-
-    } else {
-      router.push(`/profile/${username}`)
-
-    }
+    router.push(`/`)
     setSavingProfile(false)
 
   }
@@ -310,7 +304,7 @@ const EditProfile = ({ save, update }) => {
         loading && <div>Loading..</div>
       }
 
-{
+      {
         savingProfile &&
         <div className='saving'>
           Saving Profile...this might take a while<br /> Please do not close tab.
@@ -459,12 +453,14 @@ const EditProfile = ({ save, update }) => {
               </div>
             </section>
 
+
+            <div className={styles.buttongroup}>
+              <button className={styles.submitbutton} form='userDetails' type="submit">{save}</button>
+            </div>
+
           </form>
 
-          <div className={styles.buttongroup}>
-            <button className={styles.submitbutton} form='userDetails' type="submit">{save}</button>
 
-          </div>
         </div>
       }
     </>
