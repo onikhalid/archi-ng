@@ -110,7 +110,7 @@ const EditProfile = ({ save, update }) => {
       const data = doc.data();
       userWithUserName = data
     });
-    if (user.uid === userWithUserName.id) {
+    if (user.uid === userWithUserName?.id) {
       return true
     } else return querySnapshot.empty;
   };
@@ -178,105 +178,109 @@ const EditProfile = ({ save, update }) => {
     document.body.scrollTo({ top: 0, behavior: "smooth" });
     window.scrollTo({ top: 0, behavior: "smooth" })
 
+    try {
+      const newImageURL = selectedImage && await uploadImage(selectedImage)
+      const userData = {
+        id: user?.uid,
+        name: data.Name,
+        username: data.Username,
+        bio: data.Bio,
+        profilePicture: selectedImage ? newImageURL : pictureURL,
+        occupation: data.Occupation,
+
+        twitter: data.Twitter,
+        instagram: data.Instagram,
+        behance: data.Behance,
+      }
+
+      const userDocRef = doc(db, `users/${user?.uid}`);
+      await setDoc(userDocRef, { ...userData });
+      await updateProfile(user, { photoURL: selectedImage ? newImageURL : pictureURL, displayName: data.Name })
+      const batch = writeBatch(db);
 
 
-    const newImageURL = selectedImage && await uploadImage(selectedImage)
-    const userData = {
-      id: user?.uid,
-      name: data.Name,
-      username: data.Username,
-      bio: data.Bio,
-      profilePicture: selectedImage ? newImageURL : pictureURL,
-      occupation: data.Occupation,
 
-      twitter: data.Twitter,
-      instagram: data.Instagram,
-      behance: data.Behance,
+
+
+      //////////////////////////////////////////////////////////////////////////////////
+      /////   UPDATE NAME AND AVATAR IN POSTS USER HAS PREVIOUSLY CREATED/FEATURED IN
+
+      /////  POSTS
+      const allUsersPostsQuery = query(collection(db, 'posts'), where('authorId', '==', user?.uid));
+      const allUsersPostsSnap = await getDocs(allUsersPostsQuery)
+
+      allUsersPostsSnap.docs.forEach(async (posts) => {
+        const post = posts.data();
+        const postDocRef = doc(db, `posts/${post.postId}`)
+
+        batch.update(postDocRef, {
+          authorName: data.Name,
+          authorAvatar: selectedImage ? newImageURL : pictureURL,
+          authorUsername: data.Username
+        })
+      })
+
+
+      /////  BOOKMARKS
+      const allUsersPostsBookmarkssQuery = query(collection(db, 'bookmarks'), where('authorId', '==', user?.uid));
+      const allUsersPostsBookmarksSnap = await getDocs(allUsersPostsBookmarkssQuery)
+      allUsersPostsBookmarksSnap.docs.forEach(async (allBookmarks) => {
+        const bookmark = allBookmarks.data();
+        const bookmsrkDocRef = doc(db, `bookmarks/${bookmark.bookmarkId}`)
+
+        batch.update(bookmsrkDocRef, {
+          postAuthorName: data.Name,
+          postAuthorPhoto: selectedImage ? newImageURL : pictureURL
+        })
+      });
+
+
+
+
+      /////  FOLDERS
+      const allUsersFoldersQuery = query(collection(db, 'folders'), where('userId', '==', user?.uid));
+      const allUsersFoldersSnap = await getDocs(allUsersFoldersQuery)
+      allUsersFoldersSnap.docs.forEach(async (allFolders) => {
+        const folder = allFolders.data();
+        const folderDocRef = doc(db, `folders/${folder.folderId}`)
+
+        batch.update(folderDocRef, {
+          folderOwnerName: data.Name,
+          folderOwnerAvatar: selectedImage ? newImageURL : pictureURL
+        })
+      });
+
+
+
+      /////  CONTRIBUTIONS
+      const allUsersContributionsQuery = query(collection(db, 'contributions'), where('authorId', '==', user?.uid));
+      const allUsersContributionSnap = await getDocs(allUsersContributionsQuery)
+
+      allUsersContributionSnap.docs.forEach(async (allContributions) => {
+        const contribution = allContributions.data();
+        const contributionDocRef = doc(db, `contributions/${contribution.contributeId}`)
+
+        batch.update(contributionDocRef, {
+          authorName: data.Name,
+          authorPhoto: selectedImage ? newImageURL : pictureURL,
+          authorUsername: data.Username
+        })
+      });
+
+      await batch.commit();
+
+
+      toast.success("Profile updated successfully", {
+        position: 'top-center',
+        autoClose: 2000,
+      })
+
+      router.push(`/`)
+    } catch (error) {
+      console.log(error)
     }
 
-    const userDocRef = doc(db, `users/${user?.uid}`);
-    await setDoc(userDocRef, { ...userData });
-    await updateProfile(user, { photoURL: selectedImage ? newImageURL : pictureURL, displayName: data.Name })
-    const batch = writeBatch(db);
 
-
-
-
-
-    //////////////////////////////////////////////////////////////////////////////////
-    /////   UPDATE NAME AND AVATAR IN POSTS USER HAS PREVIOUSLY CREATED/FEATURED IN
-
-    /////  POSTS
-    const allUsersPostsQuery = query(collection(db, 'posts'), where('authorId', '==', user?.uid));
-    const allUsersPostsSnap = await getDocs(allUsersPostsQuery)
-
-    allUsersPostsSnap.docs.forEach(async (posts) => {
-      const post = posts.data();
-      const postDocRef = doc(db, `posts/${post.postId}`)
-
-      batch.update(postDocRef, {
-        authorName: data.Name,
-        authorAvatar: selectedImage ? newImageURL : pictureURL,
-        authorUsername: data.Username
-      })
-    })
-
-
-    /////  BOOKMARKS
-    const allUsersPostsBookmarkssQuery = query(collection(db, 'bookmarks'), where('authorId', '==', user?.uid));
-    const allUsersPostsBookmarksSnap = await getDocs(allUsersPostsBookmarkssQuery)
-    allUsersPostsBookmarksSnap.docs.forEach(async (allBookmarks) => {
-      const bookmark = allBookmarks.data();
-      const bookmsrkDocRef = doc(db, `bookmarks/${bookmark.bookmarkId}`)
-
-      batch.update(bookmsrkDocRef, {
-        postAuthorName: data.Name,
-        postAuthorPhoto: selectedImage ? newImageURL : pictureURL
-      })
-    });
-
-
-
-
-    /////  FOLDERS
-    const allUsersFoldersQuery = query(collection(db, 'folders'), where('userId', '==', user?.uid));
-    const allUsersFoldersSnap = await getDocs(allUsersFoldersQuery)
-    allUsersFoldersSnap.docs.forEach(async (allFolders) => {
-      const folder = allFolders.data();
-      const folderDocRef = doc(db, `folders/${folder.folderId}`)
-
-      batch.update(folderDocRef, {
-        folderOwnerName: data.Name,
-        folderOwnerAvatar: selectedImage ? newImageURL : pictureURL
-      })
-    });
-
-
-
-    /////  CONTRIBUTIONS
-    const allUsersContributionsQuery = query(collection(db, 'contributions'), where('authorId', '==', user?.uid));
-    const allUsersContributionSnap = await getDocs(allUsersContributionsQuery)
-
-    allUsersContributionSnap.docs.forEach(async (allContributions) => {
-      const contribution = allContributions.data();
-      const contributionDocRef = doc(db, `contributions/${contribution.contributeId}`)
-
-      batch.update(contributionDocRef, {
-        authorName: data.Name,
-        authorPhoto: selectedImage ? newImageURL : pictureURL,
-        authorUsername: data.Username
-      })
-    });
-
-    await batch.commit();
-
-
-    toast.success("Profile updated successfully", {
-      position: 'top-center',
-      autoClose: 2000,
-    })
-
-    router.push(`/`)
 
   }
 
