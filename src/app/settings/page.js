@@ -289,6 +289,9 @@ const Settings = () => {
   return (
     <>
       <title>{`${pageTitle} - ${currentSettings}`}</title>
+      <meta name="description" content={`Settings |  Archi NG` }/>
+
+
       <main className="content-container">
 
         {/* ///////////////////////////////////////////////////////////// */}

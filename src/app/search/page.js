@@ -288,6 +288,8 @@ const Search = () => {
   return (
     <>
       <title>{pageTitle}</title>
+      <meta name="description" content={pageTitle }/>
+
       <main className="content-container">
 
         {/* ///////////////////////////////////////////////////////////// */}

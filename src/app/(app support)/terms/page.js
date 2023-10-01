@@ -6,6 +6,7 @@ const Terms = () => {
     return (
         <>
             <title>Terms and Conditions | Archi NG</title>
+            <meta name="description" content="Terms and Conditions | Archi NG" />
 
 
             <div className={`${styles.container} content-container`}>

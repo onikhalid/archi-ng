@@ -263,6 +263,7 @@ export default function Page({ params }) {
         <>
             <title>{pageTitle}</title>
             <meta name="description" content={postData?.title} />
+            <meta name="description" content={`${postData?.title} - Case Study by ${postData?.authorName} | Archi NG`} />
 
 
             <div className={styles.casestudy}>

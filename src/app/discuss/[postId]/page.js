@@ -307,6 +307,7 @@ export default function Page({ params }) {
 
     <>
       <title>{pageTitle}</title>
+      <meta name="description" content={`${postData?.title} - Discussion started by ${postData?.authorName} | Archi NG`} />
 
 
       {(!loadingpost && !postData || postData == "Doesn't Exists") &&

@@ -312,6 +312,7 @@ export default function Home() {
   return (
     <>
       <title>Home | Archi NG</title>
+      <meta name="description" content="Archi NG: Documenting Architecture by Nigerians, for Nigerians" />
 
 
       <main className={`app content-container`}>

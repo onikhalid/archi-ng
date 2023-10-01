@@ -5,6 +5,7 @@ const About = () => {
   return (
     <>
       <title>About Us | Archi NG</title>
+      <meta name="description" content="About Us | Archi NG" />
 
 
       <div className={`${styles.container} content-container`}>

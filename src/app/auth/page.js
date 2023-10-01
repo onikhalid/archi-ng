@@ -98,6 +98,12 @@ export default function Login() {
 
 
   return (
+    <>
+
+    <title>Join or Login | Archi NG</title>
+    <meta name="description" content="Join or Login | Archi NG" />
+
+
     <div className={`content-container ${styles.authpage}`}>
       <section className={styles.closebutton} onClick={goBack}>
         <FontAwesomeIcon icon={faX} bounce />
@@ -126,5 +132,7 @@ export default function Login() {
       </section>
 
     </div>
+    </>
+    
   );
 }

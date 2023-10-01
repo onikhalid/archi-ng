@@ -6,6 +6,8 @@ const FAQ = () => {
   return (
     <>
       <title>Frequently Asked Questions | Archi NG</title>
+      <meta name="description" content="Frequently Asked Questions | Archi NG" />
+
 
       <div className={`${styles.container} content-container`}>
         <header>

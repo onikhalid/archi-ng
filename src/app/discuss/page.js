@@ -111,6 +111,7 @@ const Discuss = () => {
   return (
     <>
       <title>Discussions | Archi NG</title>
+      <meta name="description" content="Discussions | Archi NG" />
 
       <div className="content-container">
         <h1> Discussions</h1>

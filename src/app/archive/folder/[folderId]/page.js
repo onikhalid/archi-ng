@@ -107,6 +107,7 @@ export default function Page({ params }) {
     return (
         <>
             <title>{pageTitle}</title>
+            <meta name="description" content={pageTitle} />
 
             <main className='content-container'>
                 <header className={styles.pageHeader}>

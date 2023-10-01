@@ -122,6 +122,8 @@ const Archive = () => {
   return (
     <>
       <title>{pageTitle}</title>
+      <meta name="description" content={`Archives - ${userData ? `${userData?.name}'s` : `No one's 🙄`} Archives |  Archi NG` }/>
+
 
       <main className="content-container">
         <header className={styles.authPageHeader}>

@@ -45,6 +45,7 @@ const Contact = () => {
   return (
     <>
       <title>Contact Us | Archi NG</title>
+      <meta name="description" content="Contact Us | Archi NG" />
 
 
       <div className={`${styles.container} content-container`}>

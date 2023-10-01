@@ -6,6 +6,8 @@ const Policy = () => {
     return (
         <>
             <title>Privacy Policy | Archi NG</title>
+            <meta name="description" content="Privacy Policy | Archi NG" />
+
 
             <div className={`${styles.container} content-container`}>
                 <header>
