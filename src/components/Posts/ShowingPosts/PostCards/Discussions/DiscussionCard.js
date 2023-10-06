@@ -30,7 +30,7 @@ const DiscussCard = ({ post }) => {
 
             <section className={styles.postinfo}>
                 <div className={styles.infotop} title={post.title}>
-                    {width > 720 && <h3>{post.title.substring(0, 60)}{post.title.length > 60 && "..."}</h3>}
+                    {width > 720 && <h3>{post.title.substring(0, 50)}{post.title.length > 50 && "..."}</h3>}
                     {width < 720 && <h3>{post.title.substring(0, 31)}{post.title.length > 31 && "..."}</h3>}
                     {post.createdAt && <span>started on {formatDate(post.createdAt)}</span>}
 
