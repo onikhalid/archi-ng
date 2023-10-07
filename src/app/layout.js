@@ -39,7 +39,6 @@ export default function RootLayout({ children }) {
             <html className={poppins.className} lang="en">
               <head>
                 <link rel='shortcut icon' href='/favicon.ico' />
-                <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet"></link>
                 <link
                   rel="stylesheet"
                   href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css"
