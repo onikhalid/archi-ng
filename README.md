@@ -1,6 +1,6 @@
 # Archi NG Platform
 
-Welcome to the Archi NG Platform repository! This repository contains the source code and documentation for our web platform dedicated to architecture and design enthusiasts.
+Welcome to the Archi NG Platform repository! This repository contains the source code and documentation for our web platform dedicated to architects, architecture, and design enthusiasts.
 
 ## Table of Contents
 - [Introduction](#introduction)
